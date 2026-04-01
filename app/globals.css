@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --gold: #d4af37;
+  --dark-gold: #a67c00;
+  --burgundy: #6b1f1f;
+  --cream: #f5f1e8;
+  --dark-brown: #2c1810;
+  --charcoal: #0a0a0a;
+  --fog: #1a1410;
+}
+
+@layer base {
+  body {
+    @apply antialiased;
+    background: var(--charcoal);
+    color: var(--cream);
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-cinzel);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+}
+
+@layer utilities {
+  .gold-text {
+    background: linear-gradient(135deg, #a67c00 0%, #d4af37 50%, #f4e4b0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .victorian-ornament {
+    position: relative;
+  }
+  
+  .victorian-ornament::before,
+  .victorian-ornament::after {
+    content: '◆';
+    color: var(--gold);
+    opacity: 0.3;
+  }
+  
+  .victorian-ornament::before {
+    margin-right: 1rem;
+  }
+  
+  .victorian-ornament::after {
+    margin-left: 1rem;
+  }
+  
+  .fog-overlay {
+    background: linear-gradient(180deg, 
+      rgba(10, 10, 10, 0) 0%, 
+      rgba(26, 20, 16, 0.8) 50%, 
+      rgba(10, 10, 10, 1) 100%
+    );
+  }
+  
+  .detective-border {
+    border: 2px solid var(--gold);
+    box-shadow: 
+      0 0 20px rgba(212, 175, 55, 0.15),
+      inset 0 0 20px rgba(212, 175, 55, 0.05);
+  }
+  
+  .parchment {
+    background: linear-gradient(135deg, #f5f1e8 0%, #e8dcc8 100%);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  }
+}
