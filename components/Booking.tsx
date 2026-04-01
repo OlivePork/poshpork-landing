@@ -1,9 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { loadStripe } from '@stripe/stripe-js';
-
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 const availableDates = [
   { date: '2026-05-16', day: 'Friday', time: '10:00 AM', available: 16 },
@@ -43,6 +40,12 @@ export default function Booking() {
         }),
       });
 
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('API Error:', errorData);
+        throw new Error(errorData.error || 'Booking failed');
+      }
+
       const data = await response.json();
 
       if (data.url) {
@@ -52,7 +55,7 @@ export default function Booking() {
       }
     } catch (error) {
       console.error('Booking error:', error);
-      alert('There was an error processing your booking. Please try again.');
+      alert('There was an error processing your booking. Please try again or contact mystery@poshpork.com');
       setLoading(false);
     }
   };
