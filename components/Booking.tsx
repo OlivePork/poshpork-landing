@@ -31,7 +31,7 @@ export default function Booking() {
   const total = numPeople * 15;
 
   return (
-    <section id="booking" style={{background: 'var(--charcoal)', paddingTop: '30px', paddingBottom: '60px'}}>
+    <section id="booking" style={{background: 'var(--charcoal)', paddingTop: '40px', paddingBottom: '60px'}}>
       
       <div style={{width: '100%', maxWidth: '500px', margin: '0 auto', padding: '0 20px'}}>
         
@@ -43,8 +43,11 @@ export default function Booking() {
           <p className="text-xl mb-2" style={{color: 'var(--cream)', opacity: 0.8}}>
             Possessió Vernissa, Llucmajor
           </p>
-          <p className="text-sm uppercase tracking-wide" style={{color: 'var(--gold)', opacity: 0.6}}>
+          <p className="text-sm uppercase tracking-wide mb-4" style={{color: 'var(--gold)', opacity: 0.6}}>
             May 16 — June 1, 2026
+          </p>
+          <p className="text-sm italic" style={{color: 'var(--cream)', opacity: 0.7}}>
+            Limited trial sessions — your feedback will shape the future of this experience
           </p>
         </div>
 

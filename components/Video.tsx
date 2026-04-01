@@ -1,8 +1,8 @@
 export default function Video() {
   return (
-    <section style={{background: 'var(--charcoal)', padding: '0'}}>
+    <section style={{background: 'var(--charcoal)', padding: '0', margin: '0'}}>
       
-      <div className="max-w-6xl mx-auto px-4" style={{paddingTop: '40px'}}>
+      <div className="max-w-6xl mx-auto px-4" style={{paddingTop: '40px', paddingBottom: '0'}}>
         
         {/* Video */}
         <div className="relative rounded-lg overflow-hidden mb-10" style={{ paddingBottom: '37.5%', maxWidth: '900px', margin: '0 auto', border: '1px solid var(--gold)' }}>
@@ -16,17 +16,13 @@ export default function Video() {
         </div>
 
         {/* Text content below video */}
-        <div className="text-center max-w-2xl mx-auto">
+        <div className="text-center max-w-2xl mx-auto" style={{paddingBottom: '0', marginBottom: '0'}}>
           <p className="text-xl mb-6" style={{color: 'var(--cream)', opacity: 0.85}}>
             Join the jury. Examine the evidence. Cast your verdict.
           </p>
 
-          <p className="text-xl mb-0" style={{color: 'var(--cream)', opacity: 0.75}}>
+          <p className="text-xl" style={{color: 'var(--cream)', opacity: 0.75, marginBottom: '0'}}>
             A groundbreaking new tourism experience in Mallorca. Book now to be among the first to experience it, shape its evolution, and help create something truly original.
-          </p>
-
-          <p className="mt-6 text-sm uppercase tracking-widest" style={{color: 'var(--gold)', opacity: 0.6}}>
-            Limited to 16 Guests • May 16 - June 1
           </p>
         </div>
 
