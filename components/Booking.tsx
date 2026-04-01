@@ -31,7 +31,7 @@ export default function Booking() {
   const total = numPeople * 15;
 
   return (
-    <section id="booking" style={{background: 'var(--charcoal)', padding: '60px 0'}}>
+    <section id="booking" style={{background: 'var(--charcoal)', padding: '40px 0 60px 0'}}>
       
       <div style={{width: '100%', maxWidth: '500px', margin: '0 auto', padding: '0 20px'}}>
         
