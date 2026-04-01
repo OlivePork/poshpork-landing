@@ -19,7 +19,7 @@ export default function Hero() {
         {/* Logo */}
         <div className="mb-12">
           <img
-            src="https://imgur.com/p4ryMaz"
+            src="https://i.imgur.com/p4ryMaz.jpeg"
             alt="The Posh Pork Murder Mystery Experience"
             style={{maxWidth: '900px', width: '100%', height: 'auto', filter: 'drop-shadow(0 20px 60px rgba(0,0,0,0.8))', margin: '0 auto', borderRadius: '8px'}}
           />
