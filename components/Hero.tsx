@@ -2,7 +2,7 @@
 
 export default function Hero() {
   return (
-    <section className="relative py-16" style={{background: 'var(--charcoal)', paddingBottom: '0'}}>
+    <section className="relative" style={{background: 'var(--charcoal)', paddingTop: '64px', paddingBottom: '0'}}>
       
       {/* Subtle pattern */}
       <div className="absolute inset-0 opacity-5" style={{
@@ -13,7 +13,7 @@ export default function Hero() {
       <div className="relative z-10 max-w-6xl mx-auto px-4">
         
         {/* Logo */}
-        <div className="mb-12 text-center">
+        <div className="text-center" style={{marginBottom: '48px'}}>
           <img
             src="https://i.imgur.com/p4ryMaz.jpeg"
             alt="The Posh Pork Murder Mystery Experience"
@@ -22,7 +22,7 @@ export default function Hero() {
         </div>
 
         {/* Main headline */}
-        <h1 className="text-5xl font-bold mb-0 text-center" style={{color: 'var(--gold)', fontFamily: 'var(--font-cinzel)'}}>
+        <h1 className="text-5xl font-bold text-center" style={{color: 'var(--gold)', fontFamily: 'var(--font-cinzel)', margin: '0', padding: '0'}}>
           Which Food Is Killing You?
         </h1>
 

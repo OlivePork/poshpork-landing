@@ -1,8 +1,8 @@
 export default function Video() {
   return (
-    <section style={{background: 'var(--charcoal)', padding: '40px 0 40px 0'}}>
+    <section style={{background: 'var(--charcoal)', padding: '0'}}>
       
-      <div className="max-w-6xl mx-auto px-4">
+      <div className="max-w-6xl mx-auto px-4" style={{paddingTop: '40px'}}>
         
         {/* Video */}
         <div className="relative rounded-lg overflow-hidden mb-10" style={{ paddingBottom: '37.5%', maxWidth: '900px', margin: '0 auto', border: '1px solid var(--gold)' }}>
