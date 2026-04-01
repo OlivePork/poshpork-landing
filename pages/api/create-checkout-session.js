@@ -18,7 +18,7 @@ export default async function handler(req, res) {
               name: 'The Posh Pork Murder Mystery Experience',
               description: `Session: ${dateDisplay}`,
             },
-            unit_amount: 1500, // €15 in cents
+            unit_amount: 1500,
           },
           quantity: numPeople,
         },
