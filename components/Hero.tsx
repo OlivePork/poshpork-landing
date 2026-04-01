@@ -1,12 +1,8 @@
 'use client';
 
 export default function Hero() {
-  const scrollToBooking = () => {
-    document.getElementById('booking')?.scrollIntoView({ behavior: 'smooth' });
-  };
-
   return (
-    <section className="relative py-16" style={{background: 'var(--charcoal)'}}>
+    <section className="relative py-16" style={{background: 'var(--charcoal)', paddingBottom: '0'}}>
       
       {/* Subtle pattern */}
       <div className="absolute inset-0 opacity-5" style={{
@@ -26,7 +22,7 @@ export default function Hero() {
         </div>
 
         {/* Main headline */}
-        <h1 className="text-5xl font-bold mb-12 text-center" style={{color: 'var(--gold)', fontFamily: 'var(--font-cinzel)'}}>
+        <h1 className="text-5xl font-bold mb-0 text-center" style={{color: 'var(--gold)', fontFamily: 'var(--font-cinzel)'}}>
           Which Food Is Killing You?
         </h1>
 
