@@ -1,6 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import { loadStripe } from '@stripe/stripe-js';
+
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 const availableDates = [
   { date: '2026-05-16', day: 'Friday', time: '10:00 AM', available: 16 },
@@ -23,9 +26,35 @@ export default function Booking() {
     }
 
     setLoading(true);
-    const bookingUrl = 'https://buy.stripe.com/00w4gzaPBdSP2nj9Uj9IQ00';
-    window.open(bookingUrl, '_blank');
-    setLoading(false);
+
+    try {
+      const selectedSession = availableDates.find(d => d.date === selectedDate);
+      const dateDisplay = selectedSession 
+        ? `${selectedSession.day}, ${selectedSession.date.includes('-06-') ? 'June' : 'May'} ${selectedSession.date.split('-')[2]} at ${selectedSession.time}`
+        : selectedDate;
+
+      const response = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          date: selectedDate, 
+          numPeople,
+          dateDisplay 
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error('No checkout URL returned');
+      }
+    } catch (error) {
+      console.error('Booking error:', error);
+      alert('There was an error processing your booking. Please try again.');
+      setLoading(false);
+    }
   };
 
   const total = numPeople * 15;
