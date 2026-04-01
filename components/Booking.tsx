@@ -119,7 +119,7 @@ export default function Booking() {
               🔒 Secure Payment • ✉️ Instant Confirmation
             </p>
             <p className="text-xs" style={{color: '#999'}}>
-              Private bookings: <a href="mailto:hello@poshpork.com" className="underline" style={{color: 'var(--dark-gold)'}}>hello@poshpork.com</a>
+              Private bookings: <a href="mailto:mystery@poshpork.com" className="underline" style={{color: 'var(--dark-gold)'}}>mystery@poshpork.com</a>
             </p>
           </div>
         </div>
