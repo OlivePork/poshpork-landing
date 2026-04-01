@@ -6,7 +6,7 @@ export default function Hero() {
   };
 
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden" style={{background: 'var(--charcoal)'}}>
+    <section className="relative py-16" style={{background: 'var(--charcoal)'}}>
       
       {/* Subtle pattern */}
       <div className="absolute inset-0 opacity-5" style={{
@@ -14,10 +14,10 @@ export default function Hero() {
         backgroundSize: '60px 60px'
       }} />
 
-      <div className="relative z-10 max-w-6xl mx-auto px-4 text-center">
+      <div className="relative z-10 max-w-6xl mx-auto px-4">
         
         {/* Logo */}
-        <div className="mb-12">
+        <div className="mb-12 text-center">
           <img
             src="https://i.imgur.com/p4ryMaz.jpeg"
             alt="The Posh Pork Murder Mystery Experience"
@@ -26,38 +26,9 @@ export default function Hero() {
         </div>
 
         {/* Main headline */}
-        <h1 className="text-5xl font-bold mb-8" style={{color: 'var(--gold)', fontFamily: 'var(--font-cinzel)'}}>
+        <h1 className="text-5xl font-bold mb-12 text-center" style={{color: 'var(--gold)', fontFamily: 'var(--font-cinzel)'}}>
           Which Food Is Killing You?
         </h1>
-
-        {/* All body text same size */}
-        <p className="text-xl mb-6 max-w-2xl mx-auto" style={{color: 'var(--cream)', opacity: 0.85}}>
-          Join the jury. Examine the evidence. Cast your verdict.
-        </p>
-
-        <p className="text-xl mb-10 max-w-2xl mx-auto" style={{color: 'var(--cream)', opacity: 0.75}}>
-          A groundbreaking new tourism experience in Mallorca. Book now to be among the first to experience it, shape its evolution, and help create something truly original.
-        </p>
-
-        {/* CTA Button */}
-        <button
-          onClick={scrollToBooking}
-          className="px-10 py-4 rounded-lg font-bold transition-all duration-300 transform hover:scale-105"
-          style={{
-            fontSize: '20px',
-            background: 'linear-gradient(135deg, #a67c00 0%, #d4af37 50%, #a67c00 100%)',
-            color: 'var(--charcoal)',
-            boxShadow: '0 10px 40px rgba(212, 175, 55, 0.4)',
-            fontFamily: 'var(--font-cinzel)'
-          }}
-        >
-          Book Your Seat — €15
-        </button>
-
-        {/* Small detail */}
-        <p className="mt-8 text-sm uppercase tracking-widest" style={{color: 'var(--gold)', opacity: 0.6}}>
-          Limited to 16 Guests • May 16 - June 1
-        </p>
 
       </div>
     </section>
