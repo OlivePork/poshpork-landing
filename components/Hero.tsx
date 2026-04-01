@@ -1,7 +1,5 @@
 'use client';
 
-import Image from 'next/image';
-
 export default function Hero() {
   const scrollToBooking = () => {
     document.getElementById('booking')?.scrollIntoView({ behavior: 'smooth' });
@@ -20,14 +18,10 @@ export default function Hero() {
         
         {/* Logo */}
         <div className="mb-12">
-          <Image
+          <img
             src="/images/logo.jpeg"
             alt="The Posh Pork Murder Mystery Experience"
-            width={1200}
-            height={600}
-            className="mx-auto rounded-lg"
-            style={{maxWidth: '900px', width: '100%', height: 'auto', filter: 'drop-shadow(0 20px 60px rgba(0,0,0,0.8))'}}
-            priority
+            style={{maxWidth: '900px', width: '100%', height: 'auto', filter: 'drop-shadow(0 20px 60px rgba(0,0,0,0.8))', margin: '0 auto', borderRadius: '8px'}}
           />
         </div>
 
