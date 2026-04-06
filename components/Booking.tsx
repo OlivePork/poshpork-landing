@@ -1,20 +1,62 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 const availableDates = [
-  { date: '2026-05-16', day: 'Friday', time: '10:00 AM', available: 8 },
-  { date: '2026-05-18', day: 'Sunday', time: '10:00 AM', available: 8 },
-  { date: '2026-05-23', day: 'Friday', time: '10:00 AM', available: 8 },
-  { date: '2026-05-25', day: 'Sunday', time: '10:00 AM', available: 8 },
-  { date: '2026-05-30', day: 'Friday', time: '10:00 AM', available: 8 },
-  { date: '2026-06-01', day: 'Sunday', time: '10:00 AM', available: 8 },
+  { date: '2026-05-16', day: 'Friday', time: '10:00 AM', capacity: 8 },
+  { date: '2026-05-18', day: 'Sunday', time: '10:00 AM', capacity: 8 },
+  { date: '2026-05-23', day: 'Friday', time: '10:00 AM', capacity: 8 },
+  { date: '2026-05-25', day: 'Sunday', time: '10:00 AM', capacity: 8 },
+  { date: '2026-05-30', day: 'Friday', time: '10:00 AM', capacity: 8 },
+  { date: '2026-06-01', day: 'Sunday', time: '10:00 AM', capacity: 8 },
 ];
 
 export default function Booking() {
   const [selectedDate, setSelectedDate] = useState('');
   const [numPeople, setNumPeople] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [availability, setAvailability] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    fetchAvailability();
+  }, []);
+
+  const fetchAvailability = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('bookings')
+        .select('session_date, num_people');
+
+      if (error) {
+        console.error('Error fetching bookings:', error);
+        return;
+      }
+
+      // Calculate booked seats per date
+      const bookedSeats: Record<string, number> = {};
+      data?.forEach((booking) => {
+        const date = booking.session_date;
+        bookedSeats[date] = (bookedSeats[date] || 0) + booking.num_people;
+      });
+
+      // Calculate available seats
+      const available: Record<string, number> = {};
+      availableDates.forEach((session) => {
+        const booked = bookedSeats[session.date] || 0;
+        available[session.date] = session.capacity - booked;
+      });
+
+      setAvailability(available);
+    } catch (err) {
+      console.error('Failed to fetch availability:', err);
+    }
+  };
 
   const handleBooking = async () => {
     if (!selectedDate) {
@@ -98,11 +140,15 @@ export default function Booking() {
               style={{borderColor: 'var(--dark-gold)', color: 'var(--dark-brown)', fontSize: '16px'}}
             >
               <option value="">Choose your session...</option>
-              {availableDates.map((session) => (
-                <option key={session.date} value={session.date}>
-                  {session.day}, {session.date.includes('-06-') ? 'June' : 'May'} {session.date.split('-')[2]} - {session.available} seats left
-                </option>
-              ))}
+              {availableDates.map((session) => {
+                const available = availability[session.date] ?? session.capacity;
+                const isSoldOut = available <= 0;
+                return (
+                  <option key={session.date} value={session.date} disabled={isSoldOut}>
+                    {session.day}, {session.date.includes('-06-') ? 'June' : 'May'} {session.date.split('-')[2]} - {isSoldOut ? 'SOLD OUT' : `${available} seat${available === 1 ? '' : 's'} left`}
+                  </option>
+                );
+              })}
             </select>
           </div>
 
