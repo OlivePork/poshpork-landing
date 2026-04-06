@@ -3,12 +3,12 @@
 import { useState } from 'react';
 
 const availableDates = [
-  { date: '2026-05-16', day: 'Friday', time: '10:00 AM', available: 16 },
-  { date: '2026-05-18', day: 'Sunday', time: '10:00 AM', available: 16 },
-  { date: '2026-05-23', day: 'Friday', time: '10:00 AM', available: 16 },
-  { date: '2026-05-25', day: 'Sunday', time: '10:00 AM', available: 16 },
-  { date: '2026-05-30', day: 'Friday', time: '10:00 AM', available: 16 },
-  { date: '2026-06-01', day: 'Sunday', time: '10:00 AM', available: 16 },
+  { date: '2026-05-16', day: 'Friday', time: '10:00 AM', available: 8 },
+  { date: '2026-05-18', day: 'Sunday', time: '10:00 AM', available: 8 },
+  { date: '2026-05-23', day: 'Friday', time: '10:00 AM', available: 8 },
+  { date: '2026-05-25', day: 'Sunday', time: '10:00 AM', available: 8 },
+  { date: '2026-05-30', day: 'Friday', time: '10:00 AM', available: 8 },
+  { date: '2026-06-01', day: 'Sunday', time: '10:00 AM', available: 8 },
 ];
 
 export default function Booking() {
@@ -117,7 +117,7 @@ export default function Booking() {
               className="w-full px-4 py-3 rounded border-2 bg-white transition-all focus:outline-none focus:border-yellow-700"
               style={{borderColor: 'var(--dark-gold)', color: 'var(--dark-brown)', fontSize: '16px'}}
             >
-              {[...Array(16)].map((_, i) => (
+              {[...Array(8)].map((_, i) => (
                 <option key={i + 1} value={i + 1}>
                   {i + 1} {i + 1 === 1 ? 'Guest' : 'Guests'}
                 </option>
