@@ -2,6 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
 :root {
   --gold: #d4af37;
   --dark-gold: #a67c00;
