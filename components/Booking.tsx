@@ -156,6 +156,11 @@ export default function Booking() {
             <p className="text-xs" style={{color: '#999'}}>
               Private bookings: <a href="mailto:mystery@poshpork.com" className="underline" style={{color: 'var(--dark-gold)'}}>mystery@poshpork.com</a>
             </p>
+            <p className="text-xs mt-3" style={{color: '#999'}}>
+              <a href="/privacy" className="underline" style={{color: 'var(--dark-gold)'}}>Privacy Policy</a>
+              {' • '}
+              <a href="/terms" className="underline" style={{color: 'var(--dark-gold)'}}>Terms & Conditions</a>
+            </p>
           </div>
         </div>
 
