@@ -100,7 +100,7 @@ export default function Booking() {
               <option value="">Choose your session...</option>
               {availableDates.map((session) => (
                 <option key={session.date} value={session.date}>
-                  {session.day}, {session.date.includes('-06-') ? 'June' : 'May'} {session.date.split('-')[2]}
+                  {session.day}, {session.date.includes('-06-') ? 'June' : 'May'} {session.date.split('-')[2]} - {session.available} seats left
                 </option>
               ))}
             </select>
