@@ -8,7 +8,9 @@ export default function Hero() {
       display: 'flex', 
       alignItems: 'center', 
       justifyContent: 'center',
-      position: 'relative'
+      position: 'relative',
+      paddingTop: '80px',
+      paddingBottom: '40px'
     }}>
       
       <div style={{
