@@ -9,7 +9,7 @@ export default function Hero() {
       alignItems: 'center', 
       justifyContent: 'center',
       position: 'relative',
-      paddingTop: '80px',
+      paddingTop: '40px',
       paddingBottom: '40px'
     }}>
       
