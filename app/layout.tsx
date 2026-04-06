@@ -27,8 +27,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${cinzel.variable} ${lora.variable}`}>
-      <body className={lora.className}>
+    <html lang="en" className={`${cinzel.variable} ${lora.variable}`} style={{overflowX: 'hidden'}}>
+      <body className={lora.className} style={{overflowX: 'hidden', margin: 0, padding: 0}}>
         {children}
         <CookieBanner />
       </body>
