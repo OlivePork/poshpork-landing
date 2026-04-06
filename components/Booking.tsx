@@ -160,6 +160,8 @@ export default function Booking() {
               <a href="/privacy" className="underline" style={{color: 'var(--dark-gold)'}}>Privacy Policy</a>
               {' • '}
               <a href="/terms" className="underline" style={{color: 'var(--dark-gold)'}}>Terms & Conditions</a>
+              {' • '}
+              <a href="/cookies" className="underline" style={{color: 'var(--dark-gold)'}}>Cookie Policy</a>
             </p>
           </div>
         </div>
