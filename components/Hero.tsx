@@ -2,7 +2,7 @@
 
 export default function Hero() {
   return (
-    <section className="relative" style={{background: 'var(--charcoal)', paddingTop: '64px', paddingBottom: '0'}}>
+    <section className="relative flex items-center justify-center" style={{background: 'var(--charcoal)', minHeight: '100vh'}}>
       
       {/* Subtle pattern */}
       <div className="absolute inset-0 opacity-5" style={{
