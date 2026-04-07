@@ -1,8 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_ANON_KEY
 );
 
 const sessions = [
@@ -25,14 +25,15 @@ export default async function handler(req, res) {
       .select('session_date, num_people');
 
     if (error) {
-      console.error('Error:', error);
-      return res.status(500).json({ error: 'Database error' });
+      console.error('Supabase error:', error);
+      return res.status(500).json({ error: 'Database error', details: error.message });
     }
 
     const booked = {};
-    if (data) {
+    if (data && data.length > 0) {
       data.forEach(booking => {
-        booked[booking.session_date] = (booked[booking.session_date] || 0) + booking.num_people;
+        const date = booking.session_date;
+        booked[date] = (booked[date] || 0) + parseInt(booking.num_people);
       });
     }
 
@@ -43,7 +44,7 @@ export default async function handler(req, res) {
 
     return res.status(200).json({ availability });
   } catch (err) {
-    console.error('Error:', err);
-    return res.status(500).json({ error: 'Server error' });
+    console.error('Server error:', err);
+    return res.status(500).json({ error: 'Server error', details: err.message });
   }
 }
