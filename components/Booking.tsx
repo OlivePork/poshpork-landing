@@ -3,10 +3,10 @@
 import { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-);
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 const availableDates = [
   { date: '2026-05-16', day: 'Friday', time: '10:00 AM', capacity: 8 },
@@ -21,7 +21,7 @@ export default function Booking() {
   const [selectedDate, setSelectedDate] = useState('');
   const [numPeople, setNumPeople] = useState(1);
   const [loading, setLoading] = useState(false);
-  const [availability, setAvailability] = useState<Record<string, number>>({});
+  const [availability, setAvailability] = useState({});
 
   useEffect(() => {
     fetchAvailability();
@@ -38,15 +38,15 @@ export default function Booking() {
         return;
       }
 
-      // Calculate booked seats per date
-      const bookedSeats: Record<string, number> = {};
-      data?.forEach((booking) => {
-        const date = booking.session_date;
-        bookedSeats[date] = (bookedSeats[date] || 0) + booking.num_people;
-      });
+      const bookedSeats = {};
+      if (data) {
+        data.forEach((booking) => {
+          const date = booking.session_date;
+          bookedSeats[date] = (bookedSeats[date] || 0) + booking.num_people;
+        });
+      }
 
-      // Calculate available seats
-      const available: Record<string, number> = {};
+      const available = {};
       availableDates.forEach((session) => {
         const booked = bookedSeats[session.date] || 0;
         available[session.date] = session.capacity - booked;
@@ -109,7 +109,6 @@ export default function Booking() {
       
       <div style={{width: '100%', maxWidth: '500px', margin: '0 auto', padding: '0 20px'}}>
         
-        {/* Header */}
         <div className="text-center mb-10">
           <h2 className="text-5xl font-bold mb-6" style={{color: 'var(--gold)', fontFamily: 'var(--font-cinzel)'}}>
             Reserve Your Seat
@@ -125,10 +124,8 @@ export default function Booking() {
           </p>
         </div>
 
-        {/* Booking card */}
         <div className="parchment rounded-lg p-8" style={{border: '2px solid var(--gold)', boxShadow: '0 0 20px rgba(212, 175, 55, 0.15)'}}>
           
-          {/* Date selection */}
           <div className="mb-6">
             <label className="block font-bold mb-3" style={{color: 'var(--dark-brown)', fontFamily: 'var(--font-cinzel)', fontSize: '14px'}}>
               SELECT DATE
@@ -141,7 +138,7 @@ export default function Booking() {
             >
               <option value="">Choose your session...</option>
               {availableDates.map((session) => {
-                const available = availability[session.date] ?? session.capacity;
+                const available = availability[session.date] !== undefined ? availability[session.date] : session.capacity;
                 const isSoldOut = available <= 0;
                 return (
                   <option key={session.date} value={session.date} disabled={isSoldOut}>
@@ -152,7 +149,6 @@ export default function Booking() {
             </select>
           </div>
 
-          {/* Number of guests */}
           <div className="mb-6">
             <label className="block font-bold mb-3" style={{color: 'var(--dark-brown)', fontFamily: 'var(--font-cinzel)', fontSize: '14px'}}>
               GUESTS
@@ -171,14 +167,12 @@ export default function Booking() {
             </select>
           </div>
 
-          {/* Price display */}
           <div className="rounded-lg p-6 mb-6 text-center" style={{background: 'linear-gradient(135deg, #2c1810 0%, #0a0a0a 100%)'}}>
             <div className="font-bold" style={{color: 'var(--gold)', fontFamily: 'var(--font-cinzel)', fontSize: '48px'}}>
               €{total}
             </div>
           </div>
 
-          {/* CTA button */}
           <button
             onClick={handleBooking}
             disabled={loading}
@@ -194,7 +188,6 @@ export default function Booking() {
             {loading ? 'Processing...' : 'Secure Your Seat'}
           </button>
 
-          {/* Trust indicators */}
           <div className="mt-6 pt-6 text-center" style={{borderTop: '1px solid rgba(212, 175, 55, 0.2)'}}>
             <p className="text-xs mb-2" style={{color: '#999'}}>
               🔒 Secure Payment • ✉️ Instant Confirmation
