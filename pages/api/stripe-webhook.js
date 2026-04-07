@@ -8,6 +8,12 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );
 
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
+
 async function getRawBody(req) {
   const chunks = [];
   for await (const chunk of req) {
@@ -16,7 +22,7 @@ async function getRawBody(req) {
   return Buffer.concat(chunks);
 }
 
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -46,6 +52,7 @@ module.exports = async function handler(req, res) {
         customer_name: customer_details.name,
         stripe_session_id: session.id,
       }]);
+      console.log('Booking saved to Supabase');
     } catch (dbErr) {
       console.error('DB error:', dbErr);
     }
@@ -140,16 +147,11 @@ module.exports = async function handler(req, res) {
           </div>
         `,
       });
+      console.log('Email sent to:', customer_details.email);
     } catch (emailErr) {
       console.error('Email error:', emailErr);
     }
   }
 
   res.status(200).json({ received: true });
-};
-
-module.exports.config = {
-  api: {
-    bodyParser: false,
-  },
-};
+}
