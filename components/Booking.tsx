@@ -95,7 +95,7 @@ export default function Booking() {
             May 16 — June 1, 2026
           </p>
           <p className="text-sm italic" style={{color: 'var(--cream)', opacity: 0.7}}>
-            Limited trial sessions — your feedback will shape the future of this experience
+            Limited trial sessions — your feedback shapes the future of this experience
           </p>
         </div>
 
