@@ -1,12 +1,6 @@
 import { Resend } from 'resend';
-import { createClient } from '@supabase/supabase-js';
-
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const resend = new Resend(process.env.RESEND_API_KEY);
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-);
 
 export const config = {
   api: {
@@ -49,31 +43,6 @@ export default async function handler(req, res) {
     const sessionDisplay = session.metadata.session_display;
     const numPeople = session.metadata.num_people;
 
-    // Save booking to Supabase
-    try {
-      const { error } = await supabase
-        .from('bookings')
-        .insert([
-          {
-            session_date: sessionDate,
-            session_display: sessionDisplay,
-            num_people: parseInt(numPeople),
-            customer_email: customerEmail,
-            customer_name: customerName,
-            stripe_session_id: session.id,
-          },
-        ]);
-
-      if (error) {
-        console.error('Failed to save booking:', error);
-      } else {
-        console.log('Booking saved successfully');
-      }
-    } catch (dbError) {
-      console.error('Database error:', dbError);
-    }
-
-    // Send confirmation email
     try {
       await resend.emails.send({
         from: 'Posh Pork <mystery@poshpork.com>',
