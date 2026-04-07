@@ -1,12 +1,12 @@
-import { Resend } from 'resend';
+const { Resend } = require('resend');
+const { createClient } = require('@supabase/supabase-js');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const resend = new Resend(process.env.RESEND_API_KEY);
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
+const resend = new Resend(process.env.RESEND_API_KEY);
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+);
 
 async function getRawBody(req) {
   const chunks = [];
@@ -16,37 +16,45 @@ async function getRawBody(req) {
   return Buffer.concat(chunks);
 }
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
   const buf = await getRawBody(req);
   const sig = req.headers['stripe-signature'];
-  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
   let event;
-
   try {
-    event = stripe.webhooks.constructEvent(buf, sig, webhookSecret);
+    event = stripe.webhooks.constructEvent(buf, sig, process.env.STRIPE_WEBHOOK_SECRET);
   } catch (err) {
-    console.error(`Webhook signature verification failed: ${err.message}`);
+    console.error('Webhook error:', err.message);
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object;
+    const { customer_details, metadata } = session;
 
-    const customerEmail = session.customer_details.email;
-    const customerName = session.customer_details.name;
-    const sessionDate = session.metadata.session_date;
-    const sessionDisplay = session.metadata.session_display;
-    const numPeople = session.metadata.num_people;
+    // Save to Supabase
+    try {
+      await supabase.from('bookings').insert([{
+        session_date: metadata.session_date,
+        session_display: metadata.session_display,
+        num_people: parseInt(metadata.num_people),
+        customer_email: customer_details.email,
+        customer_name: customer_details.name,
+        stripe_session_id: session.id,
+      }]);
+    } catch (dbErr) {
+      console.error('DB error:', dbErr);
+    }
 
+    // Send email
     try {
       await resend.emails.send({
         from: 'Posh Pork <mystery@poshpork.com>',
-        to: customerEmail,
+        to: customer_details.email,
         subject: 'Your Posh Pork Murder Mystery Experience is Confirmed! 🔍',
         html: `
           <div style="font-family: Georgia, serif; color: #2c1810; max-width: 600px; margin: 0 auto;">
@@ -56,7 +64,7 @@ export default async function handler(req, res) {
             </div>
             
             <div style="background: #f5f1e8; padding: 40px 30px;">
-              <p style="font-size: 18px; margin-bottom: 20px;">Dear ${customerName},</p>
+              <p style="font-size: 18px; margin-bottom: 20px;">Dear ${customer_details.name},</p>
               
               <p style="font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
                 <strong>Thank you for booking The Posh Pork Murder Mystery Experience!</strong>
@@ -67,8 +75,8 @@ export default async function handler(req, res) {
               </p>
               
               <div style="background: white; border: 2px solid #d4af37; border-radius: 8px; padding: 20px; margin-bottom: 30px; text-align: center;">
-                <p style="font-size: 20px; color: #d4af37; margin: 0; font-weight: bold;">📅 ${sessionDisplay}</p>
-                <p style="font-size: 16px; margin: 10px 0 0 0;">👥 ${numPeople} Guest${numPeople > 1 ? 's' : ''}</p>
+                <p style="font-size: 20px; color: #d4af37; margin: 0; font-weight: bold;">📅 ${metadata.session_display}</p>
+                <p style="font-size: 16px; margin: 10px 0 0 0;">👥 ${metadata.num_people} Guest${metadata.num_people > 1 ? 's' : ''}</p>
               </div>
               
               <div style="border-top: 1px solid #d4af37; padding-top: 20px; margin-top: 30px;">
@@ -132,12 +140,16 @@ export default async function handler(req, res) {
           </div>
         `,
       });
-
-      console.log('Confirmation email sent to:', customerEmail);
-    } catch (emailError) {
-      console.error('Failed to send email:', emailError);
+    } catch (emailErr) {
+      console.error('Email error:', emailErr);
     }
   }
 
   res.status(200).json({ received: true });
-}
+};
+
+module.exports.config = {
+  api: {
+    bodyParser: false,
+  },
+};
