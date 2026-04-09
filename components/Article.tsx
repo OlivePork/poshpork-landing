@@ -1,16 +1,16 @@
 export default function Article() {
   return (
-    <section style={{background: 'var(--parchment)', paddingTop: '80px', paddingBottom: '80px'}}>
+    <section style={{background: '#f5f1e8', paddingTop: '80px', paddingBottom: '80px'}}>
       <div style={{width: '100%', maxWidth: '800px', margin: '0 auto', padding: '0 20px'}}>
         
-        <article style={{fontFamily: 'Georgia, serif', color: 'var(--dark-brown)', lineHeight: '1.8'}}>
+        <article style={{fontFamily: 'Georgia, serif', color: '#2c1810', lineHeight: '1.8'}}>
           
           <h1 style={{
             fontSize: '42px',
             fontWeight: 'bold',
             marginBottom: '30px',
-            color: 'var(--gold)',
-            fontFamily: 'var(--font-cinzel)',
+            color: '#d4af37',
+            fontFamily: 'Cinzel, serif',
             lineHeight: '1.2'
           }}>
             The Posh Pork Murder Mystery: Interactive Entertainment Comes to Llucmajor This Summer
@@ -29,8 +29,8 @@ export default function Article() {
             fontWeight: 'bold',
             marginTop: '50px',
             marginBottom: '25px',
-            color: 'var(--gold)',
-            fontFamily: 'var(--font-cinzel)'
+            color: '#d4af37',
+            fontFamily: 'Cinzel, serif'
           }}>
             What Is It?
           </h2>
@@ -48,8 +48,8 @@ export default function Article() {
             fontWeight: 'bold',
             marginTop: '50px',
             marginBottom: '25px',
-            color: 'var(--gold)',
-            fontFamily: 'var(--font-cinzel)'
+            color: '#d4af37',
+            fontFamily: 'Cinzel, serif'
           }}>
             How It Works
           </h2>
@@ -75,8 +75,8 @@ export default function Article() {
             fontWeight: 'bold',
             marginTop: '50px',
             marginBottom: '25px',
-            color: 'var(--gold)',
-            fontFamily: 'var(--font-cinzel)'
+            color: '#d4af37',
+            fontFamily: 'Cinzel, serif'
           }}>
             For Whom?
           </h2>
@@ -106,8 +106,8 @@ export default function Article() {
             fontWeight: 'bold',
             marginTop: '50px',
             marginBottom: '25px',
-            color: 'var(--gold)',
-            fontFamily: 'var(--font-cinzel)'
+            color: '#d4af37',
+            fontFamily: 'Cinzel, serif'
           }}>
             The Mystery Within the Mystery
           </h2>
@@ -126,7 +126,7 @@ export default function Article() {
 
           <div style={{
             background: 'white',
-            border: '2px solid var(--gold)',
+            border: '2px solid #d4af37',
             borderRadius: '12px',
             padding: '30px',
             marginTop: '50px',
@@ -136,8 +136,8 @@ export default function Article() {
               fontSize: '24px',
               fontWeight: 'bold',
               marginBottom: '20px',
-              color: 'var(--gold)',
-              fontFamily: 'var(--font-cinzel)'
+              color: '#d4af37',
+              fontFamily: 'Cinzel, serif'
             }}>
               Practical Details
             </h3>
@@ -161,7 +161,7 @@ export default function Article() {
               <strong>Language:</strong> English and Spanish options available
             </p>
 
-            <p style={{fontSize: '18px', fontWeight: 'bold', marginBottom: '10px', color: 'var(--gold)'}}>
+            <p style={{fontSize: '18px', fontWeight: 'bold', marginBottom: '10px', color: '#d4af37'}}>
               Pricing (Waitlist Special):
             </p>
             <p style={{fontSize: '16px', marginBottom: '5px'}}>
@@ -193,12 +193,12 @@ export default function Article() {
                 display: 'inline-block',
                 padding: '20px 40px',
                 background: 'linear-gradient(135deg, #a67c00 0%, #d4af37 50%, #a67c00 100%)',
-                color: 'var(--charcoal)',
+                color: '#0a0a0a',
                 textDecoration: 'none',
                 borderRadius: '8px',
                 fontWeight: 'bold',
                 fontSize: '20px',
-                fontFamily: 'var(--font-cinzel)',
+                fontFamily: 'Cinzel, serif',
                 boxShadow: '0 8px 24px rgba(212, 175, 55, 0.3)',
                 transition: 'transform 0.3s'
               }}
