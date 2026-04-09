@@ -4,6 +4,7 @@ import Experience from '@/components/Experience';
 import Suspects from '@/components/Suspects';
 import Booking from '@/components/Booking';
 import Waitlist from '@/components/Waitlist';
+import Article from '@/components/Article';
 import FAQ from '@/components/FAQ';
 import Footer from '@/components/Footer';
 import CookieBanner from '@/components/CookieBanner';
@@ -18,6 +19,7 @@ export default function Home() {
       <Suspects />
       <Booking />
       <Waitlist />
+      <Article />
       <FAQ />
       <Footer />
     </>
