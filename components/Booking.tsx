@@ -195,19 +195,29 @@ export default function Booking() {
             </p>
           </div>
 
-          <button
-            onClick={handleBooking}
-            disabled={loading}
-            className="w-full py-4 rounded-lg font-bold transition-all duration-300 transform hover:scale-105 disabled:opacity-50"
-            style={{
-              fontSize: '20px',
-              background: 'linear-gradient(135deg, #a67c00 0%, #d4af37 50%, #a67c00 100%)',
-              color: 'var(--charcoal)',
-              boxShadow: '0 8px 24px rgba(212, 175, 55, 0.3)',
-              fontFamily: 'var(--font-cinzel)'
-            }}
-          >
-            {loading ? 'Processing...' : 'Secure Your Seat'}
           </button>
 
-          <div className="mt-6 pt-6 text-center" style={{borde
+          <div className="mt-6 pt-6 text-center" style={{borderTop: '1px solid rgba(212, 175, 55, 0.2)'}}>
+            <p className="text-xs mb-2" style={{color: '#999'}}>
+              🔒 Secure Payment • ✉️ Instant Confirmation
+            </p>
+            <p className="text-xs mb-2" style={{color: '#999'}}>
+              Children under 3 are free
+            </p>
+            <p className="text-xs" style={{color: '#999'}}>
+              Private bookings: <a href="mailto:mystery@poshpork.com" className="underline" style={{color: 'var(--dark-gold)'}}>mystery@poshpork.com</a>
+            </p>
+            <p className="text-xs mt-3" style={{color: '#999'}}>
+              <a href="/privacy" className="underline" style={{color: 'var(--dark-gold)'}}>Privacy Policy</a>
+              {' • '}
+              <a href="/terms" className="underline" style={{color: 'var(--dark-gold)'}}>Terms & Conditions</a>
+              {' • '}
+              <a href="/cookies" className="underline" style={{color: 'var(--dark-gold)'}}>Cookie Policy</a>
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  );
+}
