@@ -195,6 +195,19 @@ export default function Booking() {
             </p>
           </div>
 
+          <button
+            onClick={handleBooking}
+            disabled={loading}
+            className="w-full py-4 rounded-lg font-bold transition-all duration-300 transform hover:scale-105 disabled:opacity-50"
+            style={{
+              fontSize: '20px',
+              background: 'linear-gradient(135deg, #a67c00 0%, #d4af37 50%, #a67c00 100%)',
+              color: 'var(--charcoal)',
+              boxShadow: '0 8px 24px rgba(212, 175, 55, 0.3)',
+              fontFamily: 'var(--font-cinzel)'
+            }}
+          >
+            {loading ? 'Processing...' : 'Secure Your Seat'}
           </button>
 
           <div className="mt-6 pt-6 text-center" style={{borderTop: '1px solid rgba(212, 175, 55, 0.2)'}}>
