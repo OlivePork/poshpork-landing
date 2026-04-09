@@ -6,7 +6,7 @@ const supabase = createClient(
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdwY2FvbndxdmJkenNteXBtcndrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1MTA3MTYsImV4cCI6MjA5MTA4NjcxNn0.Ld4zKJYqmLzOwdLep3HN-ThD8QIexMv99ib1K0ClVvA'
 );
 
-const resend = new Resend(process.env.RESEND_API_KEY || 're_9PMG3WnS_9gqcsrH4iRVuUSvfQYMvASy9');
+const resend = new Resend('re_9PMG3WnS_9gqcsrH4iRVuUSvfQYMvASy9');
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -98,7 +98,6 @@ export default async function handler(req, res) {
       });
     } catch (emailError) {
       console.error('Email error:', emailError);
-      // Don't fail the request if email fails
     }
 
     return res.status(200).json({ message: 'Successfully joined waitlist' });
