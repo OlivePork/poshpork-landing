@@ -7,7 +7,7 @@ export default function Suspects() {
         <h2 className="text-4xl font-bold text-center mb-12">Meet The Suspects</h2>
         <div className="mb-12">
           <img 
-            src="/images/suspects.jpeg" 
+            src="/images/suspects.jpg" 
             alt="Suspects" 
             className="w-full rounded-lg" 
             style={{maxWidth: '1400px', margin: '0 auto', display: 'block'}}
