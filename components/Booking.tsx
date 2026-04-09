@@ -100,7 +100,7 @@ export default function Booking() {
   };
 
   return (
-    <section id="booking" style={{background: 'var(--charcoal)', paddingTop: '40px', paddingBottom: '60px'}}>
+    <section id="booking" style={{background: 'var(--charcoal)', paddingTop: '20px', paddingBottom: '60px'}}>
       
       <div style={{width: '100%', maxWidth: '500px', margin: '0 auto', padding: '0 20px'}}>
         
