@@ -42,7 +42,7 @@ export default function Waitlist() {
 
   if (submitted) {
     return (
-      <section style={{background: 'var(--charcoal)', paddingTop: '20px', paddingBottom: '60px'}}>
+      <section style={{background: 'var(--charcoal)', paddingTop: '10px', paddingBottom: '60px'}}>
         <div style={{width: '100%', maxWidth: '600px', margin: '0 auto', padding: '0 20px', textAlign: 'center'}}>
           <div className="parchment rounded-lg p-8" style={{border: '2px solid var(--gold)'}}>
             <h3 className="text-3xl font-bold mb-4" style={{color: 'var(--gold)', fontFamily: 'var(--font-cinzel)'}}>
