@@ -1,3 +1,4 @@
+// Homepage - Updated April 2026
 import Hero from '@/components/Hero';
 import Problem from '@/components/Problem';
 import Experience from '@/components/Experience';
