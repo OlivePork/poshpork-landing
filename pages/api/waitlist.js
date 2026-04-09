@@ -43,9 +43,10 @@ export default async function handler(req, res) {
 
     // Send confirmation email
     try {
-      await resend.emails.send({
-        from: 'Posh Pork <mystery@poshpork.com>',
-        to: email,
+     await resend.emails.send({
+  from: 'Posh Pork <mystery@poshpork.com>',
+  replyTo: 'colin@permapigs.com',
+  to: email,
         subject: "You're on the Waitlist! 🔍",
         html: `
           <div style="font-family: Georgia, serif; color: #2c1810; max-width: 600px; margin: 0 auto;">
