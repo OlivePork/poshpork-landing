@@ -85,8 +85,8 @@ export default function Booking() {
           <p className="text-sm uppercase tracking-wide mb-4" style={{color: 'var(--gold)', opacity: 0.6}}>
             May 16 — June 1, 2026
           </p>
-          <p className="text-sm italic" style={{color: 'var(--cream)', opacity: 0.7}}>
-            Limited trial sessions — your feedback shapes the future of this experience
+          <p className="text-sm mb-6" style={{color: 'var(--cream)', opacity: 0.8, fontStyle: 'italic'}}>
+            This initial booking period is a trial. While the research has been done, the digital content is still being developed. Get early access with an in-person experience hosted by the creator himself over coffee. Your feedback will shape the future of the experience.
           </p>
         </div>
 
@@ -137,6 +137,9 @@ export default function Booking() {
             <div className="font-bold" style={{color: 'var(--gold)', fontFamily: 'var(--font-cinzel)', fontSize: '48px'}}>
               €{total}
             </div>
+            <p className="text-sm mt-2" style={{color: 'var(--cream)', opacity: 0.7}}>
+              €15 per guest
+            </p>
           </div>
 
           <button
