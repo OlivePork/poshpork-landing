@@ -2,11 +2,11 @@ import Stripe from 'stripe';
 import { Resend } from 'resend';
 import { createClient } from '@supabase/supabase-js';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-const resend = new Resend(process.env.RESEND_API_KEY);
+const stripe = new Stripe('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');
+const resend = new Resend('re_9PMG3WnS_9gqcsrH4iRVuUSvfQYMvASy9');
 const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  'https://gpcaonwqvbdzsmypmrwk.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdwY2FvbndxdmJkenNteXBtcndrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1MTA3MTYsImV4cCI6MjA5MTA4NjcxNn0.Ld4zKJYqmLzOwdLep3HN-ThD8QIexMv99ib1K0ClVvA'
 );
 
 export const config = {
@@ -33,7 +33,7 @@ export default async function handler(req, res) {
 
   let event;
   try {
-    event = stripe.webhooks.constructEvent(buf, sig, process.env.STRIPE_WEBHOOK_SECRET);
+    event = stripe.webhooks.constructEvent(buf, sig, 'whsec_a2b0e52d8b357d5c8a9f4b35e18d7c29f6a3b8e1c0d9f2a4b7e5c8d1a6f3b9e2');
   } catch (err) {
     console.error('Webhook error:', err.message);
     return res.status(400).send(`Webhook Error: ${err.message}`);
@@ -71,6 +71,7 @@ export default async function handler(req, res) {
     try {
       await resend.emails.send({
         from: 'Posh Pork <mystery@poshpork.com>',
+        replyTo: 'colin@permapigs.com',
         to: customerEmail,
         subject: 'Your Posh Pork Murder Mystery Experience is Confirmed! 🔍',
         html: `
