@@ -23,11 +23,15 @@ const PRICES = {
   child: 7,
 };
 
-export default function Booking() {
+export default function BookingTabs() {
+  const [activeTab, setActiveTab] = useState<'book' | 'waitlist'>('book');
   const [selectedDate, setSelectedDate] = useState('');
   const [tickets, setTickets] = useState<Ticket[]>([{ type: 'adult', price: PRICES.adult }]);
   const [loading, setLoading] = useState(false);
   const [availability, setAvailability] = useState<any>({});
+  const [email, setEmail] = useState('');
+  const [waitlistLoading, setWaitlistLoading] = useState(false);
+  const [waitlistSuccess, setWaitlistSuccess] = useState(false);
 
   useEffect(() => {
     fetch('/api/availability')
@@ -99,136 +103,267 @@ export default function Booking() {
     }
   };
 
+  const handleWaitlist = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setWaitlistLoading(true);
+
+    try {
+      const response = await fetch('/api/waitlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+
+      if (response.ok) {
+        setWaitlistSuccess(true);
+        setEmail('');
+      } else {
+        alert('Failed to join waitlist. Please try again.');
+      }
+    } catch (error) {
+      console.error('Waitlist error:', error);
+      alert('An error occurred. Please try again.');
+    } finally {
+      setWaitlistLoading(false);
+    }
+  };
+
   return (
-    <section id="booking" style={{background: 'var(--charcoal)', paddingTop: '20px', paddingBottom: '5px'}}>
+    <section id="booking" style={{background: 'var(--charcoal)', paddingTop: '20px', paddingBottom: '60px'}}>
       
-      <div style={{width: '100%', maxWidth: '500px', margin: '0 auto', padding: '0 20px'}}>
+      <div style={{width: '100%', maxWidth: '600px', margin: '0 auto', padding: '0 20px'}}>
         
         <div className="text-center mb-10">
           <h2 className="text-5xl font-bold mb-6" style={{color: 'var(--gold)', fontFamily: 'var(--font-cinzel)'}}>
-            Reserve Your Seat
+            Book Your Experience
           </h2>
           <p className="text-xl mb-2" style={{color: 'var(--cream)', opacity: 0.8}}>
-            Possessió Vernissa, Llucmajor
-          </p>
-          <p className="text-sm uppercase tracking-wide mb-4" style={{color: 'var(--gold)', opacity: 0.6}}>
-            May 16 — June 1, 2026
-          </p>
-          <p className="text-sm mb-6" style={{color: 'var(--cream)', opacity: 0.8, fontStyle: 'italic'}}>
-            This initial booking period is a trial. While the research has been done, the digital content is still being developed. Get early access with an in-person experience hosted by the creator himself over coffee. Your feedback will shape the future of the experience.
+            Join us in Mallorca or join the waitlist for the worldwide digital launch
           </p>
         </div>
 
-        <div className="parchment rounded-lg p-8" style={{border: '2px solid var(--gold)', boxShadow: '0 0 20px rgba(212, 175, 55, 0.15)'}}>
-          
-          <div className="mb-6">
-            <label className="block font-bold mb-3" style={{color: 'var(--dark-brown)', fontFamily: 'var(--font-cinzel)', fontSize: '14px'}}>
-              SELECT DATE
-            </label>
-            <select
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-              className="w-full px-4 py-3 rounded border-2 bg-white transition-all focus:outline-none focus:border-yellow-700"
-              style={{borderColor: 'var(--dark-gold)', color: 'var(--dark-brown)', fontSize: '16px'}}
-            >
-              <option value="">Choose your session...</option>
-              {availableDates.map((session) => {
-                const available = availability[session.date] !== undefined ? availability[session.date] : session.capacity;
-                const isSoldOut = available <= 0;
-                return (
-                  <option key={session.date} value={session.date} disabled={isSoldOut}>
-                    {session.day}, {session.date.includes('-06-') ? 'June' : 'May'} {session.date.split('-')[2]} - {isSoldOut ? 'SOLD OUT' : `${available} seat${available === 1 ? '' : 's'} left`}
-                  </option>
-                );
-              })}
-            </select>
-          </div>
+        {/* Tabs */}
+        <div className="flex mb-8" style={{borderBottom: '2px solid rgba(212, 175, 55, 0.3)'}}>
+          <button
+            onClick={() => setActiveTab('book')}
+            className="flex-1 py-4 text-lg font-bold transition-all"
+            style={{
+              color: activeTab === 'book' ? 'var(--gold)' : 'var(--cream)',
+              opacity: activeTab === 'book' ? 1 : 0.6,
+              borderBottom: activeTab === 'book' ? '3px solid var(--gold)' : 'none',
+              fontFamily: 'var(--font-cinzel)',
+              background: 'transparent'
+            }}
+          >
+            Book Trial Sessions
+          </button>
+          <button
+            onClick={() => setActiveTab('waitlist')}
+            className="flex-1 py-4 text-lg font-bold transition-all"
+            style={{
+              color: activeTab === 'waitlist' ? 'var(--gold)' : 'var(--cream)',
+              opacity: activeTab === 'waitlist' ? 1 : 0.6,
+              borderBottom: activeTab === 'waitlist' ? '3px solid var(--gold)' : 'none',
+              fontFamily: 'var(--font-cinzel)',
+              background: 'transparent'
+            }}
+          >
+            Join Waitlist
+          </button>
+        </div>
 
-          <div className="mb-6">
-            <div className="flex justify-between items-center mb-3">
-              <label className="block font-bold" style={{color: 'var(--dark-brown)', fontFamily: 'var(--font-cinzel)', fontSize: '14px'}}>
-                TICKETS
+        {/* Book Tab Content */}
+        {activeTab === 'book' && (
+          <div className="parchment rounded-lg p-8" style={{border: '2px solid var(--gold)', boxShadow: '0 0 20px rgba(212, 175, 55, 0.15)'}}>
+            
+            <p className="text-sm mb-6 text-center" style={{color: 'var(--dark-brown)', opacity: 0.8, fontStyle: 'italic'}}>
+              <strong>May 16 — June 1, 2026</strong> • Possessió Vernissa, Llucmajor
+            </p>
+
+            <p className="text-sm mb-6" style={{color: 'var(--dark-brown)', opacity: 0.8, fontStyle: 'italic'}}>
+              This initial booking period is a trial. While the research has been done, the digital content is still being developed. Get early access with an in-person experience hosted by the creator himself over coffee. Your feedback will shape the future of the experience.
+            </p>
+
+            <div className="mb-6">
+              <label className="block font-bold mb-3" style={{color: 'var(--dark-brown)', fontFamily: 'var(--font-cinzel)', fontSize: '14px'}}>
+                SELECT DATE
               </label>
-              {tickets.length < 8 && (
-                <button
-                  type="button"
-                  onClick={addTicket}
-                  className="text-sm px-3 py-1 rounded"
-                  style={{color: 'var(--dark-gold)', border: '1px solid var(--dark-gold)'}}
-                >
-                  + Add Ticket
-                </button>
-              )}
+              <select
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+                className="w-full px-4 py-3 rounded border-2 bg-white transition-all focus:outline-none focus:border-yellow-700"
+                style={{borderColor: 'var(--dark-gold)', color: 'var(--dark-brown)', fontSize: '16px'}}
+              >
+                <option value="">Choose your session...</option>
+                {availableDates.map((session) => {
+                  const available = availability[session.date] !== undefined ? availability[session.date] : session.capacity;
+                  const isSoldOut = available <= 0;
+                  return (
+                    <option key={session.date} value={session.date} disabled={isSoldOut}>
+                      {session.day}, {session.date.includes('-06-') ? 'June' : 'May'} {session.date.split('-')[2]} - {isSoldOut ? 'SOLD OUT' : `${available} seat${available === 1 ? '' : 's'} left`}
+                    </option>
+                  );
+                })}
+              </select>
             </div>
 
-            {tickets.map((ticket, index) => (
-              <div key={index} className="flex gap-2 mb-2">
-                <select
-                  value={ticket.type}
-                  onChange={(e) => updateTicketType(index, e.target.value as TicketType)}
-                  className="flex-1 px-4 py-3 rounded border-2 bg-white transition-all focus:outline-none focus:border-yellow-700"
-                  style={{borderColor: 'var(--dark-gold)', color: 'var(--dark-brown)', fontSize: '16px'}}
-                >
-                  <option value="adult">Adult (€15)</option>
-                  <option value="child">Child 12 & under (€7)</option>
-                </select>
-                {tickets.length > 1 && (
+            <div className="mb-6">
+              <div className="flex justify-between items-center mb-3">
+                <label className="block font-bold" style={{color: 'var(--dark-brown)', fontFamily: 'var(--font-cinzel)', fontSize: '14px'}}>
+                  TICKETS
+                </label>
+                {tickets.length < 8 && (
                   <button
                     type="button"
-                    onClick={() => removeTicket(index)}
-                    className="px-3 py-2 rounded"
-                    style={{color: '#999', border: '1px solid #999'}}
+                    onClick={addTicket}
+                    className="text-sm px-3 py-1 rounded"
+                    style={{color: 'var(--dark-gold)', border: '1px solid var(--dark-gold)'}}
                   >
-                    ✕
+                    + Add Ticket
                   </button>
                 )}
               </div>
-            ))}
-          </div>
 
-          <div className="rounded-lg p-6 mb-6 text-center" style={{background: 'linear-gradient(135deg, #2c1810 0%, #0a0a0a 100%)'}}>
-            <div className="font-bold" style={{color: 'var(--gold)', fontFamily: 'var(--font-cinzel)', fontSize: '48px'}}>
-              €{totalPrice}
+              {tickets.map((ticket, index) => (
+                <div key={index} className="flex gap-2 mb-2">
+                  <select
+                    value={ticket.type}
+                    onChange={(e) => updateTicketType(index, e.target.value as TicketType)}
+                    className="flex-1 px-4 py-3 rounded border-2 bg-white transition-all focus:outline-none focus:border-yellow-700"
+                    style={{borderColor: 'var(--dark-gold)', color: 'var(--dark-brown)', fontSize: '16px'}}
+                  >
+                    <option value="adult">Adult (€15)</option>
+                    <option value="child">Child 12 & under (€7)</option>
+                  </select>
+                  {tickets.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => removeTicket(index)}
+                      className="px-3 py-2 rounded"
+                      style={{color: '#999', border: '1px solid #999'}}
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+              ))}
             </div>
-            <p className="text-sm mt-2" style={{color: 'var(--cream)', opacity: 0.7}}>
-              {totalGuests} {totalGuests === 1 ? 'guest' : 'guests'}
-            </p>
-          </div>
 
-          <button
-            onClick={handleBooking}
-            disabled={loading}
-            className="w-full py-4 rounded-lg font-bold transition-all duration-300 transform hover:scale-105 disabled:opacity-50"
-            style={{
-              fontSize: '20px',
-              background: 'linear-gradient(135deg, #a67c00 0%, #d4af37 50%, #a67c00 100%)',
-              color: 'var(--charcoal)',
-              boxShadow: '0 8px 24px rgba(212, 175, 55, 0.3)',
-              fontFamily: 'var(--font-cinzel)'
-            }}
-          >
-            {loading ? 'Processing...' : 'Secure Your Seat'}
-          </button>
+            <div className="rounded-lg p-6 mb-6 text-center" style={{background: 'linear-gradient(135deg, #2c1810 0%, #0a0a0a 100%)'}}>
+              <div className="font-bold" style={{color: 'var(--gold)', fontFamily: 'var(--font-cinzel)', fontSize: '48px'}}>
+                €{totalPrice}
+              </div>
+              <p className="text-sm mt-2" style={{color: 'var(--cream)', opacity: 0.7}}>
+                {totalGuests} {totalGuests === 1 ? 'guest' : 'guests'}
+              </p>
+            </div>
 
-          <div className="mt-6 pt-6 text-center" style={{borderTop: '1px solid rgba(212, 175, 55, 0.2)'}}>
-            <p className="text-xs mb-2" style={{color: '#999'}}>
-              🔒 Secure Payment • ✉️ Instant Confirmation
-            </p>
-            <p className="text-xs mb-2" style={{color: '#999'}}>
-              Children under 3 are free
-            </p>
-            <p className="text-xs" style={{color: '#999'}}>
-              Private bookings: <a href="mailto:mystery@poshpork.com" className="underline" style={{color: 'var(--dark-gold)'}}>mystery@poshpork.com</a>
-            </p>
-            <p className="text-xs mt-3" style={{color: '#999'}}>
-              <a href="/privacy" className="underline" style={{color: 'var(--dark-gold)'}}>Privacy Policy</a>
-              {' • '}
-              <a href="/terms" className="underline" style={{color: 'var(--dark-gold)'}}>Terms & Conditions</a>
-              {' • '}
-              <a href="/cookies" className="underline" style={{color: 'var(--dark-gold)'}}>Cookie Policy</a>
-            </p>
+            <button
+              onClick={handleBooking}
+              disabled={loading}
+              className="w-full py-4 rounded-lg font-bold transition-all duration-300 transform hover:scale-105 disabled:opacity-50"
+              style={{
+                fontSize: '20px',
+                background: 'linear-gradient(135deg, #a67c00 0%, #d4af37 50%, #a67c00 100%)',
+                color: 'var(--charcoal)',
+                boxShadow: '0 8px 24px rgba(212, 175, 55, 0.3)',
+                fontFamily: 'var(--font-cinzel)'
+              }}
+            >
+              {loading ? 'Processing...' : 'Secure Your Seat'}
+            </button>
+
+            <div className="mt-6 pt-6 text-center" style={{borderTop: '1px solid rgba(212, 175, 55, 0.2)'}}>
+              <p className="text-xs mb-2" style={{color: '#999'}}>
+                🔒 Secure Payment • ✉️ Instant Confirmation
+              </p>
+              <p className="text-xs mb-2" style={{color: '#999'}}>
+                Children under 3 are free
+              </p>
+              <p className="text-xs" style={{color: '#999'}}>
+                Private bookings: <a href="mailto:mystery@poshpork.com" className="underline" style={{color: 'var(--dark-gold)'}}>mystery@poshpork.com</a>
+              </p>
+              <p className="text-xs mt-3" style={{color: '#999'}}>
+                <a href="/privacy" className="underline" style={{color: 'var(--dark-gold)'}}>Privacy Policy</a>
+                {' • '}
+                <a href="/terms" className="underline" style={{color: 'var(--dark-gold)'}}>Terms & Conditions</a>
+                {' • '}
+                <a href="/cookies" className="underline" style={{color: 'var(--dark-gold)'}}>Cookie Policy</a>
+              </p>
+            </div>
           </div>
-        </div>
+        )}
+
+        {/* Waitlist Tab Content */}
+        {activeTab === 'waitlist' && (
+          <div className="parchment rounded-lg p-8" style={{border: '2px solid var(--gold)', boxShadow: '0 0 20px rgba(212, 175, 55, 0.15)'}}>
+            
+            <p className="text-sm mb-6 text-center" style={{color: 'var(--dark-brown)', opacity: 0.8, fontStyle: 'italic'}}>
+              <strong>Launching July 2026</strong> • Worldwide Digital Experience
+            </p>
+
+            <p className="text-base mb-6" style={{color: 'var(--dark-brown)', lineHeight: '1.6'}}>
+              Be the first to experience The Posh Pork Murder Mystery when it launches worldwide. Join the waitlist to be notified when bookings open.
+            </p>
+
+            {waitlistSuccess ? (
+              <div className="text-center py-8">
+                <div style={{fontSize: '48px', marginBottom: '20px'}}>✅</div>
+                <h3 className="text-2xl font-bold mb-4" style={{color: 'var(--gold)', fontFamily: 'var(--font-cinzel)'}}>
+                  You're On The List!
+                </h3>
+                <p style={{color: 'var(--dark-brown)', marginBottom: '20px'}}>
+                  Check your email for confirmation. We'll notify you as soon as the digital experience launches in July 2026.
+                </p>
+                <button
+                  onClick={() => setWaitlistSuccess(false)}
+                  className="text-sm"
+                  style={{color: 'var(--dark-gold)', textDecoration: 'underline'}}
+                >
+                  Add another email
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleWaitlist}>
+                <div className="mb-6">
+                  <label className="block font-bold mb-3" style={{color: 'var(--dark-brown)', fontFamily: 'var(--font-cinzel)', fontSize: '14px'}}>
+                    EMAIL ADDRESS
+                  </label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="your@email.com"
+                    required
+                    className="w-full px-4 py-3 rounded border-2 bg-white transition-all focus:outline-none focus:border-yellow-700"
+                    style={{borderColor: 'var(--dark-gold)', color: 'var(--dark-brown)', fontSize: '16px'}}
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={waitlistLoading}
+                  className="w-full py-4 rounded-lg font-bold transition-all duration-300 transform hover:scale-105 disabled:opacity-50"
+                  style={{
+                    fontSize: '20px',
+                    background: 'linear-gradient(135deg, #a67c00 0%, #d4af37 50%, #a67c00 100%)',
+                    color: 'var(--charcoal)',
+                    boxShadow: '0 8px 24px rgba(212, 175, 55, 0.3)',
+                    fontFamily: 'var(--font-cinzel)'
+                  }}
+                >
+                  {waitlistLoading ? 'Joining...' : 'Join the Waitlist'}
+                </button>
+
+                <div className="mt-6 pt-6 text-center" style={{borderTop: '1px solid rgba(212, 175, 55, 0.2)'}}>
+                  <p className="text-xs" style={{color: '#999'}}>
+                    💡 Be the first to solve the mystery worldwide
+                  </p>
+                </div>
+              </form>
+            )}
+          </div>
+        )}
 
       </div>
     </section>
