@@ -1,8 +1,7 @@
 // Homepage - Updated April 2026
 import Hero from '@/components/Hero';
 import Video from '@/components/Video';
-import Booking from '@/components/Booking';
-import Waitlist from '@/components/Waitlist';
+import BookingTabs from '@/components/BookingTabs';
 import Article from '@/components/Article';
 import CookieBanner from '@/components/CookieBanner';
 
@@ -12,8 +11,7 @@ export default function Home() {
       <CookieBanner />
       <Hero />
       <Video />
-      <Booking />
-      <Waitlist />
+      <BookingTabs />
       <Article />
     </>
   );
