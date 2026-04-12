@@ -235,7 +235,7 @@ export default function BookingTabs() {
                   >
                     <option value="adult">Adult (€15)</option>
                     <option value="teenager">Teenager 13-17 (€10)</option>
-                    <option value="child">Child 3-12 (€7)</option>
+                    <option value="child">Child 4-12 (€7)</option>
                   </select>
                   {tickets.length > 1 && (
                     <button
