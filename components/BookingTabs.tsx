@@ -275,14 +275,17 @@ export default function BookingTabs() {
               {loading ? 'Processing...' : 'Secure Your Seat'}
             </button>
 
-            {/* Money-Back Guarantee Badge */}
+            {/* Founder's Promise */}
             <div className="mt-6 p-4 rounded-lg text-center" style={{background: '#f5f1e8', border: '2px solid var(--gold)'}}>
               <div style={{fontSize: '24px', marginBottom: '8px'}}>🛡️</div>
               <p className="font-bold mb-2" style={{color: '#0a0a0a', fontSize: '16px', fontFamily: 'var(--font-cinzel)'}}>
-                Trial Session Guarantee
+                Founder's Promise
               </p>
-              <p style={{color: '#2c1810', fontSize: '14px', lineHeight: '1.5'}}>
-                If the experience doesn't exceed your expectations, we'll refund your ticket—no questions asked. We're building this together, and your honest feedback matters more than your money.
+              <p style={{color: '#2c1810', fontSize: '14px', lineHeight: '1.5', fontStyle: 'italic', marginBottom: '8px'}}>
+                "I've spent 3 years researching this. If you don't walk away thinking differently about food, I'll refund you personally."
+              </p>
+              <p style={{color: '#2c1810', fontSize: '13px', fontWeight: 'bold'}}>
+                — Colin, Creator
               </p>
             </div>
 
