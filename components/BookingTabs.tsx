@@ -275,12 +275,23 @@ export default function BookingTabs() {
               {loading ? 'Processing...' : 'Secure Your Seat'}
             </button>
 
+            {/* Money-Back Guarantee Badge */}
+            <div className="mt-6 p-4 rounded-lg text-center" style={{background: '#f5f1e8', border: '2px solid var(--gold)'}}>
+              <div style={{fontSize: '24px', marginBottom: '8px'}}>🛡️</div>
+              <p className="font-bold mb-2" style={{color: '#0a0a0a', fontSize: '16px', fontFamily: 'var(--font-cinzel)'}}>
+                Trial Session Guarantee
+              </p>
+              <p style={{color: '#2c1810', fontSize: '14px', lineHeight: '1.5'}}>
+                If the experience doesn't exceed your expectations, we'll refund your ticket—no questions asked. We're building this together, and your honest feedback matters more than your money.
+              </p>
+            </div>
+
             <div className="mt-6 pt-6 text-center" style={{borderTop: '1px solid rgba(212, 175, 55, 0.2)'}}>
               <p className="text-xs mb-2" style={{color: '#999'}}>
                 🔒 Secure Payment • ✉️ Instant Confirmation
               </p>
               <p className="text-xs mb-2" style={{color: '#999'}}>
-                Children under 3 are free • Book via email for under 3s
+                Children under 4 are free • Book via email for under 4s
               </p>
               <p className="text-xs" style={{color: '#999'}}>
                 Private bookings: <a href="mailto:mystery@poshpork.com" className="underline" style={{color: 'var(--dark-gold)'}}>mystery@poshpork.com</a>
