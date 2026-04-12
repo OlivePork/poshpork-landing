@@ -186,7 +186,7 @@ export default function Article() {
           </div>
 
           <p style={{fontSize: '18px', marginBottom: '25px'}}>
-            With only 8 places per session, spots will fill quickly. Waitlist members secure the special pricing (€17.50 for adults, €10 for teenagers 13-17, €7 for children 4-12, free for under 4s) and get priority booking access before general release.
+            With only 8 places per session, spots will fill quickly. Waitlist members secure the special pricing (€17.50 for adults, €10 for teenagers 13-17, €7 for children 4-12, free for 3s and under) and get priority booking access before general release.
           </p>
 
           <div style={{textAlign: 'center', marginTop: '60px'}}>
