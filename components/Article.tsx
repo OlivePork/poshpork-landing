@@ -40,7 +40,7 @@ export default function Article() {
           </p>
 
           <p style={{fontSize: '18px', marginBottom: '25px'}}>
-            Sixteen guests gather around four tables, each seating four people. Coffee, wine, or other refreshments flow (depending on the venue—imagine investigating in a historic Mallorcan winery with a glass in hand). Together, they become the jury in a peculiar trial: deciding which food deserves to be labeled "guilty" of crimes against human health.
+            Eight guests gather around two tables, each seating four people. Coffee, wine, or other refreshments flow (depending on the venue—imagine investigating in a historic Mallorcan winery with a glass in hand). Together, they become the jury in a peculiar trial: deciding which food deserves to be labeled "guilty" of crimes against human health.
           </p>
 
           <h2 style={{
@@ -152,7 +152,7 @@ export default function Article() {
               <strong>When:</strong> Launching July 2026
             </p>
             <p style={{fontSize: '16px', marginBottom: '10px'}}>
-              <strong>Who:</strong> Groups of 16 (4 tables of 4)
+              <strong>Who:</strong> Groups of 8 (2 tables of 4)
             </p>
             <p style={{fontSize: '16px', marginBottom: '10px'}}>
               <strong>Duration:</strong> 90 minutes
@@ -165,25 +165,28 @@ export default function Article() {
               Pricing (Waitlist Special):
             </p>
             <p style={{fontSize: '16px', marginBottom: '5px'}}>
-              • €15 per person (waitlist members)
+              • €17.50 per adult (waitlist members)
             </p>
             <p style={{fontSize: '16px', marginBottom: '5px'}}>
-              • €7 for children 12 and under
+              • €10 for teenagers 13-17
             </p>
             <p style={{fontSize: '16px', marginBottom: '5px'}}>
-              • Free for children under 3
+              • €7 for children 4-12
+            </p>
+            <p style={{fontSize: '16px', marginBottom: '5px'}}>
+              • Free for children under 4
             </p>
             <p style={{fontSize: '16px', marginBottom: '20px', fontStyle: 'italic'}}>
               Standard pricing TBA after launch
             </p>
 
             <p style={{fontSize: '16px', fontWeight: 'bold'}}>
-              Important: Places are extremely limited at just 16 guests per session. Join the waitlist to secure the special €15 entry rate and priority booking access.
+              Important: Places are extremely limited at just 8 guests per session. Join the waitlist to secure the special pricing and priority booking access.
             </p>
           </div>
 
           <p style={{fontSize: '18px', marginBottom: '25px'}}>
-            With only 16 places per session, spots will fill quickly. Waitlist members secure the €15 entry rate (€7 for children 12 and under, free for under 3s) and get priority booking access before general release.
+            With only 8 places per session, spots will fill quickly. Waitlist members secure the special pricing (€17.50 for adults, €10 for teenagers 13-17, €7 for children 4-12, free for under 4s) and get priority booking access before general release.
           </p>
 
           <div style={{textAlign: 'center', marginTop: '60px'}}>

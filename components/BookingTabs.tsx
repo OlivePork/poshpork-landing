@@ -19,7 +19,7 @@ interface Ticket {
 }
 
 const PRICES = {
-  adult: 15,
+  adult: 17.50,
   teenager: 10,
   child: 7,
 };
@@ -233,7 +233,7 @@ export default function BookingTabs() {
                     className="flex-1 px-4 py-3 rounded border-2 bg-white transition-all focus:outline-none focus:border-yellow-700"
                     style={{borderColor: 'var(--dark-gold)', color: 'var(--dark-brown)', fontSize: '16px'}}
                   >
-                    <option value="adult">Adult (€15)</option>
+                    <option value="adult">Adult (€17.50)</option>
                     <option value="teenager">Teenager 13-17 (€10)</option>
                     <option value="child">Child 4-12 (€7)</option>
                   </select>
@@ -253,7 +253,7 @@ export default function BookingTabs() {
 
             <div className="rounded-lg p-6 mb-6 text-center" style={{background: 'linear-gradient(135deg, #2c1810 0%, #0a0a0a 100%)'}}>
               <div className="font-bold" style={{color: 'var(--gold)', fontFamily: 'var(--font-cinzel)', fontSize: '48px'}}>
-                €{totalPrice}
+                €{totalPrice.toFixed(2)}
               </div>
               <p className="text-sm mt-2" style={{color: 'var(--cream)', opacity: 0.7}}>
                 {totalGuests} {totalGuests === 1 ? 'guest' : 'guests'}
