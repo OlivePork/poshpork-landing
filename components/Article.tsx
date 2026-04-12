@@ -174,7 +174,7 @@ export default function Article() {
               • €7 for children 4-12
             </p>
             <p style={{fontSize: '16px', marginBottom: '5px'}}>
-              • Free for children under 4
+              • Free for children 3 and under 
             </p>
             <p style={{fontSize: '16px', marginBottom: '20px', fontStyle: 'italic'}}>
               Standard pricing TBA after launch
