@@ -282,7 +282,7 @@ export default function BookingTabs() {
                 Founder's Promise
               </p>
               <p style={{color: '#2c1810', fontSize: '14px', lineHeight: '1.5', fontStyle: 'italic', marginBottom: '8px'}}>
-                "I've spent 3 years researching this. If you don't walk away thinking differently about food, I'll refund you personally."
+                "I've spent 15 years researching this. If you don't walk away thinking differently about food, I'll refund you personally."
               </p>
               <p style={{color: '#2c1810', fontSize: '13px', fontWeight: 'bold'}}>
                 — Colin, Creator
