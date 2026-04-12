@@ -152,7 +152,7 @@ export default function Article() {
               <strong>When:</strong> Launching July 2026
             </p>
             <p style={{fontSize: '16px', marginBottom: '10px'}}>
-              <strong>Who:</strong> Groups of 8 (2 tables of 4)
+              <strong>Who:</strong> Groups of 8 (4 tables of 2)
             </p>
             <p style={{fontSize: '16px', marginBottom: '10px'}}>
               <strong>Duration:</strong> 90 minutes
