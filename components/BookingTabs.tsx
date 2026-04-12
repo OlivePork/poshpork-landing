@@ -11,7 +11,7 @@ const availableDates = [
   { date: '2026-06-01', day: 'Sunday', time: '10:00 AM', capacity: 8 },
 ];
 
-type TicketType = 'adult' | 'child';
+type TicketType = 'adult' | 'teenager' | 'child';
 
 interface Ticket {
   type: TicketType;
@@ -20,6 +20,7 @@ interface Ticket {
 
 const PRICES = {
   adult: 15,
+  teenager: 10,
   child: 7,
 };
 
@@ -233,7 +234,8 @@ export default function BookingTabs() {
                     style={{borderColor: 'var(--dark-gold)', color: 'var(--dark-brown)', fontSize: '16px'}}
                   >
                     <option value="adult">Adult (€15)</option>
-                    <option value="child">Child 12 & under (€7)</option>
+                    <option value="teenager">Teenager 13-17 (€10)</option>
+                    <option value="child">Child 3-12 (€7)</option>
                   </select>
                   {tickets.length > 1 && (
                     <button
@@ -278,7 +280,7 @@ export default function BookingTabs() {
                 🔒 Secure Payment • ✉️ Instant Confirmation
               </p>
               <p className="text-xs mb-2" style={{color: '#999'}}>
-                Children under 3 are free
+                Children under 3 are free • Book via email for under 3s
               </p>
               <p className="text-xs" style={{color: '#999'}}>
                 Private bookings: <a href="mailto:mystery@poshpork.com" className="underline" style={{color: 'var(--dark-gold)'}}>mystery@poshpork.com</a>
@@ -335,7 +337,7 @@ export default function BookingTabs() {
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="your@email.com"
                     required
-                    className="w-full px-4 py-3 rounded border-2 bg-white transition-all focus:outline-none focus:border-yellow-700"
+                    className="w-full px-4 py-3 rounded border-2 bg-white transition-all focus:outline-none focus:border-yellow-707"
                     style={{borderColor: 'var(--dark-gold)', color: 'var(--dark-brown)', fontSize: '16px'}}
                   />
                 </div>
