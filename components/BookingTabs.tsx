@@ -1,4 +1,4 @@
-'use client';
+  'use client';
 
 import { useState, useEffect } from 'react';
 
@@ -79,6 +79,7 @@ export default function BookingTabs() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           date: selectedDate, 
+          tickets: tickets,
           numPeople: totalGuests,
           dateDisplay 
         }),
@@ -294,7 +295,7 @@ export default function BookingTabs() {
                 🔒 Secure Payment • ✉️ Instant Confirmation
               </p>
               <p className="text-xs mb-2" style={{color: '#999'}}>
-                             Children under 4 are free
+                Children under 4 are free
               </p>
               <p className="text-xs" style={{color: '#999'}}>
                 Private bookings: <a href="mailto:mystery@poshpork.com" className="underline" style={{color: 'var(--dark-gold)'}}>mystery@poshpork.com</a>

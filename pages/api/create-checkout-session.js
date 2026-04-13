@@ -1,7 +1,6 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 export default async function handler(req, res) {
-  // Log for debugging
   console.log('API called');
   console.log('Has Stripe key:', !!process.env.STRIPE_SECRET_KEY);
   
@@ -9,9 +8,9 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { date, numPeople, dateDisplay } = req.body;
+  const { date, tickets, numPeople, dateDisplay } = req.body;
   
-  console.log('Request body:', { date, numPeople, dateDisplay });
+  console.log('Request body:', { date, tickets, numPeople, dateDisplay });
 
   if (!process.env.STRIPE_SECRET_KEY) {
     console.error('Missing STRIPE_SECRET_KEY');
@@ -19,21 +18,66 @@ export default async function handler(req, res) {
   }
 
   try {
+    // Build line items from ticket breakdown
+    const lineItems = [];
+    
+    // Count each ticket type
+    const ticketCounts = {
+      adult: 0,
+      teenager: 0,
+      child: 0
+    };
+    
+    tickets.forEach(ticket => {
+      ticketCounts[ticket.type]++;
+    });
+    
+    // Add line items for each ticket type present
+    if (ticketCounts.adult > 0) {
+      lineItems.push({
+        price_data: {
+          currency: 'eur',
+          product_data: {
+            name: 'Adult Ticket',
+            description: `The Posh Pork Murder Mystery - ${dateDisplay}`,
+          },
+          unit_amount: 1750, // €17.50
+        },
+        quantity: ticketCounts.adult,
+      });
+    }
+    
+    if (ticketCounts.teenager > 0) {
+      lineItems.push({
+        price_data: {
+          currency: 'eur',
+          product_data: {
+            name: 'Teenager Ticket (13-17)',
+            description: `The Posh Pork Murder Mystery - ${dateDisplay}`,
+          },
+          unit_amount: 1000, // €10
+        },
+        quantity: ticketCounts.teenager,
+      });
+    }
+    
+    if (ticketCounts.child > 0) {
+      lineItems.push({
+        price_data: {
+          currency: 'eur',
+          product_data: {
+            name: 'Child Ticket (4-12)',
+            description: `The Posh Pork Murder Mystery - ${dateDisplay}`,
+          },
+          unit_amount: 700, // €7
+        },
+        quantity: ticketCounts.child,
+      });
+    }
+
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
-      line_items: [
-        {
-          price_data: {
-            currency: 'eur',
-            product_data: {
-              name: 'The Posh Pork Murder Mystery Experience',
-              description: `Session: ${dateDisplay}`,
-            },
-            unit_amount: 1500,
-          },
-          quantity: numPeople,
-        },
-      ],
+      line_items: lineItems,
       mode: 'payment',
       success_url: `${req.headers.origin}?success=true`,
       cancel_url: `${req.headers.origin}?canceled=true`,
