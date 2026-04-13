@@ -17,6 +17,12 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Stripe configuration error' });
   }
 
+  // Validate tickets array
+  if (!tickets || !Array.isArray(tickets) || tickets.length === 0) {
+    console.error('Invalid tickets data:', tickets);
+    return res.status(400).json({ error: 'Invalid ticket data' });
+  }
+
   try {
     // Build line items from ticket breakdown
     const lineItems = [];
@@ -29,7 +35,9 @@ export default async function handler(req, res) {
     };
     
     tickets.forEach(ticket => {
-      ticketCounts[ticket.type]++;
+      if (ticket && ticket.type && ticketCounts.hasOwnProperty(ticket.type)) {
+        ticketCounts[ticket.type]++;
+      }
     });
     
     // Add line items for each ticket type present
@@ -73,6 +81,11 @@ export default async function handler(req, res) {
         },
         quantity: ticketCounts.child,
       });
+    }
+
+    if (lineItems.length === 0) {
+      console.error('No valid line items created');
+      return res.status(400).json({ error: 'No valid tickets to process' });
     }
 
     const session = await stripe.checkout.sessions.create({
