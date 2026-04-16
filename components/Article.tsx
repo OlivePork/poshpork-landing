@@ -158,7 +158,7 @@ export default function Article() {
               <strong>Duration:</strong> 90 minutes
             </p>
             <p style={{fontSize: '16px', marginBottom: '20px'}}>
-              <strong>Language:</strong> English Only Available
+              <strong>Language:</strong> English
             </p>
 
             <p style={{fontSize: '18px', fontWeight: 'bold', marginBottom: '10px', color: '#d4af37'}}>
