@@ -85,23 +85,56 @@ export default function PlayPage() {
     setCurrentPlayerIndex(0);
   };
 
-  const handleAnswerSubmitted = (isCorrect: boolean, pointsEarned: number) => {
-    console.log(`Player ${players[currentPlayerIndex]?.first_name}: ${isCorrect ? 'Correct' : 'Incorrect'}, Points: ${pointsEarned}`);
+  const handleAnswerSubmitted = async (isCorrect: boolean, pointsEarned: number, selectedAnswer: string) => {
+    const isCollaborative = currentQuestion?.answer_mode !== 'individual';
     
-    // Move to next player
-    if (currentPlayerIndex + 1 < players.length) {
-      setCurrentPlayerIndex(currentPlayerIndex + 1);
-      setShowQuestion(false);
+    if (isCollaborative) {
+      // COLLABORATIVE MODE: Award same answer to all players at table
+      console.log(`Table answered: ${isCorrect ? 'Correct' : 'Incorrect'}, Points: ${pointsEarned}`);
       
-      // Brief delay before showing question to next player
-      setTimeout(() => {
-        setShowQuestion(true);
-      }, 500);
-    } else {
-      // All players answered, continue video
+      // Submit answer for remaining players at table (first player already submitted)
+      for (let i = 1; i < players.length; i++) {
+        try {
+          await fetch('/api/quiz/submit-answer', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              sessionId: session.id,
+              questionId: currentQuestion.id,
+              playerId: players[i].id,
+              tableId: selectedTable.id,
+              selectedAnswer: selectedAnswer,
+            }),
+          });
+        } catch (error) {
+          console.error('Error recording answer for player:', players[i].first_name);
+        }
+      }
+      
+      // Continue video immediately
       setShowQuestion(false);
       setCurrentQuestion(null);
       setCurrentPlayerIndex(0);
+      
+    } else {
+      // INDIVIDUAL MODE: Each player answers separately
+      console.log(`${players[currentPlayerIndex]?.first_name}: ${isCorrect ? 'Correct' : 'Incorrect'}, Points: ${pointsEarned}`);
+      
+      // Move to next player
+      if (currentPlayerIndex + 1 < players.length) {
+        setCurrentPlayerIndex(currentPlayerIndex + 1);
+        setShowQuestion(false);
+        
+        // Brief delay before showing question to next player
+        setTimeout(() => {
+          setShowQuestion(true);
+        }, 500);
+      } else {
+        // All players answered, continue video
+        setShowQuestion(false);
+        setCurrentQuestion(null);
+        setCurrentPlayerIndex(0);
+      }
     }
   };
 

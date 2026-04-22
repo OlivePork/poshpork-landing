@@ -12,6 +12,7 @@ interface QuestionOverlayProps {
     option_d: string;
     correct_answer: string;
     explanation?: string;
+    answer_mode?: 'collaborative' | 'individual';
   } | null;
   playerName: string;
   playerId: string;
@@ -37,6 +38,8 @@ export default function QuestionOverlay({
   const [loading, setLoading] = useState(false);
 
   if (!isVisible || !question) return null;
+
+  const isCollaborative = question.answer_mode !== 'individual';
 
   const options = {
     A: question.option_a,
@@ -71,7 +74,7 @@ export default function QuestionOverlay({
       setPointsEarned(data.pointsEarned);
       setSubmitted(true);
       
-      // Pass the selected answer back so all players at table can get same answer
+      // Pass the selected answer back
       onAnswerSubmitted(data.isCorrect, data.pointsEarned, selectedAnswer);
 
     } catch (error) {
@@ -147,7 +150,10 @@ export default function QuestionOverlay({
                 textAlign: 'center',
               }}
             >
-              Discuss with your table and select an answer:
+              {isCollaborative 
+                ? 'Discuss with your table and select an answer:' 
+                : `${playerName}, select your answer:`
+              }
             </p>
 
             {Object.entries(options).map(([letter, text]) => (
