@@ -295,7 +295,7 @@ export default function BookingTabs() {
                 🔒 Secure Payment • ✉️ Instant Confirmation
               </p>
               <p className="text-xs mb-2" style={{color: '#999'}}>
-                Children under 4 are free
+                Children under 3 are free
               </p>
               <p className="text-xs" style={{color: '#999'}}>
                 Private bookings: <a href="mailto:mystery@poshpork.com" className="underline" style={{color: 'var(--dark-gold)'}}>mystery@poshpork.com</a>
