@@ -17,7 +17,7 @@ interface QuestionOverlayProps {
   playerId: string;
   sessionId: string;
   tableId: string;
-  onAnswerSubmitted: (isCorrect: boolean, pointsEarned: number) => void;
+  onAnswerSubmitted: (isCorrect: boolean, pointsEarned: number, selectedAnswer: string) => void;
   isVisible: boolean;
 }
 
@@ -70,7 +70,9 @@ export default function QuestionOverlay({
       setIsCorrect(data.isCorrect);
       setPointsEarned(data.pointsEarned);
       setSubmitted(true);
-      onAnswerSubmitted(data.isCorrect, data.pointsEarned);
+      
+      // Pass the selected answer back so all players at table can get same answer
+      onAnswerSubmitted(data.isCorrect, data.pointsEarned, selectedAnswer);
 
     } catch (error) {
       console.error('Answer submission error:', error);
@@ -145,7 +147,7 @@ export default function QuestionOverlay({
                 textAlign: 'center',
               }}
             >
-              {playerName}, select your answer:
+              Discuss with your table and select an answer:
             </p>
 
             {Object.entries(options).map(([letter, text]) => (
