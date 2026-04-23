@@ -14,40 +14,57 @@ export default async function handler(req, res) {
 
   try {
     // Get session date
-    const { data: session } = await supabase
+    const { data: session, error: sessionError } = await supabase
       .from('quiz_sessions')
       .select('session_date')
       .eq('id', sessionId)
       .single();
 
-    if (!session) {
+    if (sessionError || !session) {
       return res.status(404).json({ error: 'Session not found' });
     }
 
-    // Search for booking by email and session date
-    const { data: bookings, error } = await supabase
+    // Convert session_date to string format for comparison
+    const sessionDateStr = session.session_date;
+
+    // Search for booking by email - match on date as string
+    const { data: bookings, error: bookingError } = await supabase
       .from('bookings')
       .select('*')
-      .ilike('customer_email', email.trim())
-      .eq('session_date', session.session_date);
+      .ilike('customer_email', email.trim());
 
-    if (error) throw error;
+    if (bookingError) throw bookingError;
 
     if (!bookings || bookings.length === 0) {
+      return res.status(404).json({ 
+        error: 'Booking not found',
+        message: 'No booking found with this email'
+      });
+    }
+
+    // Find booking that matches session date
+    const booking = bookings.find(b => {
+      const bookingDate = typeof b.session_date === 'string' 
+        ? b.session_date.split('T')[0] 
+        : b.session_date;
+      const sessionDate = typeof sessionDateStr === 'string'
+        ? sessionDateStr.split('T')[0]
+        : sessionDateStr;
+      return bookingDate === sessionDate;
+    });
+
+    if (!booking) {
       return res.status(404).json({ 
         error: 'Booking not found',
         message: 'No booking found with this email for today\'s session'
       });
     }
 
-    const booking = bookings[0];
-
     // Check if already checked in
     if (booking.checked_in) {
       return res.status(400).json({ 
         error: 'Already checked in',
-        message: `This booking was already checked in at ${new Date(booking.checked_in_at).toLocaleTimeString()}`,
-        booking
+        message: `This booking was already checked in at ${new Date(booking.checked_in_at).toLocaleTimeString()}`
       });
     }
 
