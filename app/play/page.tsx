@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import VideoPlayer from '@/components/quiz/VideoPlayer';
 import QuestionOverlay from '@/components/quiz/QuestionOverlay';
-import GroupCheckIn from '@/components/quiz/GroupCheckIn';
+import SimpleRegistration from '@/components/quiz/SimpleRegistration';
 import Leaderboard from '@/components/quiz/Leaderboard';
 import FinalVote from '@/components/quiz/FinalVote';
 import VoteResults from '@/components/quiz/VoteResults';
@@ -14,9 +14,8 @@ export default function PlayPage() {
   const [selectedTable, setSelectedTable] = useState<any>(null);
   const [tables, setTables] = useState<any[]>([]);
   
-  // Player Data (now supports multiple players)
-  const [players, setPlayers] = useState<any[]>([]);
-  const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
+  // Player Data (single player for simple registration)
+  const [player, setPlayer] = useState<any>(null);
   
   // Quiz State
   const [questions, setQuestions] = useState<any[]>([]);
@@ -68,73 +67,40 @@ export default function PlayPage() {
     setSelectedTable(table);
   };
 
-  const handleGroupCheckInComplete = (registeredPlayers: any[]) => {
-    setPlayers(registeredPlayers);
-    setCurrentPlayerIndex(0);
+  const handleRegistrationComplete = (playerData: any) => {
+    setPlayer(playerData);
+    // Refresh table data to update seat counts
+    loadSessionData();
   };
 
   const handleQuestionTriggered = (question: any) => {
     setCurrentQuestion(question);
     setShowQuestion(true);
-    setCurrentPlayerIndex(0); // Start with first player
   };
 
   const handleQuestionComplete = () => {
     setShowQuestion(false);
     setCurrentQuestion(null);
-    setCurrentPlayerIndex(0);
   };
 
   const handleAnswerSubmitted = async (isCorrect: boolean, pointsEarned: number, selectedAnswer: string) => {
     const isCollaborative = currentQuestion?.answer_mode !== 'individual';
     
     if (isCollaborative) {
-      // COLLABORATIVE MODE: Award same answer to all players at table
-      console.log(`Table answered: ${isCorrect ? 'Correct' : 'Incorrect'}, Points: ${pointsEarned}`);
-      
-      // Submit answer for remaining players at table (first player already submitted)
-      for (let i = 1; i < players.length; i++) {
-        try {
-          await fetch('/api/quiz/submit-answer', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              sessionId: session.id,
-              questionId: currentQuestion.id,
-              playerId: players[i].id,
-              tableId: selectedTable.id,
-              selectedAnswer: selectedAnswer,
-            }),
-          });
-        } catch (error) {
-          console.error('Error recording answer for player:', players[i].first_name);
-        }
-      }
+      // COLLABORATIVE MODE: Just this player answered for the table
+      console.log(`Player answered: ${isCorrect ? 'Correct' : 'Incorrect'}, Points: ${pointsEarned}`);
       
       // Continue video immediately
       setShowQuestion(false);
       setCurrentQuestion(null);
-      setCurrentPlayerIndex(0);
       
     } else {
-      // INDIVIDUAL MODE: Each player answers separately
-      console.log(`${players[currentPlayerIndex]?.first_name}: ${isCorrect ? 'Correct' : 'Incorrect'}, Points: ${pointsEarned}`);
+      // INDIVIDUAL MODE: This player answers, then waits for others
+      console.log(`${player?.first_name}: ${isCorrect ? 'Correct' : 'Incorrect'}, Points: ${pointsEarned}`);
       
-      // Move to next player
-      if (currentPlayerIndex + 1 < players.length) {
-        setCurrentPlayerIndex(currentPlayerIndex + 1);
-        setShowQuestion(false);
-        
-        // Brief delay before showing question to next player
-        setTimeout(() => {
-          setShowQuestion(true);
-        }, 500);
-      } else {
-        // All players answered, continue video
-        setShowQuestion(false);
-        setCurrentQuestion(null);
-        setCurrentPlayerIndex(0);
-      }
+      // For now, just continue (multi-player individual questions handled later)
+      setShowQuestion(false);
+      setCurrentQuestion(null);
     }
   };
 
@@ -226,41 +192,52 @@ export default function PlayPage() {
           </p>
 
           <div style={{ display: 'grid', gap: '15px' }}>
-            {tables.map((table) => (
-              <button
-                key={table.id}
-                onClick={() => handleTableSelect(table)}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  padding: '20px',
-                  fontSize: '20px',
-                  fontWeight: 'bold',
-                  background: 'white',
-                  color: 'var(--dark-brown)',
-                  border: `3px solid ${table.theme_color}`,
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s',
-                  fontFamily: 'var(--font-cinzel)',
-                }}
-              >
-                {table.table_name === 'Lady Posh Pork' && '🥓 '}
-                {table.table_name === 'Mr Carbohydrates' && '🌾 '}
-                {table.table_name === 'Mr Vegetable Oils' && '🛢️ '}
-                {table.table_name === 'The Bliss Brothers' && '🍬 '}
-                {table.table_name}
-              </button>
-            ))}
+            {tables.map((table) => {
+              const isFull = (table.seats_taken || 0) >= (table.max_seats || 4);
+              
+              return (
+                <button
+                  key={table.id}
+                  onClick={() => !isFull && handleTableSelect(table)}
+                  disabled={isFull}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '20px',
+                    fontSize: '20px',
+                    fontWeight: 'bold',
+                    background: isFull ? '#f5f5f5' : 'white',
+                    color: isFull ? '#999' : 'var(--dark-brown)',
+                    border: `3px solid ${isFull ? '#ccc' : table.theme_color}`,
+                    borderRadius: '8px',
+                    cursor: isFull ? 'not-allowed' : 'pointer',
+                    transition: 'all 0.3s',
+                    fontFamily: 'var(--font-cinzel)',
+                    opacity: isFull ? 0.6 : 1
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    {table.table_name === 'Lady Posh Pork' && '🥓 '}
+                    {table.table_name === 'Mr Carbohydrates' && '🌾 '}
+                    {table.table_name === 'Mr Vegetable Oils' && '🛢️ '}
+                    {table.table_name === 'The Bliss Brothers' && '🍬 '}
+                    {table.table_name}
+                  </div>
+                  <div style={{ fontSize: '14px', color: isFull ? '#999' : '#666' }}>
+                    {isFull ? 'FULL' : `${table.seats_taken || 0}/${table.max_seats || 4}`}
+                  </div>
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>
     );
   }
 
-  // Render group check-in screen
-  if (players.length === 0) {
+  // Render simple registration screen
+  if (!player) {
     return (
       <div style={{ 
         minHeight: '100vh', 
@@ -270,17 +247,17 @@ export default function PlayPage() {
         justifyContent: 'center',
         padding: '20px'
       }}>
-        <GroupCheckIn
+        <SimpleRegistration
           sessionId={session.id}
           tableId={selectedTable.id}
           tableName={selectedTable.table_name}
-          onComplete={handleGroupCheckInComplete}
+          seatsTaken={selectedTable.seats_taken || 0}
+          maxSeats={selectedTable.max_seats || 4}
+          onComplete={handleRegistrationComplete}
         />
       </div>
     );
   }
-
-  const currentPlayer = players[currentPlayerIndex];
 
   // Render main experience
   return (
@@ -298,7 +275,7 @@ export default function PlayPage() {
               The Posh Pork Murder Mystery
             </h1>
             <p style={{ fontSize: '14px', color: 'var(--cream)', margin: '5px 0 0 0', opacity: 0.8 }}>
-              Table: {selectedTable.table_name} | {players.length} Player{players.length > 1 ? 's' : ''}
+              Table: {selectedTable.table_name} | Player: {player.first_name}
             </p>
           </div>
           
@@ -341,11 +318,11 @@ export default function PlayPage() {
         )}
       </div>
 
-      {/* Question Overlay - shows for current player */}
+      {/* Question Overlay */}
       <QuestionOverlay
         question={currentQuestion}
-        playerName={currentPlayer?.first_name || ''}
-        playerId={currentPlayer?.id || ''}
+        playerName={player?.first_name || ''}
+        playerId={player?.id || ''}
         sessionId={session.id}
         tableId={selectedTable.id}
         onAnswerSubmitted={handleAnswerSubmitted}
@@ -359,11 +336,11 @@ export default function PlayPage() {
         onClose={() => setShowLeaderboard(false)}
       />
 
-      {/* Final Vote - each player votes individually */}
+      {/* Final Vote */}
       <FinalVote
         sessionId={session.id}
-        playerId={currentPlayer?.id || ''}
-        playerName={currentPlayer?.first_name || ''}
+        playerId={player?.id || ''}
+        playerName={player?.first_name || ''}
         isVisible={showFinalVote}
         onVoteSubmitted={handleVoteSubmitted}
       />
@@ -404,9 +381,6 @@ export default function PlayPage() {
           <button onClick={() => setShowResults(true)} style={{ padding: '8px', fontSize: '12px', cursor: 'pointer' }}>
             Show Results
           </button>
-          <div style={{ color: 'white', fontSize: '10px', marginTop: '5px' }}>
-            Current: {currentPlayer?.first_name} ({currentPlayerIndex + 1}/{players.length})
-          </div>
         </div>
       )}
     </div>

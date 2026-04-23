@@ -17,7 +17,11 @@ export default async function handler(req, res) {
       .from('quiz_sessions')
       .select(`
         *,
-        quiz_tables (*)
+        quiz_tables (
+          *,
+          seats_taken,
+          max_seats
+        )
       `);
 
     if (sessionId) {
