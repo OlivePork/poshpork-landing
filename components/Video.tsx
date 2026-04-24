@@ -4,7 +4,7 @@ export default function Video() {
       background: 'var(--charcoal)',
       padding: '60px 20px'
     }}>
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         
         {/* Video container */}
         <div className="relative" style={{
