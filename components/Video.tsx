@@ -2,9 +2,9 @@ export default function Video() {
   return (
     <section className="relative" style={{
       background: 'var(--charcoal)',
-      padding: '80px 20px'
+      padding: '60px 20px'
     }}>
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-5xl mx-auto">
         
         {/* Video container */}
         <div className="relative" style={{
@@ -15,7 +15,7 @@ export default function Video() {
           boxShadow: '0 10px 40px rgba(0,0,0,0.3)'
         }}>
           <iframe
-            src="https://youtu.be/sWlohn79hww"
+            src="https://www.youtube.com/embed/sWlohn79hww"
             title="Posh Pork Mystery Video"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
