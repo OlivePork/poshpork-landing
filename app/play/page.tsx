@@ -1,388 +1,403 @@
-'use client';
+import Link from 'next/link';
+import Image from 'next/image';
 
-import { useState, useEffect } from 'react';
-import VideoPlayer from '@/components/quiz/VideoPlayer';
-import QuestionOverlay from '@/components/quiz/QuestionOverlay';
-import SimpleRegistration from '@/components/quiz/SimpleRegistration';
-import Leaderboard from '@/components/quiz/Leaderboard';
-import FinalVote from '@/components/quiz/FinalVote';
-import VoteResults from '@/components/quiz/VoteResults';
-
-export default function PlayPage() {
-  // Session & Table Selection
-  const [session, setSession] = useState<any>(null);
-  const [selectedTable, setSelectedTable] = useState<any>(null);
-  const [tables, setTables] = useState<any[]>([]);
-  
-  // Player Data (single player for simple registration)
-  const [player, setPlayer] = useState<any>(null);
-  
-  // Quiz State
-  const [questions, setQuestions] = useState<any[]>([]);
-  const [currentQuestion, setCurrentQuestion] = useState<any>(null);
-  const [showQuestion, setShowQuestion] = useState(false);
-  const [showLeaderboard, setShowLeaderboard] = useState(false);
-  const [showFinalVote, setShowFinalVote] = useState(false);
-  const [showResults, setShowResults] = useState(false);
-  
-  // Loading & Error
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-
-  // Load session and questions on mount
-  useEffect(() => {
-    loadSessionData();
-  }, []);
-
-  const loadSessionData = async () => {
-    try {
-      // Get today's session
-      const sessionResponse = await fetch('/api/quiz/get-session');
-      const sessionData = await sessionResponse.json();
-
-      if (!sessionResponse.ok) {
-        throw new Error(sessionData.error || 'No active session found');
-      }
-
-      setSession(sessionData.session);
-      setTables(sessionData.session.quiz_tables || []);
-
-      // Load questions
-      const questionsResponse = await fetch(`/api/quiz/get-questions?sessionId=${sessionData.session.id}`);
-      const questionsData = await questionsResponse.json();
-
-      if (questionsResponse.ok) {
-        setQuestions(questionsData.questions || []);
-      }
-
-    } catch (err: any) {
-      console.error('Session load error:', err);
-      setError(err.message || 'Failed to load session');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleTableSelect = (table: any) => {
-    setSelectedTable(table);
-  };
-
-  const handleRegistrationComplete = (playerData: any) => {
-    setPlayer(playerData);
-    // Refresh table data to update seat counts
-    loadSessionData();
-  };
-
-  const handleQuestionTriggered = (question: any) => {
-    setCurrentQuestion(question);
-    setShowQuestion(true);
-  };
-
-  const handleQuestionComplete = () => {
-    setShowQuestion(false);
-    setCurrentQuestion(null);
-  };
-
-  const handleAnswerSubmitted = async (isCorrect: boolean, pointsEarned: number, selectedAnswer: string) => {
-    const isCollaborative = currentQuestion?.answer_mode !== 'individual';
-    
-    if (isCollaborative) {
-      // COLLABORATIVE MODE: Just this player answered for the table
-      console.log(`Player answered: ${isCorrect ? 'Correct' : 'Incorrect'}, Points: ${pointsEarned}`);
+export default function HomePage() {
+  return (
+    <main style={{ 
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Inter", sans-serif',
+      color: '#1a1a1a'
+    }}>
       
-      // Continue video immediately
-      setShowQuestion(false);
-      setCurrentQuestion(null);
-      
-    } else {
-      // INDIVIDUAL MODE: This player answers, then waits for others
-      console.log(`${player?.first_name}: ${isCorrect ? 'Correct' : 'Incorrect'}, Points: ${pointsEarned}`);
-      
-      // For now, just continue (multi-player individual questions handled later)
-      setShowQuestion(false);
-      setCurrentQuestion(null);
-    }
-  };
-
-  const handleShowLeaderboard = () => {
-    setShowLeaderboard(true);
-  };
-
-  const handleVoteSubmitted = () => {
-    setShowFinalVote(false);
-    setShowResults(true);
-  };
-
-  // Render loading state
-  if (loading) {
-    return (
-      <div style={{ 
-        minHeight: '100vh', 
-        background: 'var(--charcoal)', 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'center',
-        padding: '20px'
+      {/* MINIMAL HEADER */}
+      <header style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        background: 'rgba(255, 255, 255, 0.95)',
+        backdropFilter: 'blur(10px)',
+        borderBottom: '1px solid #e5e5e5',
+        zIndex: 1000,
+        padding: '20px 40px',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
       }}>
-        <div className="parchment" style={{ padding: '40px', borderRadius: '12px', border: '2px solid var(--gold)', textAlign: 'center' }}>
-          <h2 style={{ fontSize: '24px', color: 'var(--gold)', fontFamily: 'var(--font-cinzel)', marginBottom: '20px' }}>
-            Loading Experience...
-          </h2>
-          <p style={{ color: 'var(--dark-brown)' }}>Please wait...</p>
+        <div style={{ 
+          fontFamily: 'Cinzel, serif', 
+          fontSize: '20px', 
+          fontWeight: 'bold',
+          color: '#1a1a1a'
+        }}>
+          POSH PORK
         </div>
-      </div>
-    );
-  }
+        
+        <Link 
+          href="/book"
+          style={{
+            padding: '12px 32px',
+            background: '#d4af37',
+            color: '#1a1a1a',
+            textDecoration: 'none',
+            borderRadius: '8px',
+            fontWeight: '600',
+            fontSize: '16px',
+            transition: 'all 0.3s'
+          }}
+        >
+          Book Now
+        </Link>
+      </header>
 
-  // Render error state
-  if (error) {
-    return (
-      <div style={{ 
-        minHeight: '100vh', 
-        background: 'var(--charcoal)', 
-        display: 'flex', 
-        alignItems: 'center', 
+      {/* HERO SECTION */}
+      <section style={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
         justifyContent: 'center',
-        padding: '20px'
+        background: '#ffffff',
+        padding: '120px 40px 80px',
+        position: 'relative'
       }}>
-        <div className="parchment" style={{ padding: '40px', borderRadius: '12px', border: '2px solid #ef4444', textAlign: 'center', maxWidth: '500px' }}>
-          <h2 style={{ fontSize: '24px', color: '#ef4444', fontFamily: 'var(--font-cinzel)', marginBottom: '20px' }}>
-            ⚠️ Error
-          </h2>
-          <p style={{ color: 'var(--dark-brown)', marginBottom: '20px' }}>{error}</p>
-          <button
-            onClick={() => window.location.reload()}
-            style={{
-              padding: '12px 24px',
-              background: 'linear-gradient(135deg, #a67c00 0%, #d4af37 50%, #a67c00 100%)',
-              color: 'var(--charcoal)',
-              border: 'none',
-              borderRadius: '8px',
-              fontSize: '16px',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-              fontFamily: 'var(--font-cinzel)'
-            }}
-          >
-            Reload Page
-          </button>
-        </div>
-      </div>
-    );
-  }
+        <div style={{ 
+          maxWidth: '1200px', 
+          width: '100%',
+          textAlign: 'center'
+        }}>
+          <h1 style={{
+            fontFamily: 'Cinzel, serif',
+            fontSize: 'clamp(48px, 8vw, 80px)',
+            lineHeight: '1.1',
+            fontWeight: 'bold',
+            color: '#1a1a1a',
+            marginBottom: '32px',
+            letterSpacing: '-0.02em'
+          }}>
+            SOLVE A DELICIOUS<br/>
+            CONSPIRACY
+          </h1>
 
-  // Render table selection screen
-  if (!selectedTable) {
-    return (
-      <div style={{ 
-        minHeight: '100vh', 
-        background: 'var(--charcoal)', 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'center',
-        padding: '20px'
-      }}>
-        <div className="parchment" style={{ padding: '40px', borderRadius: '12px', border: '2px solid var(--gold)', maxWidth: '600px', width: '100%' }}>
-          <h2 style={{ fontSize: '32px', color: 'var(--gold)', fontFamily: 'var(--font-cinzel)', marginBottom: '20px', textAlign: 'center' }}>
-            Select Your Table
-          </h2>
-          
-          <p style={{ fontSize: '16px', color: 'var(--dark-brown)', marginBottom: '30px', textAlign: 'center' }}>
-            Choose which table you're sitting at:
+          <p style={{
+            fontSize: 'clamp(18px, 2.5vw, 24px)',
+            lineHeight: '1.6',
+            color: '#666666',
+            maxWidth: '600px',
+            margin: '0 auto 48px',
+            fontWeight: '400'
+          }}>
+            An interactive murder mystery that questions<br/>
+            everything you know about food.
           </p>
 
-          <div style={{ display: 'grid', gap: '15px' }}>
-            {tables.map((table) => {
-              const isFull = (table.seats_taken || 0) >= (table.max_seats || 4);
-              
-              return (
-                <button
-                  key={table.id}
-                  onClick={() => !isFull && handleTableSelect(table)}
-                  disabled={isFull}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '20px',
-                    fontSize: '20px',
-                    fontWeight: 'bold',
-                    background: isFull ? '#f5f5f5' : 'white',
-                    color: isFull ? '#999' : 'var(--dark-brown)',
-                    border: `3px solid ${isFull ? '#ccc' : table.theme_color}`,
-                    borderRadius: '8px',
-                    cursor: isFull ? 'not-allowed' : 'pointer',
-                    transition: 'all 0.3s',
-                    fontFamily: 'var(--font-cinzel)',
-                    opacity: isFull ? 0.6 : 1
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    {table.table_name === 'Lady Posh Pork' && '🥓 '}
-                    {table.table_name === 'Mr Carbohydrates' && '🌾 '}
-                    {table.table_name === 'Mr Vegetable Oils' && '🛢️ '}
-                    {table.table_name === 'The Bliss Brothers' && '🍬 '}
-                    {table.table_name}
-                  </div>
-                  <div style={{ fontSize: '14px', color: isFull ? '#999' : '#666' }}>
-                    {isFull ? 'FULL' : `${table.seats_taken || 0}/${table.max_seats || 4}`}
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Render simple registration screen
-  if (!player) {
-    return (
-      <div style={{ 
-        minHeight: '100vh', 
-        background: 'var(--charcoal)', 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'center',
-        padding: '20px'
-      }}>
-        <SimpleRegistration
-          sessionId={session.id}
-          tableId={selectedTable.id}
-          tableName={selectedTable.table_name}
-          seatsTaken={selectedTable.seats_taken || 0}
-          maxSeats={selectedTable.max_seats || 4}
-          onComplete={handleRegistrationComplete}
-        />
-      </div>
-    );
-  }
-
-  // Render main experience
-  return (
-    <div style={{ minHeight: '100vh', background: 'var(--charcoal)' }}>
-      
-      {/* Header */}
-      <div style={{ 
-        background: 'linear-gradient(135deg, #2c1810 0%, #0a0a0a 100%)',
-        padding: '20px',
-        borderBottom: '2px solid var(--gold)'
-      }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '15px' }}>
-          <div>
-            <h1 style={{ fontSize: '24px', color: 'var(--gold)', fontFamily: 'var(--font-cinzel)', margin: 0 }}>
-              The Posh Pork Murder Mystery
-            </h1>
-            <p style={{ fontSize: '14px', color: 'var(--cream)', margin: '5px 0 0 0', opacity: 0.8 }}>
-              Table: {selectedTable.table_name} | Player: {player.first_name}
-            </p>
-          </div>
-          
-          <button
-            onClick={handleShowLeaderboard}
+          <Link 
+            href="/book"
             style={{
-              padding: '10px 20px',
-              background: 'linear-gradient(135deg, #a67c00 0%, #d4af37 50%, #a67c00 100%)',
-              color: 'var(--charcoal)',
-              border: 'none',
+              display: 'inline-block',
+              padding: '20px 48px',
+              background: '#d4af37',
+              color: '#1a1a1a',
+              textDecoration: 'none',
               borderRadius: '8px',
-              fontSize: '14px',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-              fontFamily: 'var(--font-cinzel)'
+              fontWeight: '600',
+              fontSize: '20px',
+              transition: 'all 0.3s',
+              boxShadow: '0 4px 24px rgba(212, 175, 55, 0.3)'
             }}
           >
-            🏆 Leaderboard
-          </button>
-        </div>
-      </div>
+            Book Your Table →
+          </Link>
 
-      {/* Video Player */}
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px' }}>
-        {session.video_url ? (
-          <VideoPlayer
-            videoId={session.video_url.includes('v=') 
-              ? session.video_url.split('v=')[1].split('&')[0]
-              : session.video_url}
-            questions={questions}
-            onQuestionTriggered={handleQuestionTriggered}
-            onQuestionComplete={handleQuestionComplete}
-          />
-        ) : (
-          <div className="parchment" style={{ padding: '40px', textAlign: 'center', border: '2px solid var(--gold)', borderRadius: '12px' }}>
-            <p style={{ fontSize: '18px', color: 'var(--dark-brown)' }}>
-              No video configured for this session. Please contact the host.
-            </p>
+          {/* Hero Image */}
+          <div style={{
+            marginTop: '80px',
+            borderRadius: '16px',
+            overflow: 'hidden',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.15)'
+          }}>
+            <img 
+              src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1600&q=80"
+              alt="Elegant dinner setting"
+              style={{
+                width: '100%',
+                height: 'auto',
+                display: 'block'
+              }}
+            />
           </div>
-        )}
-      </div>
+        </div>
+      </section>
 
-      {/* Question Overlay */}
-      <QuestionOverlay
-        question={currentQuestion}
-        playerName={player?.first_name || ''}
-        playerId={player?.id || ''}
-        sessionId={session.id}
-        tableId={selectedTable.id}
-        onAnswerSubmitted={handleAnswerSubmitted}
-        isVisible={showQuestion}
-      />
-
-      {/* Leaderboard */}
-      <Leaderboard
-        sessionId={session.id}
-        isVisible={showLeaderboard}
-        onClose={() => setShowLeaderboard(false)}
-      />
-
-      {/* Final Vote */}
-      <FinalVote
-        sessionId={session.id}
-        playerId={player?.id || ''}
-        playerName={player?.first_name || ''}
-        isVisible={showFinalVote}
-        onVoteSubmitted={handleVoteSubmitted}
-      />
-
-      {/* Vote Results */}
-      <VoteResults
-        sessionId={session.id}
-        isVisible={showResults}
-      />
-
-      {/* Dev Controls (remove in production) */}
-      {process.env.NODE_ENV === 'development' && (
-        <div style={{
-          position: 'fixed',
-          bottom: '20px',
-          right: '20px',
-          background: 'rgba(0,0,0,0.8)',
-          padding: '15px',
-          borderRadius: '8px',
-          border: '2px solid var(--gold)',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '10px',
-          zIndex: 1000
+      {/* THE EXPERIENCE */}
+      <section style={{
+        padding: '128px 40px',
+        background: '#ffffff'
+      }}>
+        <div style={{ 
+          maxWidth: '1200px', 
+          margin: '0 auto',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+          gap: '80px',
+          alignItems: 'center'
         }}>
-          <div style={{ color: 'white', fontSize: '12px', marginBottom: '5px' }}>
-            Dev Controls
+          <div>
+            <h2 style={{
+              fontFamily: 'Cinzel, serif',
+              fontSize: 'clamp(36px, 5vw, 56px)',
+              lineHeight: '1.2',
+              fontWeight: 'bold',
+              color: '#1a1a1a',
+              marginBottom: '32px'
+            }}>
+              MORE THAN<br/>
+              DINNER.<br/>
+              A REVELATION.
+            </h2>
+
+            <div style={{ fontSize: '20px', lineHeight: '1.8', color: '#1a1a1a' }}>
+              <p style={{ marginBottom: '24px', display: 'flex', gap: '12px' }}>
+                <span style={{ color: '#d4af37', fontWeight: 'bold' }}>→</span>
+                <span>Interactive storytelling over 90 minutes</span>
+              </p>
+              <p style={{ marginBottom: '24px', display: 'flex', gap: '12px' }}>
+                <span style={{ color: '#d4af37', fontWeight: 'bold' }}>→</span>
+                <span>Question conventional food wisdom</span>
+              </p>
+              <p style={{ display: 'flex', gap: '12px' }}>
+                <span style={{ color: '#d4af37', fontWeight: 'bold' }}>→</span>
+                <span>Solve the crime while uncovering shocking truths</span>
+              </p>
+            </div>
           </div>
-          <button onClick={() => setShowQuestion(true)} style={{ padding: '8px', fontSize: '12px', cursor: 'pointer' }}>
-            Test Question
-          </button>
-          <button onClick={() => setShowLeaderboard(true)} style={{ padding: '8px', fontSize: '12px', cursor: 'pointer' }}>
-            Show Leaderboard
-          </button>
-          <button onClick={() => setShowFinalVote(true)} style={{ padding: '8px', fontSize: '12px', cursor: 'pointer' }}>
-            Show Final Vote
-          </button>
-          <button onClick={() => setShowResults(true)} style={{ padding: '8px', fontSize: '12px', cursor: 'pointer' }}>
-            Show Results
-          </button>
+
+          <div style={{
+            borderRadius: '16px',
+            overflow: 'hidden',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.15)'
+          }}>
+            <img 
+              src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=800&q=80"
+              alt="People engaged in discussion"
+              style={{
+                width: '100%',
+                height: 'auto',
+                display: 'block'
+              }}
+            />
+          </div>
         </div>
-      )}
-    </div>
+      </section>
+
+      {/* HOW IT WORKS */}
+      <section style={{
+        padding: '128px 40px',
+        background: '#fafafa'
+      }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <h2 style={{
+            fontFamily: 'Cinzel, serif',
+            fontSize: 'clamp(36px, 5vw, 48px)',
+            lineHeight: '1.2',
+            fontWeight: 'bold',
+            color: '#1a1a1a',
+            marginBottom: '80px',
+            textAlign: 'center'
+          }}>
+            HOW IT WORKS
+          </h2>
+
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+            gap: '64px'
+          }}>
+            {[
+              {
+                number: '1',
+                title: 'ARRIVE',
+                description: 'Take your seat at one of four themed tables'
+              },
+              {
+                number: '2',
+                title: 'INVESTIGATE',
+                description: 'Watch, discuss, and answer questions as a team'
+              },
+              {
+                number: '3',
+                title: 'DECIDE',
+                description: 'Cast your final vote and discover the truth'
+              }
+            ].map((step) => (
+              <div key={step.number} style={{ textAlign: 'center' }}>
+                <div style={{
+                  width: '80px',
+                  height: '80px',
+                  borderRadius: '50%',
+                  background: '#d4af37',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  margin: '0 auto 24px',
+                  fontFamily: 'Cinzel, serif',
+                  fontSize: '32px',
+                  fontWeight: 'bold',
+                  color: '#1a1a1a'
+                }}>
+                  {step.number}
+                </div>
+                <h3 style={{
+                  fontFamily: 'Cinzel, serif',
+                  fontSize: '24px',
+                  fontWeight: 'bold',
+                  color: '#1a1a1a',
+                  marginBottom: '16px'
+                }}>
+                  {step.title}
+                </h3>
+                <p style={{
+                  fontSize: '18px',
+                  lineHeight: '1.6',
+                  color: '#666666'
+                }}>
+                  {step.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* TESTIMONIAL */}
+      <section style={{
+        padding: '128px 40px',
+        background: '#2c1810',
+        color: '#ffffff'
+      }}>
+        <div style={{ 
+          maxWidth: '900px', 
+          margin: '0 auto',
+          textAlign: 'center'
+        }}>
+          <blockquote style={{
+            fontSize: 'clamp(24px, 4vw, 36px)',
+            lineHeight: '1.5',
+            fontStyle: 'italic',
+            marginBottom: '32px',
+            fontWeight: '300'
+          }}>
+            "An unforgettable evening that completely changed how I think about nutrition. 
+            Part entertainment, part education, entirely brilliant."
+          </blockquote>
+          <div style={{
+            fontSize: '18px',
+            color: '#d4af37',
+            fontWeight: '600'
+          }}>
+            — Sarah M., Barcelona
+          </div>
+        </div>
+      </section>
+
+      {/* PRICING */}
+      <section style={{
+        padding: '128px 40px',
+        background: '#ffffff'
+      }}>
+        <div style={{ 
+          maxWidth: '600px', 
+          margin: '0 auto',
+          textAlign: 'center'
+        }}>
+          <h2 style={{
+            fontFamily: 'Cinzel, serif',
+            fontSize: 'clamp(36px, 5vw, 48px)',
+            lineHeight: '1.2',
+            fontWeight: 'bold',
+            color: '#1a1a1a',
+            marginBottom: '24px'
+          }}>
+            JOIN THE<br/>INVESTIGATION
+          </h2>
+
+          <p style={{
+            fontSize: '56px',
+            fontWeight: 'bold',
+            color: '#1a1a1a',
+            marginBottom: '16px',
+            lineHeight: '1'
+          }}>
+            €17.50
+          </p>
+
+          <p style={{
+            fontSize: '18px',
+            color: '#666666',
+            marginBottom: '48px'
+          }}>
+            per person · Tables of 2-4 guests · 90 minutes
+          </p>
+
+          <Link 
+            href="/book"
+            style={{
+              display: 'inline-block',
+              padding: '20px 48px',
+              background: '#d4af37',
+              color: '#1a1a1a',
+              textDecoration: 'none',
+              borderRadius: '8px',
+              fontWeight: '600',
+              fontSize: '20px',
+              transition: 'all 0.3s',
+              boxShadow: '0 4px 24px rgba(212, 175, 55, 0.3)'
+            }}
+          >
+            Book Now →
+          </Link>
+        </div>
+      </section>
+
+      {/* MINIMAL FOOTER */}
+      <footer style={{
+        padding: '64px 40px',
+        background: '#fafafa',
+        borderTop: '1px solid #e5e5e5',
+        textAlign: 'center'
+      }}>
+        <div style={{
+          fontFamily: 'Cinzel, serif',
+          fontSize: '20px',
+          fontWeight: 'bold',
+          color: '#1a1a1a',
+          marginBottom: '16px'
+        }}>
+          POSH PORK
+        </div>
+        <p style={{
+          fontSize: '14px',
+          color: '#666666',
+          marginBottom: '24px'
+        }}>
+          Mallorca, Spain
+        </p>
+        <div style={{
+          fontSize: '14px',
+          color: '#666666'
+        }}>
+          <a 
+            href="mailto:hello@poshpork.com" 
+            style={{ 
+              color: '#666666', 
+              textDecoration: 'none',
+              borderBottom: '1px solid transparent',
+              transition: 'border-color 0.3s'
+            }}
+          >
+            mystery@poshpork.com
+          </a>
+        </div>
+      </footer>
+
+    </main>
   );
 }
