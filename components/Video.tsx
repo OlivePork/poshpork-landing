@@ -15,7 +15,7 @@ export default function Video() {
           boxShadow: '0 10px 40px rgba(0,0,0,0.3)'
         }}>
           <iframe
-            src="https://www.youtube.com/embed/dQw4w9WgXcQ?si=example"
+            src="https://youtu.be/sWlohn79hww"
             title="Posh Pork Mystery Video"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
