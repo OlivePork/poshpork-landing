@@ -15,22 +15,7 @@ export default function Video() {
           />
         </div>
 
-        {/* Text content below video */}
-        <div className="text-center max-w-2xl mx-auto" style={{paddingBottom: '0', marginBottom: '0'}}>
-          <p className="text-xl mb-6" style={{color: 'var(--cream)', opacity: 0.85}}>
-            Join the jury. Examine the evidence. Cast your verdict.
-          </p>
-
-          <p className="text-xl mb-6" style={{color: 'var(--cream)', opacity: 0.75}}>
-            A groundbreaking new tourism experience in Mallorca. Book now to be among the first to experience it, shape its evolution, and help create something truly original.
-          </p>
-
-          <p className="text-xl" style={{color: 'var(--cream)', opacity: 0.75, marginBottom: '0'}}>
-            These trial sessions are hosted by the creator himself over coffee. While the digital content is still in development, you'll receive the full in-person experience and help shape what comes next.
-          </p>
-        </div>
-
-      </div>
+        
     </section>
   );
 }
