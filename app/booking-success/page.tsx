@@ -13,7 +13,7 @@ export default function BookingSuccess() {
       (window as any).gtag('event', 'conversion', {
         'send_to': 'AW-18073746528/PURCHASE_1',
         'transaction_id': sessionId || '',
-        'value': 35.0, // Adjust to your average booking value
+        'value': 35.0,
         'currency': 'EUR'
       });
     }
@@ -60,7 +60,7 @@ export default function BookingSuccess() {
               </div>
               <div className="ml-4">
                 <p className="text-gray-700">
-                  <strong>Check your email</strong> - You'll receive a confirmation email with your booking details and check-in code.
+                  <strong>Check your email</strong> - You&apos;ll receive a confirmation email with your booking details and check-in code.
                 </p>
               </div>
             </div>
@@ -73,7 +73,7 @@ export default function BookingSuccess() {
               </div>
               <div className="ml-4">
                 <p className="text-gray-700">
-                  <strong>Save your check-in code</strong> - You'll need this to access the game on the day.
+                  <strong>Save your check-in code</strong> - You&apos;ll need this to access the game on the day.
                 </p>
               </div>
             </div>
@@ -86,7 +86,7 @@ export default function BookingSuccess() {
               </div>
               <div className="ml-4">
                 <p className="text-gray-700">
-                  <strong>Arrive on time</strong> - Come hungry for dinner and ready to solve a murder!
+                  <strong>Arrive on time</strong> - Come hungry for knowledge and ready to solve a murder!
                 </p>
               </div>
             </div>
