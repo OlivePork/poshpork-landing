@@ -26,7 +26,7 @@ export default function Hero() {
         <div style={{textAlign: 'center', marginBottom: '48px'}}>
           <img
             src="https://i.imgur.com/p4ryMaz.jpeg"
-            alt="The Posh Pork Murder Mystery Experience"
+            alt="Which Food Is Killing You? Inside the Greatest Fraud In Human History"
             style={{
               maxWidth: '900px', 
               width: '100%', 
@@ -39,16 +39,42 @@ export default function Hero() {
         </div>
 
         <h1 style={{
-          fontSize: '48px',
+          fontSize: 'clamp(36px, 6vw, 56px)',
           fontWeight: 'bold',
           textAlign: 'center',
           color: 'var(--gold)',
           fontFamily: 'var(--font-cinzel)',
           margin: 0,
-          padding: 0
+          padding: 0,
+          lineHeight: 1.1
         }}>
           Which Food Is Killing You?
         </h1>
+
+        <p style={{
+          fontSize: 'clamp(16px, 2.2vw, 22px)',
+          textAlign: 'center',
+          color: 'var(--cream, #f2ece1)',
+          fontFamily: 'var(--font-cinzel)',
+          letterSpacing: '0.06em',
+          margin: '20px auto 0',
+          maxWidth: '760px',
+          opacity: 0.8
+        }}>
+          Inside the Greatest Fraud In Human History
+        </p>
+
+        <p style={{
+          fontSize: '17px',
+          textAlign: 'center',
+          color: '#9a9a9a',
+          margin: '36px auto 0',
+          maxWidth: '620px',
+          lineHeight: 1.6
+        }}>
+          A film in which you sit on the jury. Watch the evidence, answer as it lands,
+          deliver your verdict.
+        </p>
 
       </div>
     </section>

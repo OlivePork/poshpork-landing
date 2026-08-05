@@ -2,6 +2,7 @@
 import Hero from '@/components/Hero';
 import Video from '@/components/Video';
 import BookingTabs from '@/components/BookingTabs';
+import FilmSection from '@/components/FilmSection';
 import Article from '@/components/Article';
 import CookieBanner from '@/components/CookieBanner';
 
@@ -13,6 +14,7 @@ export default function Home() {
       <Video />
       
       {/* HOW IT WORKS */}
+     {/* WHY IS THIS THE GREATEST FRAUD? */}
       <section style={{
         padding: '128px 40px',
         background: '#fafafa'
@@ -27,7 +29,7 @@ export default function Home() {
             marginBottom: '80px',
             textAlign: 'center'
           }}>
-            HOW IT WORKS
+            WHY IS THIS THE GREATEST FRAUD?
           </h2>
 
           <div style={{
@@ -59,14 +61,14 @@ export default function Home() {
                 color: '#1a1a1a',
                 marginBottom: '16px'
               }}>
-                ARRIVE & SETTLE IN
+                IT KILLS QUIETLY
               </h3>
               <p style={{
                 fontSize: '18px',
                 lineHeight: '1.6',
                 color: '#666666'
               }}>
-                Claim your detective seat, sip some wine
+                Chronic inflammation is linked to more than half of all deaths worldwide. Nine of the ten leading causes of death are inflammation-related.
               </p>
             </div>
 
@@ -94,14 +96,14 @@ export default function Home() {
                 color: '#1a1a1a',
                 marginBottom: '16px'
               }}>
-                FOLLOW THE CLUES
+                IT STARTS ON YOUR PLATE
               </h3>
               <p style={{
                 fontSize: '18px',
                 lineHeight: '1.6',
                 color: '#666666'
               }}>
-                Watch the fun unfold, share your opinion with your team
+                Diet sits among the leading drivers of chronic inflammation — alongside factors most of us were never told to watch for.
               </p>
             </div>
 
@@ -129,21 +131,46 @@ export default function Home() {
                 color: '#1a1a1a',
                 marginBottom: '16px'
               }}>
-                CRACK THE CASE
+                AND NOBODY NAMED IT
               </h3>
               <p style={{
                 fontSize: '18px',
                 lineHeight: '1.6',
                 color: '#666666'
               }}>
-                Vote for your culprit, make friends along the way
+                One food on your plate is doing more damage than the rest. You have not been told which. The evidence has been there all along.
               </p>
             </div>
+          </div>
+
+          <div style={{ textAlign: 'center', marginTop: '80px' }}>
+            <a href="/movie" style={{
+              display: 'inline-block',
+              padding: '20px 48px',
+              fontFamily: 'Cinzel, serif',
+              fontSize: '20px',
+              fontWeight: 'bold',
+              color: '#0a0a0a',
+              background: 'linear-gradient(135deg, #a67c00 0%, #d4af37 50%, #a67c00 100%)',
+              borderRadius: '8px',
+              textDecoration: 'none',
+              boxShadow: '0 8px 24px rgba(212, 175, 55, 0.3)'
+            }}>
+              WATCH NOW
+            </a>
+            <p style={{
+              fontSize: '14px',
+              marginTop: '18px',
+              fontStyle: 'italic',
+              color: '#888888'
+            }}>
+              Sources cited on screen throughout the film.
+            </p>
           </div>
         </div>
       </section>
 
-      <BookingTabs />
+      {process.env.NEXT_PUBLIC_LIVE_EVENTS_ENABLED === 'true' ? <BookingTabs /> : <FilmSection />}
       <Article />
     </>
   );

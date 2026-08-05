@@ -13,15 +13,19 @@ export default function Article() {
             fontFamily: 'Cinzel, serif',
             lineHeight: '1.2'
           }}>
-            The Posh Pork Murder Mystery: Interactive Entertainment Comes to Llucmajor This Summer
+            Which Food Is Killing You? Inside the Greatest Fraud In Human History
           </h1>
 
           <p style={{fontSize: '20px', fontStyle: 'italic', marginBottom: '40px', color: '#666'}}>
-            A groundbreaking food investigation experience launches in the Llucmajor area, transforming the way we think about food, conversation, and group entertainment.
+            A film that puts you on the jury. The evidence is laid out, the witnesses contradict each other, and you decide who is guilty.
           </p>
 
           <p style={{fontSize: '18px', marginBottom: '25px'}}>
-            This summer, a unique interactive experience arrives in Llucmajor that turns guests into detectives, tables into jury boxes, and an evening out into an investigation. The Posh Pork Murder Mystery Experience brings something entirely new to rural Mallorca—interactive entertainment that challenges what we think we know about the food we eat.
+            Something in the modern diet is making people ill. That much almost everyone agrees on. What nobody agrees on is <em>what</em>. Ask ten people and you will get ten confident answers: sugar, seed oils, red meat, ultra-processed food, carbohydrates, gluten. Each answer arrives with studies attached. Each has experts prepared to stake their reputation on it.
+          </p>
+
+          <p style={{fontSize: '18px', marginBottom: '25px'}}>
+            They cannot all be right. And the reason they cannot all be right is the actual subject of this film.
           </p>
 
           <h2 style={{
@@ -32,15 +36,19 @@ export default function Article() {
             color: '#d4af37',
             fontFamily: 'Cinzel, serif'
           }}>
-            What Is It?
+            A Trial, Not a Lecture
           </h2>
 
           <p style={{fontSize: '18px', marginBottom: '25px'}}>
-            Imagine an evening out where you're not just watching—you're investigating. The Posh Pork Murder Mystery is an immersive group experience that combines digital storytelling, real conversation, and food education into one unforgettable 90 minutes.
+            Most documentaries about food tell you what to think. This one hands you the case file.
           </p>
 
           <p style={{fontSize: '18px', marginBottom: '25px'}}>
-            Eight guests gather around two tables, each seating four people. Coffee, wine, or other refreshments flow (depending on the venue—imagine investigating in a historic Mallorcan winery with a glass in hand). Together, they become the jury in a peculiar trial: deciding which food deserves to be labeled "guilty" of crimes against human health.
+            The structure is a murder trial. A crime has been committed — a slow one, spread across a century and several continents. The suspects are foods you almost certainly ate this week. The witnesses are the scientists, the executives, the regulators and the campaigners who built the world we now eat in. Several of them are lying. Some of them are lying to themselves, which is harder to spot and rather more interesting.
+          </p>
+
+          <p style={{fontSize: '18px', marginBottom: '25px'}}>
+            Your job is to work out which is which.
           </p>
 
           <h2 style={{
@@ -51,23 +59,19 @@ export default function Article() {
             color: '#d4af37',
             fontFamily: 'Cinzel, serif'
           }}>
-            How It Works
+            You Are on the Jury
           </h2>
 
           <p style={{fontSize: '18px', marginBottom: '25px'}}>
-            The experience unfolds over 90 minutes of investigation, debate, and discovery:
-          </p>
-
-          <p style={{fontSize: '18px', marginBottom: '15px'}}>
-            <strong>Digital Clues:</strong> Each table receives access to digital evidence through their devices—witness testimonies, industry documents, nutritional data, and mysterious revelations about what we eat and why.
-          </p>
-
-          <p style={{fontSize: '18px', marginBottom: '15px'}}>
-            <strong>Group Discussion:</strong> As clues emerge, tables debate what they're learning. Strangers become collaborators. Opinions clash and align. The conversation flows as naturally as wine, but the topic isn't the weather—it's the very food on our plates.
+            This is not a film you sit back and absorb. At points throughout, the evidence stops and a question appears on screen. You answer. So does everyone else watching, anywhere in the world — and at the end you find out how the rest of the jury voted.
           </p>
 
           <p style={{fontSize: '18px', marginBottom: '25px'}}>
-            <strong>The Verdict:</strong> After examining all evidence, each table casts their vote. Which food is truly guilty? Processed cereals marketed to children? Industrial seed oils hiding in everything? Sugar masquerading as health food? The jury decides.
+            That turns out to matter more than it sounds. Committing to an answer <em>before</em> you know whether you are right is a very different experience from being told the answer. You remember what you got wrong. You notice the moment your mind changed, and what changed it. People come out of this film able to say not just what they believe about food, but why — and that is a rarer thing than it should be.
+          </p>
+
+          <p style={{fontSize: '18px', marginBottom: '25px'}}>
+            If you would rather simply watch, the questions can be switched off entirely. Most people leave them on.
           </p>
 
           <h2 style={{
@@ -78,27 +82,38 @@ export default function Article() {
             color: '#d4af37',
             fontFamily: 'Cinzel, serif'
           }}>
-            For Whom?
+            Watch Alone, or Fill the Room
           </h2>
 
           <p style={{fontSize: '18px', marginBottom: '25px'}}>
-            The experience welcomes anyone curious about food, but it particularly resonates with:
-          </p>
-
-          <p style={{fontSize: '18px', marginBottom: '15px'}}>
-            <strong>Young Couples:</strong> Looking for date night with substance beyond dinner and a movie. The interactive format naturally sparks conversation, shared discovery, and genuine connection. You'll leave with inside jokes about breakfast cereal conspiracies and new perspectives you discovered together.
-          </p>
-
-          <p style={{fontSize: '18px', marginBottom: '15px'}}>
-            <strong>Young Families:</strong> Parents wanting to model critical thinking about food for their children while having an adults' night out. The 90-minute format fits perfectly into evening schedules, and the investigation offers meaningful conversation beyond the usual weekly routines. Plus, what you learn directly impacts what you feed your family.
-          </p>
-
-          <p style={{fontSize: '18px', marginBottom: '15px'}}>
-            <strong>Retired Couples & Groups:</strong> Seeking intellectually stimulating social experiences that go beyond the ordinary. The group investigation format encourages intergenerational dialogue, drawing on life experience while challenging long-held assumptions. It's the kind of evening that generates conversation for days afterward.
+            On your own, the film waits for you. Take as long as you like over each question — there is no clock and no penalty for thinking.
           </p>
 
           <p style={{fontSize: '18px', marginBottom: '25px'}}>
-            <strong>Friend Groups:</strong> Those who love good conversation and shared experiences. The four-per-table format is perfect for arriving with your crew or making new connections with like-minded curious people.
+            Put it on the television with people in the room and it becomes something else. Each question pauses the film for ten seconds, which is exactly long enough for a household to start arguing. Then it rolls on whether you have settled it or not. Families tend to split along generational lines. Dinner parties rarely reach consensus. This is the intended effect.
+          </p>
+
+          <h2 style={{
+            fontSize: '32px',
+            fontWeight: 'bold',
+            marginTop: '50px',
+            marginBottom: '25px',
+            color: '#d4af37',
+            fontFamily: 'Cinzel, serif'
+          }}>
+            Who It Is For
+          </h2>
+
+          <p style={{fontSize: '18px', marginBottom: '15px'}}>
+            <strong>Anyone who has tried to eat well and found the advice contradicts itself.</strong> If you have watched official guidance reverse itself within your lifetime — on fat, on eggs, on butter, on salt — and quietly wondered how that keeps happening, this film is about exactly that question.
+          </p>
+
+          <p style={{fontSize: '18px', marginBottom: '15px'}}>
+            <strong>Teenagers and young adults.</strong> Most food education arrives as a list of rules to obey. This arrives as a mystery to solve, which is a considerably better way to learn how evidence works, how industries fund research, and how to tell a strong claim from a loud one. Those skills outlast any particular dietary advice.
+          </p>
+
+          <p style={{fontSize: '18px', marginBottom: '25px'}}>
+            <strong>Anyone thinking harder about food as they get older.</strong> Questions about diet and long-term health become less abstract with time. This film will not hand you a prescription — it is not medicine and makes no promises. What it offers is the shape of the argument, honestly laid out, so you can follow the debate yourself and ask your doctor better questions.
           </p>
 
           <h2 style={{
@@ -113,15 +128,15 @@ export default function Article() {
           </h2>
 
           <p style={{fontSize: '18px', marginBottom: '25px'}}>
-            And then there's the question that brings it all together: What exactly <em>is</em> "Posh Pork"?
+            And then there is the question that gives the whole thing its name: what exactly <em>is</em> Posh Pork?
           </p>
 
           <p style={{fontSize: '18px', marginBottom: '25px'}}>
-            The name itself is a clue. Throughout the investigation, guests will uncover not just which foods deserve guilty verdicts, but why pork—often vilified, frequently misunderstood—might just be innocent after all. Or perhaps it's posh for reasons no one expects.
+            The name is a clue. Somewhere in the evidence sits an explanation for why one of the most vilified foods on the list may be innocent — and why the thing that replaced it was never examined nearly as closely.
           </p>
 
           <p style={{fontSize: '18px', marginBottom: '40px'}}>
-            The answer reveals itself through the evidence. Just like everything else in this experience, you'll have to investigate to find out.
+            The answer reveals itself through the evidence. Like everything else here, you will have to investigate.
           </p>
 
           <div style={{
@@ -143,55 +158,39 @@ export default function Article() {
             </h3>
             
             <p style={{fontSize: '16px', marginBottom: '10px'}}>
-              <strong>What:</strong> The Posh Pork Murder Mystery Group Experience
+              <strong>What:</strong> Which Food Is Killing You? — a feature film with interactive questions
             </p>
             <p style={{fontSize: '16px', marginBottom: '10px'}}>
-              <strong>Where:</strong> Historic venue in Llucmajor area, Mallorca
+              <strong>Where:</strong> Streamed here, on any device. Watch on a phone, laptop or television.
             </p>
             <p style={{fontSize: '16px', marginBottom: '10px'}}>
-              <strong>When:</strong> Launching July 2026
+              <strong>When:</strong> Any time. Buy once, watch whenever suits you.
             </p>
             <p style={{fontSize: '16px', marginBottom: '10px'}}>
-              <strong>Who:</strong> Groups of 8 (4 tables of 2)
+              <strong>Who:</strong> One purchase covers your household. Watch alone or gather everyone round.
             </p>
             <p style={{fontSize: '16px', marginBottom: '10px'}}>
-              <strong>Duration:</strong> 90 minutes
+              <strong>Duration:</strong> 1 hour 26 minutes
             </p>
             <p style={{fontSize: '16px', marginBottom: '20px'}}>
               <strong>Language:</strong> English
             </p>
 
             <p style={{fontSize: '18px', fontWeight: 'bold', marginBottom: '10px', color: '#d4af37'}}>
-              Pricing (Waitlist Special):
+              Price:
             </p>
-            <p style={{fontSize: '16px', marginBottom: '5px'}}>
-              • €17.50 per adult (waitlist members)
-            </p>
-            <p style={{fontSize: '16px', marginBottom: '5px'}}>
-              • €10 for teenagers 13-17
-            </p>
-            <p style={{fontSize: '16px', marginBottom: '5px'}}>
-              • €7 for children 4-12
-            </p>
-            <p style={{fontSize: '16px', marginBottom: '5px'}}>
-              • Free for children 3 and under 
-            </p>
-            <p style={{fontSize: '16px', marginBottom: '20px', fontStyle: 'italic'}}>
-              Standard pricing TBA after launch
+            <p style={{fontSize: '16px', marginBottom: '20px'}}>
+              €15 — one payment, permanent access. Rewatch as often as you like.
             </p>
 
-            <p style={{fontSize: '16px', fontWeight: 'bold'}}>
-              Important: Places are extremely limited at just 8 guests per session. Join the waitlist to secure the special pricing and priority booking access.
+            <p style={{fontSize: '16px', fontStyle: 'italic'}}>
+              This film is about evidence and how it is made. It is not medical advice, and nothing in it should replace a conversation with your doctor.
             </p>
           </div>
 
-          <p style={{fontSize: '18px', marginBottom: '25px'}}>
-            With only 8 places per session, spots will fill quickly. Waitlist members secure the special pricing (€17.50 for adults, €10 for teenagers 13-17, €7 for children 4-12, free for 3s and under) and get priority booking access before general release.
-          </p>
-
           <div style={{textAlign: 'center', marginTop: '60px'}}>
             <a 
-              href="#booking"
+              href="/movie"
               style={{
                 display: 'inline-block',
                 padding: '20px 40px',
@@ -206,10 +205,10 @@ export default function Article() {
                 transition: 'transform 0.3s'
               }}
             >
-              Join the Waitlist
+              Watch the Film
             </a>
             <p style={{fontSize: '14px', marginTop: '20px', fontStyle: 'italic', color: '#666'}}>
-              The Posh Pork Murder Mystery: Join the jury. Solve the mystery. Eat better.
+              Join the jury. Weigh the evidence. Deliver your verdict.
             </p>
           </div>
 
