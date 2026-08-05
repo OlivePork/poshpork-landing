@@ -1,9 +1,8 @@
 'use client';
-
-import { useEffect } from 'react';
+import { Suspense, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 
-export default function BookingSuccess() {
+function BookingSuccessContent() {
   const searchParams = useSearchParams();
   const sessionId = searchParams.get('session_id');
 
@@ -37,20 +36,17 @@ export default function BookingSuccess() {
             />
           </svg>
         </div>
-
         <h1 className="text-4xl font-bold text-gray-900 mb-4">
           Booking Confirmed! 🎉
         </h1>
-
         <p className="text-xl text-gray-600 mb-8">
           Thank you for booking Posh Pork Murder Mystery!
         </p>
-
         <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
           <h2 className="text-2xl font-semibold text-gray-900 mb-4">
             What Happens Next?
           </h2>
-          
+
           <div className="text-left space-y-4">
             <div className="flex items-start">
               <div className="flex-shrink-0">
@@ -64,7 +60,6 @@ export default function BookingSuccess() {
                 </p>
               </div>
             </div>
-
             <div className="flex items-start">
               <div className="flex-shrink-0">
                 <div className="flex items-center justify-center h-8 w-8 rounded-full bg-blue-500 text-white font-bold">
@@ -77,7 +72,6 @@ export default function BookingSuccess() {
                 </p>
               </div>
             </div>
-
             <div className="flex items-start">
               <div className="flex-shrink-0">
                 <div className="flex items-center justify-center h-8 w-8 rounded-full bg-blue-500 text-white font-bold">
@@ -92,7 +86,6 @@ export default function BookingSuccess() {
             </div>
           </div>
         </div>
-
         <div className="bg-amber-50 rounded-lg p-6 mb-8">
           <p className="text-gray-700">
             <strong>Questions?</strong> Contact us at{' '}
@@ -110,5 +103,13 @@ export default function BookingSuccess() {
         </a>
       </div>
     </div>
+  );
+}
+
+export default function BookingSuccess() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-amber-50" />}>
+      <BookingSuccessContent />
+    </Suspense>
   );
 }
