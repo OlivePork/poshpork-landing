@@ -4,7 +4,7 @@ import { useSearchParams } from 'next/navigation';
 
 function BookingSuccessContent() {
   const searchParams = useSearchParams();
-  const sessionId = searchParams.get('session_id');
+  const sessionId = searchParams?.get('session_id');
 
   useEffect(() => {
     if (typeof window !== 'undefined' && (window as any).gtag) {
