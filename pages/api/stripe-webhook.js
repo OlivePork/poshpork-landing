@@ -2,11 +2,13 @@ import Stripe from 'stripe';
 import { Resend } from 'resend';
 import { createClient } from '@supabase/supabase-js';
 
-const stripe = new Stripe('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');
-const resend = new Resend('re_9PMG3WnS_9gqcsrH4iRVuUSvfQYMvASy9');
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+// Service role — bypasses RLS so we can create users and write purchases.
 const supabase = createClient(
-  'https://gpcaonwqvbdzsmypmrwk.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdwY2FvbndxdmJkenNteXBtcndrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1MTA3MTYsImV4cCI6MjA5MTA4NjcxNn0.Ld4zKJYqmLzOwdLep3HN-ThD8QIexMv99ib1K0ClVvA'
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
 export const config = {
@@ -41,13 +43,108 @@ export default async function handler(req, res) {
 
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object;
+
+    // ================================================================
+    // MOVIE PURCHASE
+    // ================================================================
+    if (session.metadata?.product === 'movie') {
+      const email = session.customer_details?.email || session.customer_email;
+      let userId = session.metadata.user_id || null;
+
+      try {
+        // Create the account if they bought without signing in first.
+        if (!userId && email) {
+          const { data: created } = await supabase.auth.admin.createUser({
+            email,
+            email_confirm: true,
+          });
+          userId = created?.user?.id || null;
+
+          // Already existed — find them instead.
+          if (!userId) {
+            const { data: list } = await supabase.auth.admin.listUsers();
+            userId = list?.users?.find((u) => u.email === email)?.id || null;
+          }
+        }
+
+        if (userId) {
+          const { error } = await supabase.from('purchases').upsert(
+            {
+              user_id: userId,
+              product: 'movie',
+              stripe_session_id: session.id,
+              amount_cents: session.amount_total,
+            },
+            { onConflict: 'stripe_session_id' }
+          );
+          if (error) console.error('Purchase insert error:', error);
+          else console.log('Movie purchase saved for', email);
+        } else {
+          console.error('Could not resolve user for movie purchase', email);
+        }
+      } catch (movieErr) {
+        console.error('Movie purchase error:', movieErr);
+      }
+
+      // Email them the way in.
+      try {
+        await resend.emails.send({
+          from: 'Posh Pork <mystery@poshpork.com>',
+          replyTo: 'colin@permapigs.com',
+          to: email,
+          subject: 'Your film is ready to watch 🔍',
+          html: `
+            <div style="font-family: Georgia, serif; color: #2c1810; max-width: 600px; margin: 0 auto;">
+              <div style="background: linear-gradient(135deg, #2c1810 0%, #0a0a0a 100%); padding: 40px 20px; text-align: center;">
+                <h1 style="color: #d4af37; font-size: 26px; margin: 0;">Which Food Is Killing You?</h1>
+                <p style="color: #f5f1e8; font-style: italic; margin-top: 10px;">Join the jury. Weigh the evidence.</p>
+              </div>
+              <div style="background: #f5f1e8; padding: 40px 30px;">
+                <p style="font-size: 16px; line-height: 1.6;">
+                  <strong>Thank you — your purchase is confirmed.</strong>
+                </p>
+                <p style="font-size: 16px; line-height: 1.6;">
+                  Click below to sign in and watch. Use this same email address
+                  (<strong>${email}</strong>) and you'll go straight to the film.
+                </p>
+                <div style="text-align: center; margin: 34px 0;">
+                  <a href="https://www.poshpork.com/watch"
+                     style="display: inline-block; padding: 16px 36px; background: #d4af37; color: #0a0a0a; text-decoration: none; border-radius: 6px; font-weight: bold;">
+                    Watch the Film
+                  </a>
+                </div>
+                <p style="font-size: 15px; line-height: 1.6; color: #666;">
+                  Access is permanent — rewatch whenever you like. Watch alone and the
+                  film waits for your answers, or put it on the big screen and let the
+                  whole room decide.
+                </p>
+                <p style="font-size: 15px; line-height: 1.6; color: #666;">
+                  Any trouble getting in, just reply to this email.
+                </p>
+              </div>
+              <div style="background: #2c1810; padding: 20px; text-align: center;">
+                <p style="color: #f5f1e8; font-size: 12px; margin: 0;">© 2026 Posh Pork. Mallorca, Spain.</p>
+              </div>
+            </div>
+          `,
+        });
+        console.log('Movie email sent');
+      } catch (emailErr) {
+        console.error('Movie email error:', emailErr);
+      }
+
+      return res.status(200).json({ received: true });
+    }
+
+    // ================================================================
+    // LIVE EVENT BOOKING — unchanged
+    // ================================================================
     const customerEmail = session.customer_details.email;
     const customerName = session.customer_details.name;
     const sessionDate = session.metadata.session_date;
     const sessionDisplay = session.metadata.session_display;
     const numPeople = session.metadata.num_people;
 
-    // Save to Supabase
     try {
       const { error } = await supabase.from('bookings').insert([{
         session_date: sessionDate,
@@ -67,7 +164,6 @@ export default async function handler(req, res) {
       console.error('DB error:', dbErr);
     }
 
-    // Send email
     try {
       await resend.emails.send({
         from: 'Posh Pork <mystery@poshpork.com>',
