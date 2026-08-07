@@ -6,12 +6,15 @@ import { createClient } from "@/lib/supabase/client";
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [next, setNext] = useState("/watch");
+  const [justPurchased, setJustPurchased] = useState(false);
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    const param = new URLSearchParams(window.location.search).get("next");
+    const params = new URLSearchParams(window.location.search);
+    const param = params.get("next");
     if (param && param.startsWith("/")) setNext(param);
+    if (params.get("purchased")) setJustPurchased(true);
   }, []);
 
   const send = async () => {
@@ -67,6 +70,22 @@ export default function LoginPage() {
           </>
         ) : (
           <>
+            {justPurchased && (
+              <p style={{
+                background: "rgba(212,175,55,.12)",
+                border: "1px solid rgba(212,175,55,.35)",
+                borderRadius: "6px",
+                padding: "14px 16px",
+                fontSize: "14px",
+                lineHeight: 1.55,
+                margin: "0 0 24px",
+                textAlign: "left",
+              }}>
+                Payment received — thank you. We&apos;ve emailed you a link that takes you
+                straight to the film. Check your inbox, or sign in below.
+              </p>
+            )}
+
             <p style={{ fontSize: "11px", letterSpacing: ".3em", textTransform: "uppercase", color: "#d4af37", opacity: .75, margin: "0 0 14px" }}>
               Which Food Is Killing You?
             </p>

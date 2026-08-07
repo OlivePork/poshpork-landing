@@ -13,7 +13,7 @@ export default async function WatchPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) redirect("/login?next=/watch");
+  if (!user) redirect("/login?next=/watch&purchased=1");
 
   const { data: purchase } = await supabase
     .from("purchases")

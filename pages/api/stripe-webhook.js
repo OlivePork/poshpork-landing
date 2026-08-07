@@ -86,7 +86,21 @@ export default async function handler(req, res) {
         console.error('Movie purchase error:', movieErr);
       }
 
-      // Email them the way in.
+      // Generate a one-click sign-in link so they never type their email.
+      let watchLink = "https://www.poshpork.com/watch";
+      try {
+        const { data: linkData } = await supabase.auth.admin.generateLink({
+          type: "magiclink",
+          email,
+          options: { redirectTo: "https://www.poshpork.com/auth/callback?next=/watch" },
+        });
+        if (linkData?.properties?.action_link) {
+          watchLink = linkData.properties.action_link;
+        }
+      } catch (linkErr) {
+        console.error("Magic link error:", linkErr);
+      }
+
       try {
         await resend.emails.send({
           from: 'Posh Pork <mystery@poshpork.com>',
@@ -100,26 +114,24 @@ export default async function handler(req, res) {
                 <p style="color: #f5f1e8; font-style: italic; margin-top: 10px;">Join the jury. Weigh the evidence.</p>
               </div>
               <div style="background: #f5f1e8; padding: 40px 30px;">
+                <p style="font-size: 16px; line-height: 1.6;"><strong>Thank you — your purchase is confirmed.</strong></p>
                 <p style="font-size: 16px; line-height: 1.6;">
-                  <strong>Thank you — your purchase is confirmed.</strong>
-                </p>
-                <p style="font-size: 16px; line-height: 1.6;">
-                  Click below to sign in and watch. Use this same email address
-                  (<strong>${email}</strong>) and you'll go straight to the film.
+                  One click and you're watching. No password, nothing to remember.
                 </p>
                 <div style="text-align: center; margin: 34px 0;">
-                  <a href="https://www.poshpork.com/watch"
+                  <a href="${watchLink}"
                      style="display: inline-block; padding: 16px 36px; background: #d4af37; color: #0a0a0a; text-decoration: none; border-radius: 6px; font-weight: bold;">
                     Watch the Film
                   </a>
                 </div>
-                <p style="font-size: 15px; line-height: 1.6; color: #666;">
-                  Access is permanent — rewatch whenever you like. Watch alone and the
-                  film waits for your answers, or put it on the big screen and let the
-                  whole room decide.
+                <p style="font-size: 14px; line-height: 1.6; color: #888;">
+                  That link works once and expires. To watch again later, go to
+                  <a href="https://www.poshpork.com/login" style="color: #a67c00;">poshpork.com/login</a>
+                  and sign in with <strong>${email}</strong> — access is permanent.
                 </p>
                 <p style="font-size: 15px; line-height: 1.6; color: #666;">
-                  Any trouble getting in, just reply to this email.
+                  Watch alone and the film waits for your answers, or put it on the big
+                  screen and let the whole room decide.
                 </p>
               </div>
               <div style="background: #2c1810; padding: 20px; text-align: center;">
@@ -132,9 +144,6 @@ export default async function handler(req, res) {
       } catch (emailErr) {
         console.error('Movie email error:', emailErr);
       }
-
-      return res.status(200).json({ received: true });
-    }
 
     // ================================================================
     // LIVE EVENT BOOKING — unchanged
