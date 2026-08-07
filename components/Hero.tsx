@@ -25,7 +25,7 @@ export default function Hero() {
         
         <div style={{textAlign: 'center', marginBottom: '48px'}}>
           <img
-            src="https://i.imgur.com/p4ryMaz.jpeg"
+            src="/poster.jpg"
             alt="Which Food Is Killing You? Inside the Greatest Fraud In Human History"
             style={{
               maxWidth: '900px', 
