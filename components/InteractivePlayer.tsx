@@ -32,13 +32,12 @@ export default function InteractivePlayer({
   const firedRef = useRef<Set<string>>(new Set());
   const askedAtRef = useRef<number>(0);
   const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const sessionIdRef = useRef<string | null>(null);
 
   const [mode, setMode] = useState<Mode>("interactive");
   const [groupSize, setGroupSize] = useState(1);
   const [showSetup, setShowSetup] = useState(true);
-  const [sessionId, setSessionId] = useState<string | null>(null);
 
-  // A screen is one question, or several when they share a verdict_group.
   const [screen, setScreen] = useState<Question[] | null>(null);
   const [remaining, setRemaining] = useState(0);
   const [held, setHeld] = useState(false);
@@ -48,9 +47,11 @@ export default function InteractivePlayer({
   const modeRef = useRef(mode);
   const screenRef = useRef(screen);
   const picksRef = useRef(picks);
+  const groupSizeRef = useRef(groupSize);
   useEffect(() => void (modeRef.current = mode), [mode]);
   useEffect(() => void (screenRef.current = screen), [screen]);
   useEffect(() => void (picksRef.current = picks), [picks]);
+  useEffect(() => void (groupSizeRef.current = groupSize), [groupSize]);
 
   useEffect(() => {
     const saved = window.localStorage.getItem(MODE_KEY) as Mode | null;
@@ -69,27 +70,24 @@ export default function InteractivePlayer({
     tickRef.current = null;
   }, []);
 
-  const submit = useCallback(
-    (questionId: string, answer: string | null) => {
-      if (!sessionId) return;
-      fetch("/api/answers", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          session_id: sessionId,
-          question_id: questionId,
-          answer,
-          answer_mode: modeRef.current,
-          group_size: groupSize,
-          seconds_to_answer: Number(((Date.now() - askedAtRef.current) / 1000).toFixed(1)),
-        }),
-        keepalive: true,
-      }).catch(() => {});
-    },
-    [sessionId, groupSize],
-  );
+  const submit = useCallback((questionId: string, answer: string | null) => {
+    const sid = sessionIdRef.current;
+    if (!sid) return;
+    fetch("/api/answers", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        session_id: sid,
+        question_id: questionId,
+        answer,
+        answer_mode: modeRef.current,
+        group_size: groupSizeRef.current,
+        seconds_to_answer: Number(((Date.now() - askedAtRef.current) / 1000).toFixed(1)),
+      }),
+      keepalive: true,
+    }).catch(() => {});
+  }, []);
 
-  // Sends whatever has been chosen, records blanks for the rest, resumes.
   const closeScreen = useCallback(
     (record: boolean) => {
       const qs = screenRef.current;
@@ -140,6 +138,12 @@ export default function InteractivePlayer({
     [stopTick, closeScreen],
   );
 
+  // Kept in refs so the player effect never needs rebuilding.
+  const questionsRef = useRef(questions);
+  const askRef = useRef(ask);
+  useEffect(() => void (questionsRef.current = questions), [questions]);
+  useEffect(() => void (askRef.current = ask), [ask]);
+
   useEffect(() => {
     if (!mountRef.current || playerRef.current) return;
 
@@ -155,13 +159,13 @@ export default function InteractivePlayer({
 
     player.on("timeupdate", ({ seconds }: { seconds: number }) => {
       if (modeRef.current === "off" || screenRef.current) return;
-      for (const q of questions) {
+      for (const q of questionsRef.current) {
         if (firedRef.current.has(q.id)) continue;
         if (seconds >= q.timestamp_seconds && seconds < q.timestamp_seconds + FIRE_WINDOW) {
           const group = q.verdict_group
-            ? questions.filter((x) => x.verdict_group === q.verdict_group)
+            ? questionsRef.current.filter((x) => x.verdict_group === q.verdict_group)
             : [q];
-          ask(group);
+          askRef.current(group);
           break;
         }
         if (seconds >= q.timestamp_seconds + FIRE_WINDOW) firedRef.current.add(q.id);
@@ -169,24 +173,23 @@ export default function InteractivePlayer({
     });
 
     player.on("ended", () => {
-      if (!sessionId) return;
+      const sid = sessionIdRef.current;
+      if (!sid) return;
       fetch("/api/answers/complete", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ session_id: sessionId }),
+        body: JSON.stringify({ session_id: sid }),
         keepalive: true,
       }).catch(() => {});
     });
 
     return () => {
-      stopTick();
+      if (tickRef.current) clearInterval(tickRef.current);
       player.destroy().catch(() => {});
       playerRef.current = null;
     };
-  }, [videoId, questions, ask, stopTick, sessionId]);
+  }, [videoId]);
 
-  // Number keys. Single question: 1–4 pick an option.
-  // Verdict grid: 1–8 run across the grid, two per suspect.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const qs = screenRef.current;
@@ -235,7 +238,9 @@ export default function InteractivePlayer({
 
   const begin = async (chosen: Mode, size: number) => {
     setMode(chosen);
+    modeRef.current = chosen;
     setGroupSize(size);
+    groupSizeRef.current = size;
     persist(chosen, size);
     setShowSetup(false);
 
@@ -246,9 +251,9 @@ export default function InteractivePlayer({
         body: JSON.stringify({ video_id: videoId, mode: chosen, group_size: size }),
       });
       const json = await res.json();
-      setSessionId(json.session_id ?? null);
+      sessionIdRef.current = json.session_id ?? null;
     } catch {
-      setSessionId(null);
+      sessionIdRef.current = null;
     }
 
     playerRef.current?.play().catch(() => {});
@@ -433,6 +438,7 @@ export default function InteractivePlayer({
                 className={mode === m ? "is-on" : ""}
                 onClick={() => {
                   setMode(m);
+                  modeRef.current = m;
                   persist(m, groupSize);
                   if (m === "off" && screenRef.current) closeScreen(false);
                 }}
@@ -470,9 +476,8 @@ const CSS = `
 .pp-option:disabled { cursor: default; opacity: .45; }
 .pp-option.is-picked { opacity: 1; border-color: #d4af37; background: rgba(212,175,55,.24); }
 .pp-key { flex: none; width: 34px; height: 34px; display: grid; place-items: center; font-family: Cinzel, serif; font-size: 15px; border: 1px solid rgba(212,175,55,.5); border-radius: 50%; color: #d4af37; }
-
 .pp-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 28px; }
-.pp-suspect { border: 1px solid rgba(212,175,55,.3); border-radius: 8px; padding: 18px 16px; background: rgba(255,255,255,.02); transition: border-color .15s; }
+.pp-suspect { border: 1px solid rgba(212,175,55,.3); border-radius: 8px; padding: 18px 16px; background: rgba(255,255,255,.02); }
 .pp-suspect.is-done { border-color: rgba(212,175,55,.7); }
 .pp-suspect-name { font-family: Cinzel, serif; font-size: clamp(15px, 1.8vw, 19px); color: #d4af37; margin: 0 0 14px; }
 .pp-verdict-row { display: flex; gap: 8px; }
@@ -483,7 +488,6 @@ const CSS = `
 .pp-key-sm { font-size: 11px; opacity: .5; border: 1px solid currentColor; border-radius: 50%; width: 18px; height: 18px; display: grid; place-items: center; }
 .pp-deliver { width: 100%; padding: 18px; cursor: pointer; font-family: Cinzel, serif; font-size: 18px; font-weight: bold; color: #0a0a0a; background: linear-gradient(135deg,#a67c00,#d4af37 50%,#a67c00); border: none; border-radius: 6px; }
 .pp-deliver:disabled { opacity: .35; cursor: default; }
-
 .pp-timer { margin-top: 22px; }
 .pp-timer-track { height: 2px; background: rgba(255,255,255,.12); overflow: hidden; }
 .pp-timer-fill { height: 100%; background: #d4af37; transition: width .1s linear; }
