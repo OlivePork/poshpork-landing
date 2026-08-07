@@ -2,14 +2,30 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Script from "next/script";
+import SiteHeader from "@/components/SiteHeader";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Posh Pork Murder Mystery",
-  description: "An immersive murder mystery dinner experience in Mallorca",
+  title: "Which Food Is Killing You? | Inside the Greatest Fraud In Human History",
+  description:
+    "A film that puts you on the jury. Weigh the evidence, answer as you watch, and deliver your verdict on which food is guilty.",
   verification: {
     google: 'google72a182ec07d32c38',
+  },
+  openGraph: {images: ["https://www.poshpork.com/og-image.jpg"],
+    title: "Which Food Is Killing You?",
+    description:
+      "Inside the Greatest Fraud In Human History. A film that puts you on the jury — watch the evidence, deliver your verdict.",
+    url: "https://www.poshpork.com",
+    siteName: "Posh Pork",
+    type: "video.movie",
+  },
+  twitter: {images: ["https://www.poshpork.com/og-image.jpg"],
+    card: "summary_large_image",
+    title: "Which Food Is Killing You?",
+    description:
+      "Inside the Greatest Fraud In Human History. Watch the evidence, deliver your verdict.",
   },
 };
 
@@ -40,7 +56,10 @@ export default function RootLayout({
           `}
         </Script>
       </head>
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <SiteHeader />
+        {children}
+      </body>
     </html>
   );
 }
