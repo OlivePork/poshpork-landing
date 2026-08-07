@@ -87,18 +87,18 @@ export default async function handler(req, res) {
       }
 
       // Generate a one-click sign-in link so they never type their email.
-      let watchLink = "https://www.poshpork.com/watch";
+      let watchLink = 'https://www.poshpork.com/watch';
       try {
         const { data: linkData } = await supabase.auth.admin.generateLink({
-          type: "magiclink",
+          type: 'magiclink',
           email,
-          options: { redirectTo: "https://www.poshpork.com/auth/callback?next=/watch" },
+          options: { redirectTo: 'https://www.poshpork.com/auth/callback?next=/watch' },
         });
         if (linkData?.properties?.action_link) {
           watchLink = linkData.properties.action_link;
         }
       } catch (linkErr) {
-        console.error("Magic link error:", linkErr);
+        console.error('Magic link error:', linkErr);
       }
 
       try {
@@ -144,6 +144,9 @@ export default async function handler(req, res) {
       } catch (emailErr) {
         console.error('Movie email error:', emailErr);
       }
+
+      return res.status(200).json({ received: true });
+    }
 
     // ================================================================
     // LIVE EVENT BOOKING — unchanged
