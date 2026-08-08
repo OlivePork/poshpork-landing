@@ -5,6 +5,8 @@ import { createClient } from '@supabase/supabase-js';
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.poshpork.com';
+
 // Service role — bypasses RLS so we can create users and write purchases.
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -52,18 +54,23 @@ export default async function handler(req, res) {
       let userId = session.metadata.user_id || null;
 
       try {
-        // Create the account if they bought without signing in first.
         if (!userId && email) {
-          const { data: created } = await supabase.auth.admin.createUser({
-            email,
-            email_confirm: true,
-          });
-          userId = created?.user?.id || null;
+          // Look first. Creating blind is what produced duplicate accounts.
+          const { data: existing } = await supabase
+            .from('user_lookup')
+            .select('id')
+            .eq('email', email.toLowerCase())
+            .maybeSingle();
 
-          // Already existed — find them instead.
+          userId = existing?.id || null;
+
           if (!userId) {
-            const { data: list } = await supabase.auth.admin.listUsers();
-            userId = list?.users?.find((u) => u.email === email)?.id || null;
+            const { data: created, error: createErr } = await supabase.auth.admin.createUser({
+              email,
+              email_confirm: true,
+            });
+            if (createErr) console.error('Create user error:', createErr);
+            userId = created?.user?.id || null;
           }
         }
 
@@ -87,12 +94,12 @@ export default async function handler(req, res) {
       }
 
       // Generate a one-click sign-in link so they never type their email.
-      let watchLink = 'https://www.poshpork.com/watch';
+      let watchLink = `${SITE_URL}/watch`;
       try {
         const { data: linkData } = await supabase.auth.admin.generateLink({
           type: 'magiclink',
           email,
-          options: { redirectTo: 'https://www.poshpork.com/auth/callback?next=/watch' },
+          options: { redirectTo: `${SITE_URL}/auth/callback?next=/watch` },
         });
         if (linkData?.properties?.action_link) {
           watchLink = linkData.properties.action_link;
@@ -126,7 +133,7 @@ export default async function handler(req, res) {
                 </div>
                 <p style="font-size: 14px; line-height: 1.6; color: #888;">
                   That link works once and expires. To watch again later, go to
-                  <a href="https://www.poshpork.com/login" style="color: #a67c00;">poshpork.com/login</a>
+                  <a href="${SITE_URL}/login" style="color: #a67c00;">poshpork.com/login</a>
                   and sign in with <strong>${email}</strong> — access is permanent.
                 </p>
                 <p style="font-size: 15px; line-height: 1.6; color: #666;">

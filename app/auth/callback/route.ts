@@ -13,5 +13,6 @@ export async function GET(request: NextRequest) {
     if (!error) return NextResponse.redirect(`${origin}${next}`);
   }
 
+  console.error("Auth callback failed", { code: !!code, url: request.url });
   return NextResponse.redirect(`${origin}/login?error=link_expired`);
 }
