@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import InteractivePlayer from "@/components/InteractivePlayer";
+import SupportList from "@/components/SupportList";
 
 const VIDEO_ID = process.env.NEXT_PUBLIC_VIMEO_VIDEO_ID!;
 
@@ -24,6 +25,8 @@ export default async function WatchPage() {
 
   const purchase = purchases?.[0] ?? null;
 
+  if (!purchase) redirect("/movie");
+
   const { data: questions } = await supabase
     .from("questions")
     .select("id, order_number, timestamp_seconds, question_text, options, hold_seconds, verdict_group")
@@ -32,8 +35,9 @@ export default async function WatchPage() {
     .order("timestamp_seconds", { ascending: true });
 
   return (
-    <main style={{ background: "#0a0a0a", minHeight: "100vh", paddingTop: "40px" }}>
+    <main style={{ background: "#0a0a0a", minHeight: "100vh", paddingTop: "40px", paddingBottom: "80px" }}>
       <InteractivePlayer videoId={VIDEO_ID} questions={questions ?? []} />
+      <SupportList />
     </main>
   );
 }
