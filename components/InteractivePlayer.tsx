@@ -161,18 +161,35 @@ export default function InteractivePlayer({
       if (modeRef.current === "off" || screenRef.current) return;
       for (const q of questionsRef.current) {
         if (firedRef.current.has(q.id)) continue;
-        if (seconds >= q.timestamp_seconds && seconds < q.timestamp_seconds + FIRE_WINDOW) {
+
+        // The verdict gets a wide window — it's the payoff, and people scrub.
+        const win = q.verdict_group ? 30 : FIRE_WINDOW;
+
+        if (seconds >= q.timestamp_seconds && seconds < q.timestamp_seconds + win) {
           const group = q.verdict_group
             ? questionsRef.current.filter((x) => x.verdict_group === q.verdict_group)
             : [q];
           askRef.current(group);
           break;
         }
-        if (seconds >= q.timestamp_seconds + FIRE_WINDOW) firedRef.current.add(q.id);
+
+        // Ordinary questions are retired once you're past them. The verdict never is.
+        if (seconds >= q.timestamp_seconds + win && !q.verdict_group) {
+          firedRef.current.add(q.id);
+        }
       }
     });
 
     player.on("ended", () => {
+      // Last chance: if they reached the credits without voting, ask now.
+      const unvoted = questionsRef.current.filter(
+        (q) => q.verdict_group && !firedRef.current.has(q.id),
+      );
+      if (unvoted.length && modeRef.current !== "off") {
+        askRef.current(unvoted);
+        return;
+      }
+
       const sid = sessionIdRef.current;
       if (!sid) return;
       fetch("/api/answers/complete", {
@@ -262,6 +279,10 @@ export default function InteractivePlayer({
   const isVerdict = !!screen && screen.length > 1;
   const hold = screen?.[0]?.hold_seconds ?? DEFAULT_HOLD;
   const answeredCount = screen ? screen.filter((q) => picks[q.id]).length : 0;
+
+  const shareText = encodeURIComponent(
+    "I've just delivered my verdict on Which Food Is Killing You? See if you agree — poshpork.com",
+  );
 
   return (
     <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "24px 16px 64px" }}>
@@ -394,7 +415,17 @@ export default function InteractivePlayer({
               </div>
 
               {sent ? (
-                <p className="pp-logged">Verdict delivered.</p>
+                <div className="pp-passiton">
+                  <p className="pp-logged">Verdict delivered.</p>
+                  <p className="pp-passiton-line">
+                    Humans rose to the top by passing what they knew to the people around
+                    them. Older, younger, and everyone in between.
+                  </p>
+                  <div className="pp-passiton-actions">
+                    <a className="pp-passiton-primary" href="/movie?gift=1" target="_blank" rel="noopener noreferrer">Pass it on — €15</a>
+                    <a className="pp-passiton-wa" href={`https://wa.me/?text=${shareText}`} target="_blank" rel="noopener noreferrer">Tell someone</a>
+                  </div>
+                </div>
               ) : (
                 <>
                   <button
@@ -501,4 +532,9 @@ const CSS = `
 .pp-bar-modes button { padding: 7px 14px; background: none; border: none; border-right: 1px solid rgba(212,175,55,.2); color: inherit; opacity: .6; cursor: pointer; font: inherit; }
 .pp-bar-modes button:last-child { border-right: none; }
 .pp-bar-modes button.is-on { background: rgba(212,175,55,.18); color: #d4af37; opacity: 1; }
+.pp-passiton { padding-top: 6px; }
+.pp-passiton-line { margin: 18px auto 24px; max-width: 460px; font-size: 15px; line-height: 1.6; opacity: .7; }
+.pp-passiton-actions { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+.pp-passiton-primary { padding: 14px 30px; font-family: Cinzel, serif; font-size: 16px; font-weight: bold; color: #0a0a0a; background: linear-gradient(135deg,#a67c00,#d4af37 50%,#a67c00); border-radius: 6px; text-decoration: none; }
+.pp-passiton-wa { padding: 14px 30px; font-family: Cinzel, serif; font-size: 16px; color: #f2ece1; border: 1px solid rgba(255,255,255,.25); border-radius: 6px; text-decoration: none; }
 `;
