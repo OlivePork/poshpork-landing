@@ -14,11 +14,11 @@ export async function POST(req: Request) {
 
   const session = await stripe.checkout.sessions.create({
     mode: "payment",
-    line_items: [{ price: process.env.STRIPE_MOVIE_PRICE_ID!, quantity: 1 }],
+    line_items: [{ price: process.env.STRIPE_GIFT_PRICE_ID!, quantity: 1 }],
     customer_email: user?.email,
-    metadata: { user_id: user?.id ?? "", product: "movie" },
+    metadata: { user_id: user?.id ?? "", product: "gift" },
     allow_promotion_codes: true,
-    success_url: `${origin}/watch?purchased=1`,
+    success_url: `${origin}/gift/sent?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${origin}/movie`,
   });
 

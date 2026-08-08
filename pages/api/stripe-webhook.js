@@ -73,6 +73,73 @@ export default async function handler(req, res) {
             userId = created?.user?.id || null;
           }
         }
+        // ================================================================
+    // GIFT PURCHASE
+    // ================================================================
+    if (session.metadata?.product === 'gift') {
+      const email = session.customer_details?.email || session.customer_email;
+      const userId = session.metadata.user_id || null;
+
+      // POSH-XXXX-XXXX, avoiding characters people misread.
+      const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      const chunk = () =>
+        Array.from({ length: 4 }, () => alphabet[Math.floor(Math.random() * alphabet.length)]).join('');
+      const code = `POSH-${chunk()}-${chunk()}`;
+
+      try {
+        await supabase.from('gift_codes').insert({
+          code,
+          purchaser_user_id: userId,
+          purchaser_email: email,
+          stripe_session_id: session.id,
+        });
+        console.log('Gift code created', code);
+      } catch (giftErr) {
+        console.error('Gift code error:', giftErr);
+      }
+
+      try {
+        const shareText = encodeURIComponent(
+          `I've sent you a film — Which Food Is Killing You?\n\nRedeem it here: ${SITE_URL}/redeem?code=${code}`
+        );
+
+        await resend.emails.send({
+          from: 'Posh Pork <mystery@poshpork.com>',
+          replyTo: 'colin@permapigs.com',
+          to: email,
+          subject: 'Your gift code is ready 🎁',
+          html: `
+            <div style="font-family: Georgia, serif; color: #2c1810; max-width: 600px; margin: 0 auto;">
+              <div style="background: linear-gradient(135deg, #2c1810 0%, #0a0a0a 100%); padding: 40px 20px; text-align: center;">
+                <h1 style="color: #d4af37; font-size: 26px; margin: 0;">Which Food Is Killing You?</h1>
+                <p style="color: #f5f1e8; font-style: italic; margin-top: 10px;">A gift worth arguing about.</p>
+              </div>
+              <div style="background: #f5f1e8; padding: 40px 30px; text-align: center;">
+                <p style="font-size: 16px; line-height: 1.6;">Thank you. Here is your gift code:</p>
+                <p style="font-size: 30px; font-family: monospace; letter-spacing: 2px; color: #2c1810; background: #fff; border: 2px dashed #d4af37; border-radius: 8px; padding: 20px; margin: 26px 0;">
+                  ${code}
+                </p>
+                <a href="https://wa.me/?text=${shareText}"
+                   style="display: inline-block; padding: 16px 36px; background: #25D366; color: #fff; text-decoration: none; border-radius: 6px; font-weight: bold;">
+                  Send it on WhatsApp
+                </a>
+                <p style="font-size: 14px; line-height: 1.6; color: #888; margin-top: 26px;">
+                  Or send them this link yourself:<br/>
+                  <a href="${SITE_URL}/redeem?code=${code}" style="color: #a67c00;">${SITE_URL}/redeem?code=${code}</a>
+                </p>
+              </div>
+              <div style="background: #2c1810; padding: 20px; text-align: center;">
+                <p style="color: #f5f1e8; font-size: 12px; margin: 0;">© 2026 Posh Pork. Mallorca, Spain.</p>
+              </div>
+            </div>
+          `,
+        });
+      } catch (emailErr) {
+        console.error('Gift email error:', emailErr);
+      }
+
+      return res.status(200).json({ received: true });
+    }
 
         if (userId) {
           const { error } = await supabase.from('purchases').upsert(
