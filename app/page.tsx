@@ -3,6 +3,7 @@ import Hero from '@/components/Hero';
 import Video from '@/components/Video';
 import BookingTabs from '@/components/BookingTabs';
 import FilmSection from '@/components/FilmSection';
+import GiftButton from '@/components/GiftButton';
 import Article from '@/components/Article';
 import CookieBanner from '@/components/CookieBanner';
 
@@ -13,8 +14,7 @@ export default function Home() {
       <Hero />
       <Video />
       
-      {/* HOW IT WORKS */}
-     {/* WHY IS THIS THE GREATEST FRAUD? */}
+      {/* WHY IS THIS THE GREATEST FRAUD? */}
       <section style={{
         padding: '128px 40px',
         background: '#fafafa'
@@ -68,7 +68,7 @@ export default function Home() {
                 lineHeight: '1.6',
                 color: '#666666'
               }}>
-                Chronic inflammation is linked to more than half of all deaths worldwide. Nine of the ten leading causes of death are inflammation-related.
+                Three out of five people die from chronic inflammatory disease. Nine of the ten leading causes of death are inflammation-related.
               </p>
             </div>
 
@@ -144,27 +144,38 @@ export default function Home() {
           </div>
 
           <div style={{ textAlign: 'center', marginTop: '80px' }}>
-            <a href="/movie" style={{
-              display: 'inline-block',
-              padding: '20px 48px',
-              fontFamily: 'Cinzel, serif',
-              fontSize: '20px',
-              fontWeight: 'bold',
-              color: '#0a0a0a',
-              background: 'linear-gradient(135deg, #a67c00 0%, #d4af37 50%, #a67c00 100%)',
-              borderRadius: '8px',
-              textDecoration: 'none',
-              boxShadow: '0 8px 24px rgba(212, 175, 55, 0.3)'
+            <div style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: '14px',
+              justifyContent: 'center',
+              alignItems: 'center'
             }}>
-              WATCH NOW
-            </a>
+              <a href="/movie" style={{
+                display: 'inline-block',
+                padding: '20px 48px',
+                fontFamily: 'Cinzel, serif',
+                fontSize: '20px',
+                fontWeight: 'bold',
+                color: '#0a0a0a',
+                background: 'linear-gradient(135deg, #a67c00 0%, #d4af37 50%, #a67c00 100%)',
+                borderRadius: '8px',
+                textDecoration: 'none',
+                boxShadow: '0 8px 24px rgba(212, 175, 55, 0.3)'
+              }}>
+                WATCH NOW
+              </a>
+
+              <GiftButton />
+            </div>
+
             <p style={{
               fontSize: '14px',
               marginTop: '18px',
               fontStyle: 'italic',
               color: '#888888'
             }}>
-              Sources cited on screen throughout the film.
+              €15 — one payment, permanent access. Sources cited on screen throughout the film.
             </p>
           </div>
         </div>
