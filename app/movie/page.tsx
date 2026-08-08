@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import BuyButton from "@/components/BuyButton";
+import GiftButton from "@/components/GiftButton";
 
 export const dynamic = "force-dynamic";
 
@@ -50,7 +51,10 @@ export default async function MoviePage() {
             Watch now
           </a>
         ) : (
-          <BuyButton />
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "14px", justifyContent: "center" }}>
+            <BuyButton />
+            <GiftButton />
+          </div>
         )}
 
         <p style={{ fontSize: "15px", color: "#888888", marginTop: "32px", lineHeight: 1.6 }}>

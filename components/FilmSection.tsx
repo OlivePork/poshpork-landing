@@ -1,3 +1,5 @@
+import GiftButton from "@/components/GiftButton";
+
 export default function FilmSection() {
   return (
     <section style={{
@@ -88,19 +90,37 @@ export default function FilmSection() {
           </div>
         </div>
 
-        <a href="/movie" style={{
-          display: 'inline-block',
-          padding: '18px 48px',
-          fontFamily: 'Cinzel, serif',
-          fontSize: '17px',
-          fontWeight: 'bold',
-          color: '#1a1a1a',
-          background: '#d4af37',
-          borderRadius: '4px',
-          textDecoration: 'none'
+        <div style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: '14px',
+          justifyContent: 'center',
+          alignItems: 'center'
         }}>
-          WATCH THE FILM
-        </a>
+          <a href="/movie" style={{
+            display: 'inline-block',
+            padding: '18px 48px',
+            fontFamily: 'Cinzel, serif',
+            fontSize: '17px',
+            fontWeight: 'bold',
+            color: '#1a1a1a',
+            background: '#d4af37',
+            borderRadius: '4px',
+            textDecoration: 'none'
+          }}>
+            WATCH THE FILM
+          </a>
+
+          <GiftButton />
+        </div>
+
+        <p style={{
+          fontSize: '14px',
+          color: '#777777',
+          marginTop: '24px'
+        }}>
+          €15 — one payment, permanent access. 1 hour 26 minutes.
+        </p>
       </div>
     </section>
   );
