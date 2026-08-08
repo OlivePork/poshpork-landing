@@ -1,6 +1,7 @@
 // Homepage - Updated April 2026
 import Hero from '@/components/Hero';
 import Video from '@/components/Video';
+import Suspects from '@/components/Suspects';
 import BookingTabs from '@/components/BookingTabs';
 import FilmSection from '@/components/FilmSection';
 import GiftButton from '@/components/GiftButton';

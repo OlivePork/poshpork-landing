@@ -32,7 +32,7 @@ export default async function SiteHeader() {
       zIndex: 50,
       display: "flex",
       alignItems: "center",
-      justifyContent: "space-between",
+      gap: "20px",
       padding: "14px 24px",
       background: "rgba(10,10,10,.86)",
       backdropFilter: "blur(8px)",
@@ -48,6 +48,18 @@ export default async function SiteHeader() {
         POSH PORK
       </a>
 
+      <a href="/about" style={{
+        fontFamily: "Cinzel, serif",
+        fontSize: "12px",
+        letterSpacing: "0.1em",
+        color: "#f2ece1",
+        opacity: 0.6,
+        textDecoration: "none",
+        marginLeft: "auto",
+      }}>
+        THE STORY
+      </a>
+
       <a href={href} style={{
         fontFamily: "Cinzel, serif",
         fontSize: "13px",
@@ -55,6 +67,7 @@ export default async function SiteHeader() {
         padding: "9px 20px",
         borderRadius: "4px",
         textDecoration: "none",
+        whiteSpace: "nowrap",
         color: owned ? "#0a0a0a" : "#d4af37",
         background: owned
           ? "linear-gradient(135deg,#a67c00,#d4af37 50%,#a67c00)"
