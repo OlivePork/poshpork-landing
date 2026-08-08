@@ -2,19 +2,28 @@
 
 import { useState } from "react";
 
+const COUNTRIES = [
+  "Ireland", "United Kingdom", "Spain", "France", "Germany", "Italy",
+  "Netherlands", "Belgium", "Portugal", "Poland", "Sweden", "Denmark",
+  "Norway", "Finland", "Austria", "Switzerland", "United States", "Canada",
+  "Australia", "New Zealand", "Other",
+];
+
 export default function SupportList() {
   const [supermarket, setSupermarket] = useState("");
-  const [town, setTown] = useState("");
+  const [country, setCountry] = useState("");
   const [busy, setBusy] = useState(false);
 
+  const ready = supermarket.trim() && country;
+
   const go = async () => {
-    if (!supermarket.trim()) return;
+    if (!ready) return;
     setBusy(true);
     try {
       const res = await fetch("/api/checkout-support", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ supermarket, town }),
+        body: JSON.stringify({ supermarket, country }),
       });
       const { url } = await res.json();
       if (url) window.location.href = url;
@@ -55,7 +64,7 @@ export default function SupportList() {
 
       <p style={{ fontSize: "16px", lineHeight: 1.7, opacity: .75, margin: "0 0 16px" }}>
         Add your name and the shop you actually use. When enough names sit behind one
-        shop, that becomes something a buyer has to answer.
+        chain, that becomes something a buyer has to answer.
       </p>
 
       <p style={{ fontSize: "16px", lineHeight: 1.7, opacity: .75, margin: "0 0 28px" }}>
@@ -69,25 +78,29 @@ export default function SupportList() {
           value={supermarket}
           onChange={(e) => setSupermarket(e.target.value)}
           placeholder="Which supermarket?"
-          style={inputStyle}
+          style={fieldStyle}
         />
-        <input
-          value={town}
-          onChange={(e) => setTown(e.target.value)}
-          placeholder="Which town? (optional)"
-          style={inputStyle}
-        />
+        <select
+          value={country}
+          onChange={(e) => setCountry(e.target.value)}
+          style={{ ...fieldStyle, color: country ? "#f2ece1" : "rgba(242,236,225,.4)" }}
+        >
+          <option value="">Which country?</option>
+          {COUNTRIES.map((c) => (
+            <option key={c} value={c} style={{ color: "#000" }}>{c}</option>
+          ))}
+        </select>
       </div>
 
       <button
         onClick={go}
-        disabled={busy || !supermarket.trim()}
+        disabled={busy || !ready}
         style={{
           width: "100%", padding: "16px", cursor: "pointer",
           fontFamily: "Cinzel, serif", fontSize: "17px", fontWeight: "bold",
           background: "linear-gradient(135deg,#a67c00,#d4af37 50%,#a67c00)",
           color: "#141414", border: "none", borderRadius: "6px",
-          opacity: busy || !supermarket.trim() ? .45 : 1,
+          opacity: busy || !ready ? .45 : 1,
         }}
       >
         {busy ? "Opening…" : "Add my name — €1"}
@@ -101,7 +114,7 @@ export default function SupportList() {
   );
 }
 
-const inputStyle: React.CSSProperties = {
+const fieldStyle: React.CSSProperties = {
   width: "100%",
   padding: "14px 16px",
   fontSize: "16px",

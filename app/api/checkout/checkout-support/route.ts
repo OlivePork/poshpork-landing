@@ -6,10 +6,10 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 export async function POST(req: Request) {
   const origin = new URL(req.url).origin;
-  const { supermarket, town } = await req.json();
+  const { supermarket, country } = await req.json();
 
-  if (!supermarket?.trim()) {
-    return NextResponse.json({ error: "Which supermarket?" }, { status: 400 });
+  if (!supermarket?.trim() || !country?.trim()) {
+    return NextResponse.json({ error: "Supermarket and country needed" }, { status: 400 });
   }
 
   const supabase = await createClient();
@@ -25,7 +25,7 @@ export async function POST(req: Request) {
       user_id: user?.id ?? "",
       product: "support",
       supermarket: supermarket.trim().slice(0, 120),
-      town: (town ?? "").trim().slice(0, 120),
+      country: country.trim().slice(0, 60),
     },
     success_url: `${origin}/watch?supported=1`,
     cancel_url: `${origin}/watch`,

@@ -235,8 +235,7 @@ export default async function handler(req, res) {
           user_id: session.metadata.user_id || null,
           email,
           supermarket: session.metadata.supermarket,
-          town: session.metadata.town || null,
-          country: session.customer_details?.address?.country || null,
+          country: session.metadata.country,
           stripe_session_id: session.id,
         });
         console.log('Supporter added', email, session.metadata.supermarket);
@@ -246,7 +245,6 @@ export default async function handler(req, res) {
 
       return res.status(200).json({ received: true });
     }
-
     // ================================================================
     // LIVE EVENT BOOKING — unchanged
     // ================================================================
