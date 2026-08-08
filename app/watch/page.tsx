@@ -15,14 +15,14 @@ export default async function WatchPage() {
 
   if (!user) redirect("/login?next=/watch&purchased=1");
 
-  const { data: purchase } = await supabase
+  const { data: purchases } = await supabase
     .from("purchases")
     .select("id")
     .eq("user_id", user.id)
     .eq("product", "movie")
-    .maybeSingle();
+    .limit(1);
 
-  if (!purchase) redirect("/movie");
+  const purchase = purchases?.[0] ?? null;
 
   const { data: questions } = await supabase
     .from("questions")

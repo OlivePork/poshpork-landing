@@ -10,14 +10,16 @@ export async function POST(req: Request) {
   if (!user) return NextResponse.json({ error: "Not signed in" }, { status: 401 });
 
   // Re-check the purchase here too — never trust that the page did it.
-  const { data: purchase } = await supabase
+  const { data: purchases } = await supabase
     .from("purchases")
     .select("id")
     .eq("user_id", user.id)
     .eq("product", "movie")
-    .maybeSingle();
+    .limit(1);
 
-  if (!purchase) return NextResponse.json({ error: "No purchase found" }, { status: 403 });
+  if (!purchases?.[0]) {
+    return NextResponse.json({ error: "No purchase found" }, { status: 403 });
+  }
 
   const { video_id, mode, group_size } = await req.json();
 

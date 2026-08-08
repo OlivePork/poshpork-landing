@@ -16,8 +16,8 @@ export default async function MoviePage() {
       .select("id")
       .eq("user_id", user.id)
       .eq("product", "movie")
-      .maybeSingle();
-    owned = !!data;
+      .limit(1);
+    owned = !!data?.[0];
   }
 
   return (

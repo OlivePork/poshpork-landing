@@ -15,12 +15,12 @@ export default async function SiteHeader() {
       .select("id")
       .eq("user_id", user.id)
       .eq("product", "movie")
-      .maybeSingle();
-    owned = !!data;
+      .limit(1);
+    owned = !!data?.[0];
   }
 
-  // Signed in and paid → send them back to the film.
-  // Signed in, not paid → send them to buy.
+  // Signed in and paid → back to the film.
+  // Signed in, not paid → buy it.
   // Not signed in → sign in.
   const href = owned ? "/watch" : user ? "/movie" : "/login";
   const label = owned ? "Watch the film" : user ? "Get the film" : "Sign in";
