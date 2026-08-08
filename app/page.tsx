@@ -1,7 +1,7 @@
 // Homepage - Updated April 2026
 import Hero from '@/components/Hero';
-import Video from '@/components/Video';
 import Suspects from '@/components/Suspects';
+import Stakes from '@/components/Stakes';
 import BookingTabs from '@/components/BookingTabs';
 import FilmSection from '@/components/FilmSection';
 import GiftButton from '@/components/GiftButton';
@@ -13,8 +13,9 @@ export default function Home() {
     <>
       <CookieBanner />
       <Hero />
-      <Video />
-      
+      <Suspects />
+      <Stakes />
+
       {/* WHY IS THIS THE GREATEST FRAUD? */}
       <section style={{
         padding: '128px 40px',
@@ -39,106 +40,25 @@ export default function Home() {
             gap: '64px'
           }}>
             <div style={{ textAlign: 'center' }}>
-              <div style={{
-                width: '80px',
-                height: '80px',
-                borderRadius: '50%',
-                background: '#d4af37',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                margin: '0 auto 24px',
-                fontFamily: 'Cinzel, serif',
-                fontSize: '32px',
-                fontWeight: 'bold',
-                color: '#1a1a1a'
-              }}>
-                1
-              </div>
-              <h3 style={{
-                fontFamily: 'Cinzel, serif',
-                fontSize: '24px',
-                fontWeight: 'bold',
-                color: '#1a1a1a',
-                marginBottom: '16px'
-              }}>
-                IT KILLS QUIETLY
-              </h3>
-              <p style={{
-                fontSize: '18px',
-                lineHeight: '1.6',
-                color: '#666666'
-              }}>
+              <div style={numberCircle}>1</div>
+              <h3 style={stepHeading}>IT KILLS QUIETLY</h3>
+              <p style={stepBody}>
                 Three out of five people die from chronic inflammatory disease. Nine of the ten leading causes of death are inflammation-related.
               </p>
             </div>
 
             <div style={{ textAlign: 'center' }}>
-              <div style={{
-                width: '80px',
-                height: '80px',
-                borderRadius: '50%',
-                background: '#d4af37',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                margin: '0 auto 24px',
-                fontFamily: 'Cinzel, serif',
-                fontSize: '32px',
-                fontWeight: 'bold',
-                color: '#1a1a1a'
-              }}>
-                2
-              </div>
-              <h3 style={{
-                fontFamily: 'Cinzel, serif',
-                fontSize: '24px',
-                fontWeight: 'bold',
-                color: '#1a1a1a',
-                marginBottom: '16px'
-              }}>
-                IT STARTS ON YOUR PLATE
-              </h3>
-              <p style={{
-                fontSize: '18px',
-                lineHeight: '1.6',
-                color: '#666666'
-              }}>
+              <div style={numberCircle}>2</div>
+              <h3 style={stepHeading}>IT STARTS ON YOUR PLATE</h3>
+              <p style={stepBody}>
                 Diet sits among the leading drivers of chronic inflammation — alongside factors most of us were never told to watch for.
               </p>
             </div>
 
             <div style={{ textAlign: 'center' }}>
-              <div style={{
-                width: '80px',
-                height: '80px',
-                borderRadius: '50%',
-                background: '#d4af37',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                margin: '0 auto 24px',
-                fontFamily: 'Cinzel, serif',
-                fontSize: '32px',
-                fontWeight: 'bold',
-                color: '#1a1a1a'
-              }}>
-                3
-              </div>
-              <h3 style={{
-                fontFamily: 'Cinzel, serif',
-                fontSize: '24px',
-                fontWeight: 'bold',
-                color: '#1a1a1a',
-                marginBottom: '16px'
-              }}>
-                AND NOBODY NAMED IT
-              </h3>
-              <p style={{
-                fontSize: '18px',
-                lineHeight: '1.6',
-                color: '#666666'
-              }}>
+              <div style={numberCircle}>3</div>
+              <h3 style={stepHeading}>AND NOBODY NAMED IT</h3>
+              <p style={stepBody}>
                 One food on your plate is doing more damage than the rest. You have not been told which. The evidence has been there all along.
               </p>
             </div>
@@ -187,3 +107,32 @@ export default function Home() {
     </>
   );
 }
+
+const numberCircle: React.CSSProperties = {
+  width: '80px',
+  height: '80px',
+  borderRadius: '50%',
+  background: '#d4af37',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  margin: '0 auto 24px',
+  fontFamily: 'Cinzel, serif',
+  fontSize: '32px',
+  fontWeight: 'bold',
+  color: '#1a1a1a'
+};
+
+const stepHeading: React.CSSProperties = {
+  fontFamily: 'Cinzel, serif',
+  fontSize: '24px',
+  fontWeight: 'bold',
+  color: '#1a1a1a',
+  marginBottom: '16px'
+};
+
+const stepBody: React.CSSProperties = {
+  fontSize: '18px',
+  lineHeight: '1.6',
+  color: '#666666'
+};

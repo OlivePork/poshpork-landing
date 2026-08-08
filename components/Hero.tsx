@@ -3,16 +3,14 @@
 export default function Hero() {
   return (
     <section style={{
-      background: 'var(--charcoal)', 
-      minHeight: '100vh', 
-      display: 'flex', 
-      alignItems: 'center', 
+      background: 'var(--charcoal, #1a1a1a)',
+      minHeight: '100vh',
+      display: 'flex',
+      alignItems: 'center',
       justifyContent: 'center',
       position: 'relative',
-      paddingTop: '40px',
-      paddingBottom: '40px'
+      padding: '60px 20px'
     }}>
-      
       <div style={{
         position: 'absolute',
         inset: 0,
@@ -21,62 +19,93 @@ export default function Hero() {
         backgroundSize: '60px 60px'
       }} />
 
-      <div style={{position: 'relative', zIndex: 10, maxWidth: '1536px', margin: '0 auto', padding: '0 16px'}}>
-        
-        <div style={{textAlign: 'center', marginBottom: '48px'}}>
-          <img
-            src="/poster.jpg"
-            alt="Which Food Is Killing You? Inside the Greatest Fraud In Human History"
-            style={{
-              maxWidth: '900px', 
-              width: '100%', 
-              height: 'auto', 
-              filter: 'drop-shadow(0 20px 60px rgba(0,0,0,0.8))', 
-              margin: '0 auto', 
-              borderRadius: '8px'
-            }}
-          />
-        </div>
+      <div style={{ position: 'relative', zIndex: 10, maxWidth: '820px', margin: '0 auto', textAlign: 'center' }}>
 
         <h1 style={{
-          fontSize: 'clamp(36px, 6vw, 56px)',
+          fontSize: 'clamp(36px, 6vw, 60px)',
           fontWeight: 'bold',
-          textAlign: 'center',
-          color: 'var(--gold)',
-          fontFamily: 'var(--font-cinzel)',
+          color: 'var(--gold, #d4af37)',
+          fontFamily: 'var(--font-cinzel), Cinzel, serif',
           margin: 0,
-          padding: 0,
-          lineHeight: 1.1
+          lineHeight: 1.08
         }}>
           Which Food Is Killing You?
         </h1>
 
         <p style={{
-          fontSize: 'clamp(16px, 2.2vw, 22px)',
-          textAlign: 'center',
-          color: 'var(--cream, #f2ece1)',
-          fontFamily: 'var(--font-cinzel)',
+          fontSize: 'clamp(15px, 2.2vw, 21px)',
+          color: '#f2ece1',
+          fontFamily: 'var(--font-cinzel), Cinzel, serif',
           letterSpacing: '0.06em',
-          margin: '20px auto 0',
-          maxWidth: '760px',
-          opacity: 0.8
+          margin: '18px auto 48px',
+          opacity: 0.75
         }}>
           Inside the Greatest Fraud In Human History
         </p>
 
-        <p style={{
-          fontSize: '17px',
-          textAlign: 'center',
-          color: '#9a9a9a',
-          margin: '36px auto 0',
-          maxWidth: '620px',
-          lineHeight: 1.6
+        <div style={{ maxWidth: '540px', margin: '0 auto 48px' }}>
+          <p style={heroLine}>
+            Three out of five people die from chronic inflammatory disease.
+          </p>
+          <p style={heroLine}>
+            Its drivers are lifestyle. The largest lifestyle factor, for most of us, is food.
+          </p>
+          <p style={{
+            ...heroLine,
+            color: '#d4af37',
+            fontFamily: 'var(--font-cinzel), Cinzel, serif',
+            fontSize: 'clamp(19px, 2.6vw, 25px)',
+            marginTop: '26px'
+          }}>
+            So which food is it?
+          </p>
+        </div>
+
+        {/* TRAILER — replace this block with the embed when it's cut */}
+        <div style={{
+          width: '100%',
+          aspectRatio: '16 / 9',
+          borderRadius: '10px',
+          border: '1px solid rgba(212,175,55,.35)',
+          background: '#000',
+          display: 'grid',
+          placeItems: 'center',
+          marginBottom: '40px'
         }}>
-          A film in which you sit on the jury. Watch the evidence, answer as it lands,
-          deliver your verdict.
+          <p style={{ color: '#666', fontSize: '15px', fontFamily: 'Cinzel, serif', letterSpacing: '.15em' }}>
+            TRAILER
+          </p>
+        </div>
+
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '14px', justifyContent: 'center' }}>
+          <a href="/movie" style={{
+            display: 'inline-block',
+            padding: '20px 46px',
+            fontFamily: 'Cinzel, serif',
+            fontSize: '18px',
+            fontWeight: 'bold',
+            color: '#0a0a0a',
+            background: 'linear-gradient(135deg, #a67c00 0%, #d4af37 50%, #a67c00 100%)',
+            borderRadius: '8px',
+            textDecoration: 'none',
+            boxShadow: '0 8px 24px rgba(212, 175, 55, 0.3)'
+          }}>
+            Buy the film — €15
+          </a>
+        </div>
+
+        <p style={{ fontSize: '14px', color: '#888', marginTop: '22px' }}>
+          A film in which you are the jury. 1 hour 26 minutes.
         </p>
 
       </div>
     </section>
   );
 }
+
+const heroLine: React.CSSProperties = {
+  fontSize: 'clamp(16px, 2.1vw, 19px)',
+  lineHeight: 1.65,
+  color: '#b0b0b0',
+  margin: '0 0 10px'
+};
