@@ -7,25 +7,42 @@ import SiteHeader from "@/components/SiteHeader";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://www.poshpork.com"),
   title: "Which Food Is Killing You? | Inside the Greatest Fraud In Human History",
   description:
     "A film that puts you on the jury. Weigh the evidence, answer as you watch, and deliver your verdict on which food is guilty.",
   verification: {
     google: 'google72a182ec07d32c38',
   },
-  openGraph: {images: ["https://www.poshpork.com/og-image.jpg"],
+  openGraph: {
     title: "Which Food Is Killing You?",
     description:
       "Inside the Greatest Fraud In Human History. A film that puts you on the jury — watch the evidence, deliver your verdict.",
     url: "https://www.poshpork.com",
     siteName: "Posh Pork",
     type: "video.movie",
+    images: [
+      {
+        url: "https://www.poshpork.com/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Which Food Is Killing You? The suspects lined up for trial.",
+      },
+    ],
   },
-  twitter: {images: ["https://www.poshpork.com/og-image.jpg"],
+  twitter: {
     card: "summary_large_image",
     title: "Which Food Is Killing You?",
     description:
       "Inside the Greatest Fraud In Human History. Watch the evidence, deliver your verdict.",
+    images: [
+      {
+        url: "https://www.poshpork.com/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Which Food Is Killing You? The suspects lined up for trial.",
+      },
+    ],
   },
 };
 
