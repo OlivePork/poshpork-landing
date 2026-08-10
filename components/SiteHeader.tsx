@@ -57,7 +57,7 @@ export default async function SiteHeader() {
         textDecoration: "none",
         marginLeft: "auto",
       }}>
-        THE STORY
+        THE BACK STORY
       </a>
 
       <a href={href} style={{

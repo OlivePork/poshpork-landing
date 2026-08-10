@@ -20,17 +20,18 @@ export default function AboutPage() {
             fontFamily: "Cinzel, serif", fontSize: "clamp(32px,5vw,46px)",
             lineHeight: 1.15, color: "#d4af37", margin: "0 0 40px",
           }}>
-            His parents died, and the farm was his.
+            Life turned suddenly, and the farm was his.
           </h1>
 
-          <p style={p}>
+         <p style={p}>
             He was in his twenties. Irish, one of several siblings, and suddenly responsible
             for a farm that had fed a family for generations and could no longer feed itself.
-            Farming was breaking everywhere around him — good animals, decent people, prices
-            that made no sense. He spent years working out why, and came to an answer that had
-            nothing to do with farming: nobody eating the food had any idea what it took to
-            make it, or why one piece of meat was not the same as another. The gap was not in
-            the field. It was in the mind of whoever stood in the aisle deciding.
+            It unlocked a world of energy inside him &mdash; poured first into fixing the farm,
+            and in time into fixing the food system itself. He spent years working out why it
+            had failed, and came to an answer that had nothing to do with farming: nobody
+            eating the food had any idea what it took to make it, or why one piece of meat was
+            not the same as another. The gap was not in the field. It was in the mind of
+            whoever stood in the aisle deciding.
           </p>
 
           <p style={p}>So he tried to close it.</p>
@@ -88,7 +89,7 @@ export default function AboutPage() {
           <p style={pullQuote}>That is what this film is for.</p>
 
           <p style={p}>
-            He had no studio, no crew, no money and no experience. He had a laptop, tools that
+            Colin Marry had no studio, no crew, no money and no experience. He had a laptop, tools that            He had no studio, no crew, no money and no experience. He had a laptop, tools that
             had only existed for about a year, and an alarm set for half past four every
             morning. Seven hours a day, every day, before the rest of life started. It took a
             year.
