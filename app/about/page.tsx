@@ -17,8 +17,9 @@ export default function AboutPage() {
           </p>
 
           <h1 style={{
-            fontFamily: "Cinzel, serif", fontSize: "clamp(32px,5vw,46px)",
-            lineHeight: 1.15, color: "#d4af37", margin: "0 0 40px",
+            fontFamily: "Georgia, serif", fontSize: "clamp(26px,4vw,34px)",
+            lineHeight: 1.4, color: "#2c1810", margin: "0 0 40px",
+            fontWeight: "normal",
           }}>
             Life turned suddenly, and the farm was his.
           </h1>
