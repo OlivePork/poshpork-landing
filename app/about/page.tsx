@@ -21,10 +21,14 @@ export default function AboutPage() {
             lineHeight: 1.4, color: "#2c1810", margin: "0 0 40px",
             fontWeight: "normal",
           }}>
-            Life turned suddenly, and the farm was his.
+            
           </h1>
 
          <p style={p}>
+            Life turned suddenly over fifteen years ago, unlocking an atomic level of energy 
+            inside Colin Marry, which he channelled into the family business, the farm.
+
+            
             He was in his twenties. Irish, one of several siblings, and suddenly responsible
             for a farm that had fed a family for generations and could no longer feed itself.
             It unlocked a world of energy inside him &mdash; poured first into fixing the farm,
