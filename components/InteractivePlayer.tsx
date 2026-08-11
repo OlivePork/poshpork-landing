@@ -212,10 +212,15 @@ export default function InteractivePlayer({
       const qs = screenRef.current;
       if (!qs) return;
 
-      if (e.key === "Enter" && qs.length > 1) {
+      // Enter always resumes the film. On the verdict screen it delivers first.
+      if (e.key === "Enter") {
         e.preventDefault();
-        setSent(true);
-        window.setTimeout(() => closeScreen(true), 700);
+        if (qs.length > 1) {
+          setSent(true);
+          window.setTimeout(() => closeScreen(true), 700);
+        } else {
+          closeScreen(true);
+        }
         return;
       }
 
@@ -313,7 +318,7 @@ export default function InteractivePlayer({
                   <span className="pp-choice-name">Watching as a group</span>
                   <span className="pp-choice-note">
                     Time to confer, then the film rolls on by itself. Number keys answer,
-                    T holds the clock.
+                    T holds the clock, Enter continues.
                   </span>
                 </button>
 
@@ -368,10 +373,14 @@ export default function InteractivePlayer({
                     <div className="pp-timer-fill" style={{ width: `${held ? 100 : (remaining / hold) * 100}%` }} />
                   </div>
                   <div className="pp-timer-row">
-                    <span>{held ? "Held — answer when ready" : `${Math.ceil(remaining)}s`}</span>
+                    <span>
+                      {held ? "Paused — continue when ready" : `${Math.ceil(remaining)}s`}
+                    </span>
                     <span className="pp-timer-actions">
                       {!held && <button onClick={() => { stopTick(); setHeld(true); }}>More time</button>}
-                      <button onClick={() => closeScreen(true)}>Skip</button>
+                      <button onClick={() => closeScreen(true)}>
+                        {picks[screen[0].id] ? "Continue ⏎" : "Skip"}
+                      </button>
                     </span>
                   </div>
                 </div>
@@ -445,7 +454,9 @@ export default function InteractivePlayer({
                         <div className="pp-timer-fill" style={{ width: `${held ? 100 : (remaining / hold) * 100}%` }} />
                       </div>
                       <div className="pp-timer-row">
-                        <span>{held ? "Held — decide when ready" : `${Math.ceil(remaining)}s`}</span>
+                        <span>
+                          {held ? "Paused — decide when ready" : `${Math.ceil(remaining)}s`}
+                        </span>
                         <span className="pp-timer-actions">
                           {!held && <button onClick={() => { stopTick(); setHeld(true); }}>More time</button>}
                         </span>
