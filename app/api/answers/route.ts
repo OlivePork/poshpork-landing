@@ -42,7 +42,7 @@ export async function POST(req: Request) {
       group_size: Math.min(Math.max(Number(group_size) || 1, 1), 200),
       seconds_to_answer,
     },
-    { onConflict: "session_id,question_id" },
+    { onConflict: "session_id,question_id,answer" },
   );
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
