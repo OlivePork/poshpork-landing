@@ -37,6 +37,7 @@ export default function InteractivePlayer({
   const [mode, setMode] = useState<Mode>("interactive");
   const [groupSize, setGroupSize] = useState(1);
   const [showSetup, setShowSetup] = useState(true);
+  const [agreed, setAgreed] = useState(false);
 
   const [screen, setScreen] = useState<Question[] | null>(null);
   const [remaining, setRemaining] = useState(0);
@@ -305,6 +306,8 @@ export default function InteractivePlayer({
   }, [pick, tapVerdict, closeScreen, stopTick]);
 
   const begin = async (chosen: Mode, size: number) => {
+    if (!agreed) return; // belt and braces — buttons are disabled too
+
     setMode(chosen);
     modeRef.current = chosen;
     setGroupSize(size);
@@ -316,7 +319,12 @@ export default function InteractivePlayer({
       const res = await fetch("/api/sessions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ video_id: videoId, mode: chosen, group_size: size }),
+        body: JSON.stringify({
+          video_id: videoId,
+          mode: chosen,
+          group_size: size,
+          disclaimer_accepted: true,
+        }),
       });
       const json = await res.json();
       sessionIdRef.current = json.session_id ?? null;
@@ -357,15 +365,36 @@ export default function InteractivePlayer({
                 other viewer&apos;s.
               </p>
 
+              <label className="pp-agree">
+                <input
+                  type="checkbox"
+                  checked={agreed}
+                  onChange={(e) => setAgreed(e.target.checked)}
+                />
+                <span>
+                  I understand this film is <strong>food education, not medical advice</strong>.
+                  It is not a substitute for professional care, and I will not change any
+                  prescribed treatment without speaking to my doctor.
+                </span>
+              </label>
+
               <div className="pp-choices">
-                <button className="pp-choice" onClick={() => begin("interactive", 1)}>
+                <button
+                  className="pp-choice"
+                  disabled={!agreed}
+                  onClick={() => begin("interactive", 1)}
+                >
                   <span className="pp-choice-name">On my own</span>
                   <span className="pp-choice-note">
                     The film waits for your answer. Take as long as you like.
                   </span>
                 </button>
 
-                <button className="pp-choice" onClick={() => begin("group", Math.max(groupSize, 2))}>
+                <button
+                  className="pp-choice"
+                  disabled={!agreed}
+                  onClick={() => begin("group", Math.max(groupSize, 2))}
+                >
                   <span className="pp-choice-name">Watching as a group</span>
                   <span className="pp-choice-note">
                     One answer per room during the film, then everyone votes at the end.
@@ -373,11 +402,17 @@ export default function InteractivePlayer({
                   </span>
                 </button>
 
-                <button className="pp-choice pp-choice-quiet" onClick={() => begin("off", 1)}>
+                <button
+                  className="pp-choice pp-choice-quiet"
+                  disabled={!agreed}
+                  onClick={() => begin("off", 1)}
+                >
                   <span className="pp-choice-name">Just play the film</span>
                   <span className="pp-choice-note">No questions, no interruptions.</span>
                 </button>
               </div>
+
+              {!agreed && <p className="pp-agree-hint">Tick the box above to begin.</p>}
 
               <label className="pp-size">
                 How many watching?
@@ -421,14 +456,21 @@ export default function InteractivePlayer({
               {mode === "group" && (
                 <div className="pp-timer">
                   <div className="pp-timer-track">
-                    <div className="pp-timer-fill" style={{ width: `${held ? 100 : (remaining / hold) * 100}%` }} />
+                    <div
+                      className="pp-timer-fill"
+                      style={{ width: `${held ? 100 : (remaining / hold) * 100}%` }}
+                    />
                   </div>
                   <div className="pp-timer-row">
                     <span>
                       {held ? "Paused — continue when ready" : `${Math.ceil(remaining)}s`}
                     </span>
                     <span className="pp-timer-actions">
-                      {!held && <button onClick={() => { stopTick(); setHeld(true); }}>More time</button>}
+                      {!held && (
+                        <button onClick={() => { stopTick(); setHeld(true); }}>
+                          More time
+                        </button>
+                      )}
                       <button onClick={() => closeScreen(true)}>
                         {picks[screen[0].id] ? "Continue ⏎" : "Skip"}
                       </button>
@@ -479,9 +521,7 @@ export default function InteractivePlayer({
                             <button
                               key={opt}
                               className={`pp-verdict ${active ? `is-${opt.toLowerCase()}` : ""}`}
-                              onClick={() =>
-                                groupVote ? tapVerdict(q, oi) : pick(q.id, opt)
-                              }
+                              onClick={() => (groupVote ? tapVerdict(q, oi) : pick(q.id, opt))}
                               disabled={sent}
                             >
                               <span className="pp-key-sm">{idx * 2 + oi + 1}</span>
@@ -506,8 +546,22 @@ export default function InteractivePlayer({
                     them. Older, younger, and everyone in between.
                   </p>
                   <div className="pp-passiton-actions">
-                    <a className="pp-passiton-primary" href="/movie?gift=1" target="_blank" rel="noopener noreferrer">Pass it on — €15</a>
-                    <a className="pp-passiton-wa" href={`https://wa.me/?text=${shareText}`} target="_blank" rel="noopener noreferrer">Tell someone</a>
+                    
+                      className="pp-passiton-primary"
+                      href="/movie?gift=1"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Pass it on — €15
+                    </a>
+                    
+                      className="pp-passiton-wa"
+                      href={`https://wa.me/?text=${shareText}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Tell someone
+                    </a>
                   </div>
                 </div>
               ) : (
@@ -526,14 +580,21 @@ export default function InteractivePlayer({
                   {mode === "group" && (
                     <div className="pp-timer">
                       <div className="pp-timer-track">
-                        <div className="pp-timer-fill" style={{ width: `${held ? 100 : (remaining / hold) * 100}%` }} />
+                        <div
+                          className="pp-timer-fill"
+                          style={{ width: `${held ? 100 : (remaining / hold) * 100}%` }}
+                        />
                       </div>
                       <div className="pp-timer-row">
                         <span>
                           {held ? "Paused — decide when ready" : `${Math.ceil(remaining)}s`}
                         </span>
                         <span className="pp-timer-actions">
-                          {!held && <button onClick={() => { stopTick(); setHeld(true); }}>More time</button>}
+                          {!held && (
+                            <button onClick={() => { stopTick(); setHeld(true); }}>
+                              More time
+                            </button>
+                          )}
                         </span>
                       </div>
                     </div>
@@ -579,9 +640,14 @@ const CSS = `
 .pp-title { font-family: Cinzel, serif; font-size: clamp(22px, 3vw, 30px); margin: 0 0 12px; color: #d4af37; }
 .pp-title-lg { font-size: clamp(24px, 3.6vw, 38px); line-height: 1.15; margin-bottom: 28px; color: #f2ece1; }
 .pp-lede { margin: 0 0 24px; opacity: .75; font-size: 15px; }
+.pp-agree { display: flex; gap: 12px; align-items: flex-start; text-align: left; margin: 0 0 22px; padding: 14px 16px; font-size: 13px; line-height: 1.5; border: 1px solid rgba(212,175,55,.25); border-radius: 6px; background: rgba(255,255,255,.02); cursor: pointer; }
+.pp-agree input { flex: none; width: 18px; height: 18px; margin-top: 1px; accent-color: #d4af37; cursor: pointer; }
+.pp-agree strong { color: #d4af37; font-weight: 600; }
+.pp-agree-hint { margin: 14px 0 0; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; opacity: .5; }
 .pp-choices { display: grid; gap: 10px; text-align: left; }
 .pp-choice { display: grid; gap: 4px; padding: 16px 18px; cursor: pointer; border: 1px solid rgba(212,175,55,.35); border-radius: 6px; background: rgba(212,175,55,.06); color: inherit; }
-.pp-choice:hover { border-color: #d4af37; background: rgba(212,175,55,.13); }
+.pp-choice:hover:not(:disabled) { border-color: #d4af37; background: rgba(212,175,55,.13); }
+.pp-choice:disabled { opacity: .35; cursor: not-allowed; }
 .pp-choice-quiet { background: transparent; border-color: rgba(255,255,255,.14); }
 .pp-choice-name { font-family: Cinzel, serif; font-size: 17px; color: #d4af37; }
 .pp-choice-note { font-size: 13px; opacity: .65; }
