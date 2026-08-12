@@ -205,7 +205,7 @@ export default function InteractivePlayer({
       for (const q of questionsRef.current) {
         if (firedRef.current.has(q.id)) continue;
 
-        // The verdict gets a wide window — it's the payoff, and people scrub.
+        // The verdict gets a wide window because it is the payoff and people scrub.
         const win = q.verdict_group ? 30 : FIRE_WINDOW;
 
         if (seconds >= q.timestamp_seconds && seconds < q.timestamp_seconds + win) {
@@ -216,7 +216,7 @@ export default function InteractivePlayer({
           break;
         }
 
-        // Ordinary questions are retired once you're past them. The verdict never is.
+        // Ordinary questions retire once you are past them. The verdict never does.
         if (seconds >= q.timestamp_seconds + win && !q.verdict_group) {
           firedRef.current.add(q.id);
         }
@@ -306,7 +306,7 @@ export default function InteractivePlayer({
   }, [pick, tapVerdict, closeScreen, stopTick]);
 
   const begin = async (chosen: Mode, size: number) => {
-    if (!agreed) return; // belt and braces — buttons are disabled too
+    if (!agreed) return; // belt and braces: the buttons are disabled too
 
     setMode(chosen);
     modeRef.current = chosen;
@@ -345,7 +345,7 @@ export default function InteractivePlayer({
     : 0;
 
   const shareText = encodeURIComponent(
-    "I've just delivered my verdict on Which Food Is Killing You? See if you agree — poshpork.com",
+    "I have just delivered my verdict on Which Food Is Killing You? See if you agree at poshpork.com",
   );
 
   return (
@@ -372,29 +372,22 @@ export default function InteractivePlayer({
                   onChange={(e) => setAgreed(e.target.checked)}
                 />
                 <span>
-                  I understand this film is <strong>food education, not medical advice</strong>.
-                  It is not a substitute for professional care, and I will not change any
-                  prescribed treatment without speaking to my doctor.
+                  I understand this film is{" "}
+                  <strong>food education, not medical advice</strong>. It is not a
+                  substitute for professional care, and I will not change any prescribed
+                  treatment without speaking to my doctor.
                 </span>
               </label>
 
               <div className="pp-choices">
-                <button
-                  className="pp-choice"
-                  disabled={!agreed}
-                  onClick={() => begin("interactive", 1)}
-                >
+                <button className="pp-choice" disabled={!agreed} onClick={() => begin("interactive", 1)}>
                   <span className="pp-choice-name">On my own</span>
                   <span className="pp-choice-note">
                     The film waits for your answer. Take as long as you like.
                   </span>
                 </button>
 
-                <button
-                  className="pp-choice"
-                  disabled={!agreed}
-                  onClick={() => begin("group", Math.max(groupSize, 2))}
-                >
+                <button className="pp-choice" disabled={!agreed} onClick={() => begin("group", Math.max(groupSize, 2))}>
                   <span className="pp-choice-name">Watching as a group</span>
                   <span className="pp-choice-note">
                     One answer per room during the film, then everyone votes at the end.
@@ -402,11 +395,7 @@ export default function InteractivePlayer({
                   </span>
                 </button>
 
-                <button
-                  className="pp-choice pp-choice-quiet"
-                  disabled={!agreed}
-                  onClick={() => begin("off", 1)}
-                >
+                <button className="pp-choice pp-choice-quiet" disabled={!agreed} onClick={() => begin("off", 1)}>
                   <span className="pp-choice-name">Just play the film</span>
                   <span className="pp-choice-note">No questions, no interruptions.</span>
                 </button>
@@ -456,23 +445,14 @@ export default function InteractivePlayer({
               {mode === "group" && (
                 <div className="pp-timer">
                   <div className="pp-timer-track">
-                    <div
-                      className="pp-timer-fill"
-                      style={{ width: `${held ? 100 : (remaining / hold) * 100}%` }}
-                    />
+                    <div className="pp-timer-fill" style={{ width: `${held ? 100 : (remaining / hold) * 100}%` }} />
                   </div>
                   <div className="pp-timer-row">
-                    <span>
-                      {held ? "Paused — continue when ready" : `${Math.ceil(remaining)}s`}
-                    </span>
+                    <span>{held ? "Paused, continue when ready" : `${Math.ceil(remaining)}s`}</span>
                     <span className="pp-timer-actions">
-                      {!held && (
-                        <button onClick={() => { stopTick(); setHeld(true); }}>
-                          More time
-                        </button>
-                      )}
+                      {!held && <button onClick={() => { stopTick(); setHeld(true); }}>More time</button>}
                       <button onClick={() => closeScreen(true)}>
-                        {picks[screen[0].id] ? "Continue ⏎" : "Skip"}
+                        {picks[screen[0].id] ? "Continue" : "Skip"}
                       </button>
                     </span>
                   </div>
@@ -511,11 +491,8 @@ export default function InteractivePlayer({
                       <p className="pp-suspect-name">{q.question_text}</p>
                       <div className="pp-verdict-row">
                         {q.options.map((opt, oi) => {
-                          const shown =
-                            c === undefined ? null : oi === 0 ? c : groupSize - c;
-                          const active = groupVote
-                            ? (shown ?? 0) > 0
-                            : picks[q.id] === opt;
+                          const shown = c === undefined ? null : oi === 0 ? c : groupSize - c;
+                          const active = groupVote ? (shown ?? 0) > 0 : picks[q.id] === opt;
 
                           return (
                             <button
@@ -546,22 +523,8 @@ export default function InteractivePlayer({
                     them. Older, younger, and everyone in between.
                   </p>
                   <div className="pp-passiton-actions">
-                    
-                      className="pp-passiton-primary"
-                      href="/movie?gift=1"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Pass it on — €15
-                    </a>
-                    
-                      className="pp-passiton-wa"
-                      href={`https://wa.me/?text=${shareText}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Tell someone
-                    </a>
+                    <a className="pp-passiton-primary" href="/movie?gift=1" target="_blank" rel="noopener noreferrer">Pass it on</a>
+                    <a className="pp-passiton-wa" href={`https://wa.me/?text=${shareText}`} target="_blank" rel="noopener noreferrer">Tell someone</a>
                   </div>
                 </div>
               ) : (
@@ -580,21 +543,12 @@ export default function InteractivePlayer({
                   {mode === "group" && (
                     <div className="pp-timer">
                       <div className="pp-timer-track">
-                        <div
-                          className="pp-timer-fill"
-                          style={{ width: `${held ? 100 : (remaining / hold) * 100}%` }}
-                        />
+                        <div className="pp-timer-fill" style={{ width: `${held ? 100 : (remaining / hold) * 100}%` }} />
                       </div>
                       <div className="pp-timer-row">
-                        <span>
-                          {held ? "Paused — decide when ready" : `${Math.ceil(remaining)}s`}
-                        </span>
+                        <span>{held ? "Paused, decide when ready" : `${Math.ceil(remaining)}s`}</span>
                         <span className="pp-timer-actions">
-                          {!held && (
-                            <button onClick={() => { stopTick(); setHeld(true); }}>
-                              More time
-                            </button>
-                          )}
+                          {!held && <button onClick={() => { stopTick(); setHeld(true); }}>More time</button>}
                         </span>
                       </div>
                     </div>
