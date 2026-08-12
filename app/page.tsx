@@ -1,4 +1,4 @@
-// Homepage - Updated April 2026
+// Homepage - Updated August 2026
 import Hero from '@/components/Hero';
 import Suspects from '@/components/Suspects';
 import Stakes from '@/components/Stakes';
@@ -43,7 +43,10 @@ export default function Home() {
               <div style={numberCircle}>1</div>
               <h3 style={stepHeading}>IT KILLS QUIETLY</h3>
               <p style={stepBody}>
-                Three out of five people die from chronic inflammatory disease. Nine of the ten leading causes of death are inflammation-related.
+                Three out of five people die from chronic inflammatory
+                disease — heart disease, stroke, cancer, diabetes and
+                the rest. It arrives slowly enough that nobody calls
+                it a cause of death.
               </p>
             </div>
 
@@ -55,11 +58,13 @@ export default function Home() {
               </p>
             </div>
 
+            {/* CHANGED: heading and body rewritten — the old version claimed a single
+                culprit, which contradicts the combination thesis. */}
             <div style={{ textAlign: 'center' }}>
               <div style={numberCircle}>3</div>
-              <h3 style={stepHeading}>AND NOBODY NAMED IT</h3>
+              <h3 style={stepHeading}>AND NOBODY NAMED THE PATTERN</h3>
               <p style={stepBody}>
-                One food on your plate is doing more damage than the rest. You have not been told which. The evidence has been there all along.
+                The suspects have been examined one at a time for sixty years. They have never been examined together. That is where the case falls apart — and where this film begins.
               </p>
             </div>
           </div>
@@ -90,19 +95,96 @@ export default function Home() {
               <GiftButton />
             </div>
 
+            {/* CHANGED: access terms now match the wording used everywhere else. */}
             <p style={{
               fontSize: '14px',
+              lineHeight: '1.7',
               marginTop: '18px',
               fontStyle: 'italic',
               color: '#888888'
             }}>
-              €15 — one payment, permanent access. Sources cited on screen throughout the film.
+              €15 — one payment, permanent access. One purchase covers your household.<br />
+              Sources cited on screen throughout the film.
+            </p>
+
+            {/* NEW: medical disclaimer beside the purchase point, not only in the footer. */}
+            <p style={{
+              fontSize: '13px',
+              lineHeight: '1.7',
+              marginTop: '24px',
+              color: '#999999',
+              maxWidth: '560px',
+              marginLeft: 'auto',
+              marginRight: 'auto'
+            }}>
+              This film is about evidence and how it is made. It is not medical advice,
+              and nothing in it should replace a conversation with your doctor.
             </p>
           </div>
         </div>
       </section>
 
       {process.env.NEXT_PUBLIC_LIVE_EVENTS_ENABLED === 'true' ? <BookingTabs /> : <FilmSection />}
+
+      {/* NEW SECTION: states the AI production plainly and discloses the commercial
+          interest. Both were previously absent from the site. */}
+      <section style={{
+        padding: '128px 40px',
+        background: '#111111'
+      }}>
+        <div style={{ maxWidth: '760px', margin: '0 auto' }}>
+          <p style={{
+            fontFamily: 'Cinzel, serif',
+            fontSize: '13px',
+            letterSpacing: '0.22em',
+            color: '#d4af37',
+            marginBottom: '24px'
+          }}>
+            HOW THIS FILM WAS MADE
+          </p>
+
+          <h2 style={{
+            fontFamily: 'Cinzel, serif',
+            fontSize: 'clamp(30px, 4vw, 42px)',
+            lineHeight: '1.2',
+            fontWeight: 'bold',
+            color: '#f5f5f5',
+            marginBottom: '32px'
+          }}>
+            One person, one laptop, one year
+          </h2>
+
+          <p style={{ fontSize: '18px', lineHeight: '1.7', color: '#bbbbbb', marginBottom: '20px' }}>
+            Written and directed by Colin Marry, an Irish pig farmer with no filmmaking
+            background. No studio, no crew, no budget. The animation was generated using
+            AI tools that did not exist two years ago; the research, the script, the
+            argument, the edit and every decision about what the evidence means are his.
+          </p>
+
+          <p style={{ fontSize: '18px', lineHeight: '1.7', color: '#bbbbbb', marginBottom: '40px' }}>
+            It took a year, seven hours a day, starting at half past four in the morning.
+            He has written about why{' '}
+            <a href="/about" style={{ color: '#d4af37' }}>here</a>.
+          </p>
+
+          <p style={{
+            fontSize: '14px',
+            lineHeight: '1.8',
+            color: '#999999',
+            borderLeft: '2px solid #d4af37',
+            paddingLeft: '20px'
+          }}>
+            <strong style={{ color: '#cccccc' }}>Disclosure.</strong> Colin Marry is a pig
+            farmer and intends in future to bring a pork product to market under the Posh
+            Pork name. No such product currently exists or is for sale. The film was
+            self-funded and received no industry, commercial or institutional backing.
+            He is not a doctor and does not claim to be.
+          </p>
+        </div>
+      </section>
+
+      {/* Article is now trimmed to "The Mystery Within the Mystery" + Practical Details.
+          Its duplicated sections were removed in components/Article.tsx. */}
       <Article />
     </>
   );

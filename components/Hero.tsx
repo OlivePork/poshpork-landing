@@ -61,7 +61,7 @@ export default function Hero() {
           </p>
         </div>
 
-        {/* TRAILER — replace this block with the embed when it's cut */}
+        {/* TRAILER — replace this whole block with the embed when it's cut */}
         <div style={{
           width: '100%',
           aspectRatio: '16 / 9',
@@ -70,10 +70,26 @@ export default function Hero() {
           background: '#000',
           display: 'grid',
           placeItems: 'center',
+          gap: '14px',
           marginBottom: '40px'
         }}>
-          <p style={{ color: '#666', fontSize: '15px', fontFamily: 'Cinzel, serif', letterSpacing: '.15em' }}>
+          <p style={{
+            color: '#d4af37',
+            fontSize: '13px',
+            fontFamily: 'Cinzel, serif',
+            letterSpacing: '.28em',
+            margin: 0
+          }}>
             TRAILER
+          </p>
+          <p style={{
+            color: '#777',
+            fontSize: 'clamp(20px, 3.5vw, 30px)',
+            fontFamily: 'Georgia, serif',
+            fontStyle: 'italic',
+            margin: 0
+          }}>
+            Coming soon
           </p>
         </div>
 
@@ -94,8 +110,10 @@ export default function Hero() {
           </a>
         </div>
 
-        <p style={{ fontSize: '14px', color: '#888', marginTop: '22px' }}>
-          A film in which you are the jury. 1 hour 26 minutes.
+        {/* CHANGED: access terms now match the wording used everywhere else. */}
+        <p style={{ fontSize: '14px', lineHeight: 1.7, color: '#888', marginTop: '22px' }}>
+          A film in which you are the jury. 1 hour 26 minutes.<br />
+          One payment. Permanent access. One purchase covers your household.
         </p>
 
       </div>

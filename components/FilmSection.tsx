@@ -29,15 +29,16 @@ export default function FilmSection() {
           SOLVE IT FROM YOUR SOFA
         </h2>
 
+        {/* CHANGED: the "full Posh Pork Murder Mystery" line is removed; "in full"
+            added so the surviving sentence still has a subject. */}
         <p style={{
           fontSize: '19px',
           lineHeight: '1.7',
           color: '#b0b0b0',
           marginBottom: '48px'
         }}>
-          The full Posh Pork Murder Mystery, now a film you can watch any time.
-          The evidence is laid out, the witnesses contradict each other, and you
-          deliver the verdict — counted alongside every other viewer&apos;s.
+          The evidence is laid out in full, the witnesses contradict each other,
+          and you deliver the verdict — counted alongside every other viewer&apos;s.
         </p>
 
         <div style={{
@@ -114,12 +115,15 @@ export default function FilmSection() {
           <GiftButton />
         </div>
 
+        {/* CHANGED: access terms now match the wording used everywhere else. */}
         <p style={{
           fontSize: '14px',
+          lineHeight: '1.7',
           color: '#777777',
           marginTop: '24px'
         }}>
-          €15 — one payment, permanent access. 1 hour 26 minutes.
+          €15 — one payment, permanent access. One purchase covers your household.<br />
+          1 hour 26 minutes.
         </p>
       </div>
     </section>
