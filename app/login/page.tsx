@@ -5,16 +5,17 @@ import { createClient } from "@/lib/supabase/client";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
-  const [next, setNext] = useState("/watch");
   const [justPurchased, setJustPurchased] = useState(false);
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [message, setMessage] = useState("");
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const param = params.get("next");
-    if (param && param.startsWith("/")) setNext(param);
     if (params.get("purchased")) setJustPurchased(true);
+    if (params.get("error") === "link_expired") {
+      setStatus("error");
+      setMessage("That link has expired or has already been used. Enter your email for a fresh one.");
+    }
   }, []);
 
   const send = async () => {
@@ -22,10 +23,13 @@ export default function LoginPage() {
     setStatus("sending");
 
     const supabase = createClient();
+    // No query string on the redirect target — Supabase appends its own `code`
+    // parameter, and an existing `?next=` causes it to be dropped.
+    // /auth/callback defaults to /watch, which is where everyone should land.
     const { error } = await supabase.auth.signInWithOtp({
       email: email.trim(),
       options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`,
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
       },
     });
 
