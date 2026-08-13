@@ -2,292 +2,320 @@ export default function TermsAndConditions() {
   return (
     <div style={{background: 'var(--cream)', minHeight: '100vh', padding: '60px 20px'}}>
       <div style={{maxWidth: '800px', margin: '0 auto', color: 'var(--dark-brown)'}}>
-        
+
         <h1 style={{fontSize: '48px', marginBottom: '20px', color: 'var(--gold)', fontFamily: 'var(--font-cinzel)'}}>
-          Terms & Conditions
+          Terms &amp; Conditions
         </h1>
-        
+
         <p style={{marginBottom: '40px', fontSize: '14px', opacity: 0.7}}>
-          Last updated: April 6, 2026
+          Last updated: August 13, 2026
         </p>
 
-        <section style={{marginBottom: '40px'}}>
-          <h2 style={{fontSize: '24px', marginBottom: '16px', color: 'var(--dark-brown)', fontFamily: 'var(--font-cinzel)'}}>
-            1. Agreement to Terms
-          </h2>
-          <p style={{marginBottom: '16px', lineHeight: '1.8'}}>
-            By accessing and using poshpork.com and booking The Posh Pork Murder Mystery Experience ("the Experience"), you agree to be bound by these Terms & Conditions. 
-            If you do not agree with any part of these terms, you may not use our services.
+        {/* ============================================================
+            TRADER IDENTIFICATION — required by Spanish LSSI-CE.
+            DO NOT PUBLISH until the autónomo registration is complete
+            and the address below is replaced with a real establishment
+            address you are content to be legally served at.
+            A parcel-shop address is not suitable.
+            ============================================================ */}
+        <section style={{
+          marginBottom: '40px',
+          padding: '24px',
+          background: 'rgba(212,175,55,0.10)',
+          borderLeft: '3px solid var(--gold)'
+        }}>
+          <h2 style={sectionHeading}>Who we are</h2>
+          <p style={para}>
+            <strong>Trader:</strong> Colin Marry<br/>
+            <strong>Trading as:</strong> Posh Pork<br/>
+            <strong>NIF:</strong> Z4356082W<br/>
+            <strong>Registered address:</strong> [ADDRESS PENDING — see note below]<br/>
+            <strong>Email:</strong> mystery@poshpork.com
           </p>
-          <p style={{marginBottom: '16px', lineHeight: '1.8'}}>
-            These terms apply to all visitors, users, and participants of the Experience.
+          <p style={{...para, fontSize: '13px', opacity: 0.75, marginBottom: 0}}>
+            Colin Marry trades as a sole trader (autónomo) registered in Spain.
           </p>
         </section>
 
         <section style={{marginBottom: '40px'}}>
-          <h2 style={{fontSize: '24px', marginBottom: '16px', color: 'var(--dark-brown)', fontFamily: 'var(--font-cinzel)'}}>
-            2. Service Description
-          </h2>
-          <p style={{marginBottom: '16px', lineHeight: '1.8'}}>
-            The Posh Pork Murder Mystery Experience is a virtual, interactive murder mystery experience focused on food education and entertainment. 
-            The Experience:
+          <h2 style={sectionHeading}>1. What these terms cover</h2>
+          <p style={para}>
+            These Terms &amp; Conditions govern your purchase of and access to <em>Which Food Is Killing You?
+            Inside the Greatest Fraud In Human History</em> (&quot;the Film&quot;) through poshpork.com
+            (&quot;the Site&quot;).
           </p>
-          <ul style={{marginBottom: '16px', marginLeft: '20px', lineHeight: '1.8'}}>
-            <li>Is delivered virtually (online or at designated physical locations in Mallorca)</li>
-            <li>Lasts approximately 90 minutes</li>
-            <li>Is educational entertainment and not medical or nutritional advice</li>
-            <li>Does not include physical food service</li>
-            <li>May be recorded for quality and improvement purposes</li>
+          <p style={para}>
+            By purchasing or viewing the Film you agree to be bound by these terms. If you do not agree with
+            them, please do not purchase.
+          </p>
+        </section>
+
+        <section style={{marginBottom: '40px'}}>
+          <h2 style={sectionHeading}>2. What you are buying</h2>
+          <p style={para}>
+            The Film is a feature-length documentary of approximately 1 hour 27 minutes, with optional
+            interactive questions that appear during playback. On purchase you receive:
+          </p>
+          <ul style={list}>
+            <li>A personal, non-exclusive, non-transferable licence to stream the Film for private,
+                non-commercial viewing</li>
+            <li>Unlimited repeat viewing for as long as we make the Film available on the Site
+                (see section 7)</li>
+            <li>Access for your household, as defined in section 4</li>
           </ul>
-          <p style={{marginBottom: '16px', lineHeight: '1.8'}}>
-            We reserve the right to modify, suspend, or discontinue the Experience at any time without prior notice.
+          <p style={para}>
+            The Film is streamed only. No downloadable copy is provided, and no physical media is supplied.
+          </p>
+          <p style={para}>
+            The Film is educational and journalistic in nature. It is not medical, nutritional or dietary
+            advice, and nothing in it should be relied upon in making decisions about your health. Always
+            consult a qualified professional.
           </p>
         </section>
 
         <section style={{marginBottom: '40px'}}>
-          <h2 style={{fontSize: '24px', marginBottom: '16px', color: 'var(--dark-brown)', fontFamily: 'var(--font-cinzel)'}}>
-            3. Trial Period
-          </h2>
-          <p style={{marginBottom: '16px', lineHeight: '1.8'}}>
-            The sessions running from May 16 to June 1, 2026 are <strong>trial sessions</strong>. As such:
+          <h2 style={sectionHeading}>3. Price and payment</h2>
+          <p style={para}>
+            The Film is priced at €15 as a single payment. Prices are in euros and include applicable VAT.
+            Payment is processed securely by Stripe; we do not store your card details.
           </p>
-          <ul style={{marginBottom: '16px', marginLeft: '20px', lineHeight: '1.8'}}>
-            <li>The Experience is in development and may contain errors or incomplete elements</li>
-            <li>We welcome your feedback to shape its evolution</li>
-            <li>Technical issues may occur and will be addressed to the best of our ability</li>
-            <li>The format and content may change for future sessions</li>
+          <p style={para}>
+            Your purchase is confirmed on successful payment, and you will receive a confirmation email
+            containing your access details. If you do not receive it within one hour, check your spam folder
+            and then contact us.
+          </p>
+          <p style={para}>
+            Gift purchases are made on the same terms. The recipient of a gift is bound by these terms once
+            they redeem their access.
+          </p>
+        </section>
+
+        <section style={{marginBottom: '40px'}}>
+          <h2 style={sectionHeading}>4. Your household, and what you may not do</h2>
+          <p style={para}>
+            <strong>4.1 Household viewing.</strong> One purchase covers the members of your household —
+            people who normally live with you at the same address. You may watch together on one screen or
+            on separate devices. To support this, your account permits a limited number of simultaneous
+            streams. We may suspend access where usage clearly exceeds normal household use.
+          </p>
+          <p style={para}>
+            <strong>4.2 What you may not do.</strong> You may not:
+          </p>
+          <ul style={list}>
+            <li>Share your login credentials with anyone outside your household</li>
+            <li>Record, download, copy, screen-capture or re-upload the Film, in whole or in part</li>
+            <li>Show the Film to any audience outside your household, whether or not you charge admission —
+                this includes schools, workplaces, clinics, libraries, community groups, clubs and events</li>
+            <li>Sell, rent, sub-licence or otherwise transfer your access</li>
+            <li>Use the Film or any part of it for any commercial purpose</li>
           </ul>
-          <p style={{marginBottom: '16px', lineHeight: '1.8'}}>
-            By booking a trial session, you acknowledge and accept these conditions.
+          <p style={para}>
+            <strong>4.3 Group and educational screenings.</strong> Screenings outside a household require a
+            separate licence. We offer these and are glad to arrange them — contact us at
+            mystery@poshpork.com.
+          </p>
+          <p style={para}>
+            We may suspend or terminate access, without refund, where these terms are breached.
           </p>
         </section>
 
         <section style={{marginBottom: '40px'}}>
-          <h2 style={{fontSize: '24px', marginBottom: '16px', color: 'var(--dark-brown)', fontFamily: 'var(--font-cinzel)'}}>
-            4. Bookings and Payment
-          </h2>
-          <p style={{marginBottom: '16px', lineHeight: '1.8'}}>
-            <strong>4.1 Booking Process</strong><br/>
-            To book the Experience, you must:
+          <h2 style={sectionHeading}>5. Refunds</h2>
+          <p style={para}>
+            <strong>5.1 Your statutory right.</strong> As a consumer in the EU you have 14 days from purchase
+            to withdraw and receive a full refund, without giving a reason. Email us with your order details
+            and we will refund you.
           </p>
-          <ul style={{marginBottom: '16px', marginLeft: '20px', lineHeight: '1.8'}}>
-            <li>Select your preferred session date and time</li>
-            <li>Specify the number of participants</li>
-            <li>Complete payment through our secure Stripe payment system</li>
-            <li>Provide a valid email address for confirmation</li>
-          </ul>
-          <p style={{marginBottom: '16px', lineHeight: '1.8'}}>
-            <strong>4.2 Pricing</strong><br/>
-            The Experience is priced at €15 per participant. Prices are in euros (EUR) and include applicable Spanish VAT.
+          <p style={para}>
+            <strong>5.2 Technical problems.</strong> If you cannot access the Film because of a fault on our
+            side and we cannot resolve it within a reasonable time, you are entitled to a full refund. Tell
+            us what is happening and we will try to fix it first.
           </p>
-          <p style={{marginBottom: '16px', lineHeight: '1.8'}}>
-            <strong>4.3 Payment</strong><br/>
-            Payment must be made in full at the time of booking. We accept payment by credit/debit card processed securely through Stripe. 
-            Your booking is confirmed only upon successful payment.
+          <p style={para}>
+            <strong>5.3 Beyond 14 days.</strong> Refunds after this period are at our discretion. We would
+            rather hear from an unhappy viewer than not — please write to us.
           </p>
-          <p style={{marginBottom: '16px', lineHeight: '1.8'}}>
-            <strong>4.4 Booking Confirmation</strong><br/>
-            You will receive a booking confirmation email with session details within 24 hours of payment. 
-            If you do not receive confirmation, contact mystery@poshpork.com immediately.
+          <p style={para}>
+            Refunds are issued to the original payment method within 14 days of being agreed.
           </p>
         </section>
 
         <section style={{marginBottom: '40px'}}>
-          <h2 style={{fontSize: '24px', marginBottom: '16px', color: 'var(--dark-brown)', fontFamily: 'var(--font-cinzel)'}}>
-            5. Cancellations and Refunds
-          </h2>
-          <p style={{marginBottom: '16px', lineHeight: '1.8'}}>
-            <strong>5.1 Cancellation by You</strong><br/>
-            If you need to cancel your booking:
+          <h2 style={sectionHeading}>6. Accounts and access</h2>
+          <p style={para}>
+            You are responsible for keeping your login credentials confidential and for all activity under
+            your account. Tell us promptly if you believe your account has been accessed by someone else.
           </p>
-          <ul style={{marginBottom: '16px', marginLeft: '20px', lineHeight: '1.8'}}>
-            <li><strong>More than 7 days before the session:</strong> Full refund</li>
-            <li><strong>3-7 days before the session:</strong> 50% refund</li>
-            <li><strong>Less than 3 days before the session:</strong> No refund</li>
-          </ul>
-          <p style={{marginBottom: '16px', lineHeight: '1.8'}}>
-            To request a cancellation, email mystery@poshpork.com with your booking reference. Refunds will be processed within 14 days.
-          </p>
-          <p style={{marginBottom: '16px', lineHeight: '1.8'}}>
-            <strong>5.2 Cancellation by Us</strong><br/>
-            We reserve the right to cancel any session due to technical issues, insufficient bookings, or unforeseen circumstances. 
-            In such cases, you will receive a full refund or the option to transfer to another available session.
-          </p>
-          <p style={{marginBottom: '16px', lineHeight: '1.8'}}>
-            <strong>5.3 No-Shows</strong><br/>
-            If you fail to attend your booked session without prior cancellation, no refund will be provided.
+          <p style={para}>
+            You must provide a valid email address. If you lose access to it, contact us and we will try to
+            help, but we may be unable to restore access where we cannot verify the purchase.
           </p>
         </section>
 
         <section style={{marginBottom: '40px'}}>
-          <h2 style={{fontSize: '24px', marginBottom: '16px', color: 'var(--dark-brown)', fontFamily: 'var(--font-cinzel)'}}>
-            6. Participant Responsibilities
-          </h2>
-          <p style={{marginBottom: '16px', lineHeight: '1.8'}}>
-            As a participant, you agree to:
+          <h2 style={sectionHeading}>7. Availability of the Film</h2>
+          <p style={para}>
+            We intend to keep the Film available indefinitely, and describe your access as permanent on that
+            basis. However, we cannot guarantee that the Site or the streaming service will remain available
+            forever, and access depends on services we do not control.
           </p>
-          <ul style={{marginBottom: '16px', marginLeft: '20px', lineHeight: '1.8'}}>
-            <li>Arrive on time for your scheduled session</li>
-            <li>Ensure you have the necessary technical equipment (internet connection, device) for virtual sessions</li>
-            <li>Behave respectfully toward other participants and facilitators</li>
-            <li>Not record, photograph, or otherwise reproduce the Experience without prior written permission</li>
-            <li>Not share access credentials with non-paying participants</li>
-            <li>Provide honest feedback when requested</li>
-          </ul>
-          <p style={{marginBottom: '16px', lineHeight: '1.8'}}>
-            We reserve the right to remove any participant who violates these responsibilities without refund.
+          <p style={para}>
+            <strong>If we ever decide to withdraw the Film from sale or discontinue the Site, we will give
+            existing purchasers at least 90 days&apos; notice by email</strong>, so that you have a final
+            opportunity to watch.
+          </p>
+          <p style={para}>
+            We may carry out maintenance, make improvements, or change the interactive questions from time to
+            time. We do not warrant that the service will be uninterrupted or error-free.
           </p>
         </section>
 
         <section style={{marginBottom: '40px'}}>
-          <h2 style={{fontSize: '24px', marginBottom: '16px', color: 'var(--dark-brown)', fontFamily: 'var(--font-cinzel)'}}>
-            7. Intellectual Property
-          </h2>
-          <p style={{marginBottom: '16px', lineHeight: '1.8'}}>
-            All content, materials, characters, storylines, graphics, and designs in the Experience are the exclusive property of Posh Pork and are protected by copyright, trademark, and other intellectual property laws.
+          <h2 style={sectionHeading}>8. Interactive questions and your answers</h2>
+          <p style={para}>
+            The Film includes optional questions, and a closing verdict on each of the four suspects. Your
+            answers are recorded against your account and shown to other viewers only in aggregate as a
+            running tally. We do not publish or share individual answers, and no viewer can see how another
+            has voted. The questions can be switched off, and doing so does not affect the Film.
           </p>
-          <p style={{marginBottom: '16px', lineHeight: '1.8'}}>
-            You may not:
-          </p>
-          <ul style={{marginBottom: '16px', marginLeft: '20px', lineHeight: '1.8'}}>
-            <li>Reproduce, distribute, or create derivative works from the Experience</li>
-            <li>Use our branding, characters, or content for commercial purposes</li>
-            <li>Reverse engineer or extract underlying data or code</li>
-          </ul>
-        </section>
-
-        <section style={{marginBottom: '40px'}}>
-          <h2 style={{fontSize: '24px', marginBottom: '16px', color: 'var(--dark-brown)', fontFamily: 'var(--font-cinzel)'}}>
-            8. Disclaimers and Limitations of Liability
-          </h2>
-          <p style={{marginBottom: '16px', lineHeight: '1.8'}}>
-            <strong>8.1 Educational Entertainment Only</strong><br/>
-            The Experience is for entertainment and educational purposes only. It is not a substitute for professional medical, nutritional, or dietary advice. 
-            Any information provided is for general knowledge and should not be relied upon for making health decisions.
-          </p>
-          <p style={{marginBottom: '16px', lineHeight: '1.8'}}>
-            <strong>8.2 No Warranties</strong><br/>
-            The Experience is provided "as is" without warranties of any kind, express or implied. We do not guarantee that:
-          </p>
-          <ul style={{marginBottom: '16px', marginLeft: '20px', lineHeight: '1.8'}}>
-            <li>The Experience will be uninterrupted or error-free</li>
-            <li>Technical issues will not occur</li>
-            <li>The content is completely accurate or up-to-date</li>
-          </ul>
-          <p style={{marginBottom: '16px', lineHeight: '1.8'}}>
-            <strong>8.3 Limitation of Liability</strong><br/>
-            To the fullest extent permitted by law, Posh Pork shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising from your participation in the Experience.
-          </p>
-          <p style={{marginBottom: '16px', lineHeight: '1.8'}}>
-            Our total liability to you for any claim arising from the Experience shall not exceed the amount you paid for your booking.
+          <p style={para}>
+            See our <a href="/privacy" style={link}>Privacy Policy</a> for how we handle this data.
           </p>
         </section>
 
         <section style={{marginBottom: '40px'}}>
-          <h2 style={{fontSize: '24px', marginBottom: '16px', color: 'var(--dark-brown)', fontFamily: 'var(--font-cinzel)'}}>
-            9. Privacy and Data Protection
-          </h2>
-          <p style={{marginBottom: '16px', lineHeight: '1.8'}}>
-            Your use of our services is subject to our Privacy Policy, which explains how we collect, use, and protect your personal data in compliance with GDPR. 
-            By using our services, you consent to our data practices as described in the Privacy Policy.
+          <h2 style={sectionHeading}>9. Intellectual property</h2>
+          <p style={para}>
+            The Film, together with all content, characters, storylines, artwork, music and designs within
+            it, is the property of Colin Marry trading as Posh Pork and is protected by copyright and other
+            intellectual property laws. Your purchase grants a licence to view, not any transfer of
+            ownership.
           </p>
-          <p style={{marginBottom: '16px', lineHeight: '1.8'}}>
-            View our full <a href="/privacy" style={{color: 'var(--dark-gold)', textDecoration: 'underline'}}>Privacy Policy</a>.
-          </p>
-        </section>
-
-        <section style={{marginBottom: '40px'}}>
-          <h2 style={{fontSize: '24px', marginBottom: '16px', color: 'var(--dark-brown)', fontFamily: 'var(--font-cinzel)'}}>
-            10. Future Products
-          </h2>
-          <p style={{marginBottom: '16px', lineHeight: '1.8'}}>
-            Posh Pork may develop and launch additional products and services, including:
-          </p>
-          <ul style={{marginBottom: '16px', marginLeft: '20px', lineHeight: '1.8'}}>
-            <li>Fully online versions of the Experience</li>
-            <li>Posh Pork branded food products in supermarkets</li>
-            <li>Other related experiences or offerings</li>
-          </ul>
-          <p style={{marginBottom: '16px', lineHeight: '1.8'}}>
-            If you have opted in to marketing communications, we may contact you about these future offerings. 
-            Your participation in the current Experience does not create any obligation to purchase future products.
+          <p style={para}>
+            Sources cited on screen remain the property of their respective owners and are used for the
+            purposes of review, criticism and comment.
           </p>
         </section>
 
         <section style={{marginBottom: '40px'}}>
-          <h2 style={{fontSize: '24px', marginBottom: '16px', color: 'var(--dark-brown)', fontFamily: 'var(--font-cinzel)'}}>
-            11. Age Restrictions
-          </h2>
-          <p style={{marginBottom: '16px', lineHeight: '1.8'}}>
-            The Experience is intended for participants aged 16 and older. Participants under 18 must have parental or guardian consent to book and participate.
+          <h2 style={sectionHeading}>10. Age</h2>
+          <p style={para}>
+            Purchases must be made by a person aged 18 or over. Once purchased, the Film may be watched by
+            anyone in the household, including children and teenagers — it contains no material unsuitable
+            for a general audience and is intended to be watched by families together.
           </p>
         </section>
 
         <section style={{marginBottom: '40px'}}>
-          <h2 style={{fontSize: '24px', marginBottom: '16px', color: 'var(--dark-brown)', fontFamily: 'var(--font-cinzel)'}}>
-            12. Force Majeure
-          </h2>
-          <p style={{marginBottom: '16px', lineHeight: '1.8'}}>
-            We shall not be liable for any failure or delay in performing our obligations due to circumstances beyond our reasonable control, including but not limited to natural disasters, 
-            government actions, internet service provider failures, or technical infrastructure issues.
+          <h2 style={sectionHeading}>11. Disclaimers and liability</h2>
+          <p style={para}>
+            <strong>11.1 Nature of the Film.</strong> The Film presents evidence, argument and interpretation
+            on a contested subject. It is offered as entertainment and education, not as professional advice
+            of any kind. It should not be used to diagnose, treat or make decisions about any medical
+            condition.
+          </p>
+          <p style={para}>
+            <strong>11.2 Accuracy.</strong> We have taken care with the research and cite sources on screen so
+            that you can examine them yourself. We do not warrant that all content is complete or free from
+            error, and we welcome corrections.
+          </p>
+          <p style={para}>
+            <strong>11.3 Limitation.</strong> To the fullest extent permitted by law, our total liability
+            arising from your purchase shall not exceed the amount you paid. Nothing in these terms limits
+            liability for death or personal injury caused by negligence, for fraud, or for any liability that
+            cannot lawfully be excluded — including your statutory rights as a consumer.
           </p>
         </section>
 
         <section style={{marginBottom: '40px'}}>
-          <h2 style={{fontSize: '24px', marginBottom: '16px', color: 'var(--dark-brown)', fontFamily: 'var(--font-cinzel)'}}>
-            13. Governing Law and Disputes
-          </h2>
-          <p style={{marginBottom: '16px', lineHeight: '1.8'}}>
-            These Terms & Conditions are governed by the laws of Spain. Any disputes arising from these terms or your use of the Experience shall be subject to the exclusive jurisdiction of the courts of Mallorca, Spain.
+          <h2 style={sectionHeading}>12. Disclosure of interest</h2>
+          <p style={para}>
+            The Film was written and directed by Colin Marry, a pig farmer, and was self-funded. It received
+            no industry, commercial, institutional or advocacy funding, and no company had any involvement in
+            or sight of its contents. The animation was generated using AI tools.
           </p>
-          <p style={{marginBottom: '16px', lineHeight: '1.8'}}>
-            If you are a consumer based in the EU, you also have the right to use the European Commission's Online Dispute Resolution platform: 
-            <a href="https://ec.europa.eu/consumers/odr" style={{color: 'var(--dark-gold)', textDecoration: 'underline'}}> ec.europa.eu/consumers/odr</a>
-          </p>
-        </section>
-
-        <section style={{marginBottom: '40px'}}>
-          <h2 style={{fontSize: '24px', marginBottom: '16px', color: 'var(--dark-brown)', fontFamily: 'var(--font-cinzel)'}}>
-            14. Changes to Terms
-          </h2>
-          <p style={{marginBottom: '16px', lineHeight: '1.8'}}>
-            We reserve the right to modify these Terms & Conditions at any time. Changes will be effective immediately upon posting to this page. 
-            Your continued use of our services after changes are posted constitutes acceptance of the modified terms.
-          </p>
-          <p style={{marginBottom: '16px', lineHeight: '1.8'}}>
-            We will notify you of significant changes by email or prominent notice on our website.
+          <p style={para}>
+            Colin Marry may in future develop and sell food products, including pork products, under the Posh
+            Pork name. No such product currently exists or is for sale. Your purchase of the Film creates no
+            obligation to buy anything else, and if you have opted in to marketing we may contact you about
+            future offerings. You can unsubscribe at any time.
           </p>
         </section>
 
         <section style={{marginBottom: '40px'}}>
-          <h2 style={{fontSize: '24px', marginBottom: '16px', color: 'var(--dark-brown)', fontFamily: 'var(--font-cinzel)'}}>
-            15. Severability
-          </h2>
-          <p style={{marginBottom: '16px', lineHeight: '1.8'}}>
-            If any provision of these Terms & Conditions is found to be invalid or unenforceable, the remaining provisions shall continue in full force and effect.
+          <h2 style={sectionHeading}>13. Privacy</h2>
+          <p style={para}>
+            Your use of the Site is subject to our <a href="/privacy" style={link}>Privacy Policy</a>, which
+            explains how we collect, use and protect your personal data in compliance with the GDPR.
           </p>
         </section>
 
         <section style={{marginBottom: '40px'}}>
-          <h2 style={{fontSize: '24px', marginBottom: '16px', color: 'var(--dark-brown)', fontFamily: 'var(--font-cinzel)'}}>
-            16. Contact Information
-          </h2>
-          <p style={{marginBottom: '16px', lineHeight: '1.8'}}>
-            For questions about these Terms & Conditions, contact us:
+          <h2 style={sectionHeading}>14. Changes to these terms</h2>
+          <p style={para}>
+            We may modify these terms from time to time. Changes take effect when posted to this page and
+            apply to purchases made after that date. Where a change materially affects existing purchasers,
+            we will notify you by email.
           </p>
-          <p style={{marginBottom: '16px', lineHeight: '1.8'}}>
+        </section>
+
+        <section style={{marginBottom: '40px'}}>
+          <h2 style={sectionHeading}>15. Governing law and disputes</h2>
+          <p style={para}>
+            These terms are governed by the laws of Spain, and disputes are subject to the courts of
+            Mallorca, Spain. If you are a consumer resident in another EU member state, this does not deprive
+            you of the protection of the mandatory consumer laws of your own country.
+          </p>
+          <p style={para}>
+            EU consumers may also use the European Commission&apos;s Online Dispute Resolution platform:{' '}
+            <a href="https://ec.europa.eu/consumers/odr" style={link}>ec.europa.eu/consumers/odr</a>
+          </p>
+        </section>
+
+        <section style={{marginBottom: '40px'}}>
+          <h2 style={sectionHeading}>16. Severability</h2>
+          <p style={para}>
+            If any provision of these terms is found invalid or unenforceable, the remaining provisions
+            continue in full force and effect.
+          </p>
+        </section>
+
+        <section style={{marginBottom: '40px'}}>
+          <h2 style={sectionHeading}>17. Contact</h2>
+          <p style={para}>
             <strong>Email:</strong> mystery@poshpork.com<br/>
-            <strong>Address:</strong> Posh Pork, Mallorca, Spain
+            <strong>Post:</strong> [ADDRESS PENDING]
           </p>
         </section>
 
         <div style={{marginTop: '60px', paddingTop: '40px', borderTop: '1px solid rgba(0,0,0,0.1)', textAlign: 'center'}}>
-          <a href="/" style={{color: 'var(--dark-gold)', textDecoration: 'underline', fontSize: '16px'}}>
-            ← Back to Home
-          </a>
+          <a href="/" style={link}>← Back to Home</a>
         </div>
 
       </div>
     </div>
   );
 }
+
+const sectionHeading: React.CSSProperties = {
+  fontSize: '24px',
+  marginBottom: '16px',
+  color: 'var(--dark-brown)',
+  fontFamily: 'var(--font-cinzel)'
+};
+
+const para: React.CSSProperties = {
+  marginBottom: '16px',
+  lineHeight: '1.8'
+};
+
+const list: React.CSSProperties = {
+  marginBottom: '16px',
+  marginLeft: '20px',
+  lineHeight: '1.8'
+};
+
+const link: React.CSSProperties = {
+  color: 'var(--dark-gold)',
+  textDecoration: 'underline'
+};
