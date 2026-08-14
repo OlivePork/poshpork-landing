@@ -37,13 +37,46 @@ export default function Hero() {
           color: '#f2ece1',
           fontFamily: 'var(--font-cinzel), Cinzel, serif',
           letterSpacing: '0.06em',
-          margin: '18px auto 48px',
+          margin: '18px auto 34px',
           opacity: 0.75
         }}>
           Inside the Greatest Fraud In Human History
         </p>
 
-        <div style={{ maxWidth: '540px', margin: '0 auto 48px' }}>
+        {/* TRAILER — autoplays muted and loops. Browsers block autoplay with
+            sound, so muted is the only way this starts on its own. Controls
+            stay visible so the viewer can turn the sound on. */}
+        <div style={{
+          width: '100%',
+          aspectRatio: '16 / 9',
+          borderRadius: '10px',
+          overflow: 'hidden',
+          border: '1px solid rgba(212,175,55,.35)',
+          background: '#000',
+          marginBottom: '12px'
+        }}>
+          <iframe
+            src="https://player.vimeo.com/video/1218266606?autoplay=1&muted=1&loop=1&title=0&byline=0&portrait=0&dnt=1&playsinline=1"
+            title="Which Food Is Killing You? — trailer"
+            allow="autoplay; fullscreen; picture-in-picture"
+            allowFullScreen
+            style={{ width: '100%', height: '100%', border: 0, display: 'block' }}
+          />
+        </div>
+
+        <p style={{
+          fontFamily: 'Cinzel, serif',
+          fontSize: '12px',
+          letterSpacing: '.18em',
+          textTransform: 'uppercase',
+          color: '#d4af37',
+          opacity: .7,
+          margin: '0 0 30px'
+        }}>
+          Playing silently — turn the sound on
+        </p>
+
+        <div style={{ maxWidth: '540px', margin: '0 auto 30px' }}>
           <p style={heroLine}>
             Three out of five people die from chronic inflammatory disease.
           </p>
@@ -55,41 +88,9 @@ export default function Hero() {
             color: '#d4af37',
             fontFamily: 'var(--font-cinzel), Cinzel, serif',
             fontSize: 'clamp(19px, 2.6vw, 25px)',
-            marginTop: '26px'
+            marginTop: '20px'
           }}>
             So which food is it?
-          </p>
-        </div>
-
-        {/* TRAILER — replace this whole block with the embed when it's cut */}
-        <div style={{
-          width: '100%',
-          aspectRatio: '16 / 9',
-          borderRadius: '10px',
-          border: '1px solid rgba(212,175,55,.35)',
-          background: '#000',
-          display: 'grid',
-          placeItems: 'center',
-          gap: '14px',
-          marginBottom: '40px'
-        }}>
-          <p style={{
-            color: '#d4af37',
-            fontSize: '13px',
-            fontFamily: 'Cinzel, serif',
-            letterSpacing: '.28em',
-            margin: 0
-          }}>
-            TRAILER
-          </p>
-          <p style={{
-            color: '#777',
-            fontSize: 'clamp(20px, 3.5vw, 30px)',
-            fontFamily: 'Georgia, serif',
-            fontStyle: 'italic',
-            margin: 0
-          }}>
-            Coming soon
           </p>
         </div>
 
@@ -110,9 +111,8 @@ export default function Hero() {
           </a>
         </div>
 
-        {/* CHANGED: access terms now match the wording used everywhere else. */}
-        <p style={{ fontSize: '14px', lineHeight: 1.7, color: '#888', marginTop: '22px' }}>
-          A film in which you are the jury. 1 hour 26 minutes.<br />
+        <p style={{ fontSize: '14px', lineHeight: 1.7, color: '#888', marginTop: '20px' }}>
+          A film in which you are the jury. 1 hour 27 minutes.<br />
           One payment. Permanent access. One purchase covers your household.
         </p>
 
