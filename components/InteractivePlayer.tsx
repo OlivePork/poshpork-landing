@@ -28,6 +28,7 @@ export default function InteractivePlayer({
   questions: Question[];
 }) {
   const mountRef = useRef<HTMLDivElement>(null);
+  const frameRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<Player | null>(null);
   const firedRef = useRef<Set<string>>(new Set());
   const askedAtRef = useRef<number>(0);
@@ -250,6 +251,34 @@ export default function InteractivePlayer({
     };
   }, [videoId]);
 
+  // Vimeo's own fullscreen button puts the *iframe* fullscreen, which hides
+  // every overlay — the questions simply never appear. Redirect it to the
+  // frame, which contains both the player and the overlays.
+  //
+  // Note: on iOS Safari, and when casting to a TV, the platform forces its own
+  // native player and no web overlay can be shown on top. That is not fixable
+  // from here.
+  useEffect(() => {
+    const player = playerRef.current;
+    if (!player) return;
+
+    const onVimeoFs = async (data: { fullscreen: boolean }) => {
+      if (!data.fullscreen) return;
+      if (document.fullscreenElement === frameRef.current) return;
+      try {
+        await player.exitFullscreen();
+        await frameRef.current?.requestFullscreen();
+      } catch {
+        /* browser refused the swap; native fullscreen stands */
+      }
+    };
+
+    player.on("fullscreenchange", onVimeoFs);
+    return () => {
+      player.off("fullscreenchange", onVimeoFs);
+    };
+  }, [videoId]);
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const qs = screenRef.current;
@@ -352,7 +381,7 @@ export default function InteractivePlayer({
     <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "24px 16px 64px" }}>
       <style>{CSS}</style>
 
-      <div className="pp-frame">
+      <div className="pp-frame" ref={frameRef}>
         <div ref={mountRef} />
 
         {showSetup && (
@@ -645,4 +674,11 @@ const CSS = `
 .pp-passiton-actions { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
 .pp-passiton-primary { padding: 14px 30px; font-family: Cinzel, serif; font-size: 16px; font-weight: bold; color: #0a0a0a; background: linear-gradient(135deg,#a67c00,#d4af37 50%,#a67c00); border-radius: 6px; text-decoration: none; }
 .pp-passiton-wa { padding: 14px 30px; font-family: Cinzel, serif; font-size: 16px; color: #f2ece1; border: 1px solid rgba(255,255,255,.25); border-radius: 6px; text-decoration: none; }
+
+/* Fullscreen: the frame goes fullscreen, not the iframe, so the overlays
+   stay on top of the film. Without this, questions never appear. */
+.pp-frame:fullscreen { border: none; border-radius: 0; background: #000; display: grid; place-items: center; }
+.pp-frame:fullscreen > div:first-child { width: 100%; }
+.pp-frame:fullscreen .pp-veil { position: fixed; }
+.pp-frame:-webkit-full-screen { border: none; border-radius: 0; background: #000; }
 `;
