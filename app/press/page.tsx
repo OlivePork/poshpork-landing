@@ -20,7 +20,30 @@ export default function PressPage() {
           </p>
         </div>
       </header>
-
+{/* TRAILER */}
+      <section style={{ ...section, paddingBottom: 0 }}>
+        <div style={wrap}>
+          <div style={{
+            width: "100%",
+            aspectRatio: "16 / 9",
+            borderRadius: "8px",
+            overflow: "hidden",
+            border: "1px solid rgba(212,175,55,.3)",
+            background: "#000",
+          }}>
+            <iframe
+              src="https://player.vimeo.com/video/1218266606?title=0&byline=0&portrait=0&dnt=1"
+              title="Which Food Is Killing You? — trailer"
+              allow="autoplay; fullscreen; picture-in-picture"
+              allowFullScreen
+              style={{ width: "100%", height: "100%", border: 0, display: "block" }}
+            />
+          </div>
+          <p style={{ ...para, fontSize: "14px", opacity: .65, marginTop: "14px" }}>
+            Trailer — free to embed. <a href="https://vimeo.com/1218266606" style={link}>vimeo.com/1218266606</a>
+          </p>
+        </div>
+      </section>
       {/* AT A GLANCE */}
       <section style={section}>
         <div style={wrap}>
