@@ -96,9 +96,7 @@ export default function PressPage() {
             fat that has carried the blame for sixty years and is now asking for a retrial.
           </p>
           <p style={para}>
-            The witnesses are the scientists, the executives and the regulators who built the
-            world we eat in. Their accounts contradict each other. Working out which is which
-            is the viewer&apos;s job, because the viewer is on the jury.
+            The viewer is on the jury.
           </p>
           <p style={para}>
             At points throughout the film, the evidence stops and a question appears. You commit
@@ -114,13 +112,13 @@ export default function PressPage() {
             all be right. Why they cannot all be right is the actual subject of the film.
           </p>
           <p style={para}>
-            It is animated, and deliberately so. The subject is heavy; the film is not. A
+            It is animated, so it spread food education to as wide an audience as possible. The subject is heavy; the film is not. A
             fourteen-year-old follows every step and laughs at the pirates.
           </p>
           <p style={para}>
             Written and directed by Colin Marry, an Irish pig farmer with an MSc in Agricultural
             Economics and no filmmaking background, working alone for a year with AI animation
-            tools and no budget. Sources cited on screen throughout.
+            tools and no budget. 
           </p>
         </div>
       </section>
@@ -250,7 +248,7 @@ export default function PressPage() {
         </div>
       </section>
 
-      {/* DISCLOSURE */}
+{/* DISCLOSURE */}
       <section style={{ ...section, background: "#141414" }}>
         <div style={wrap}>
           <h2 style={h2}>Disclosure</h2>
@@ -263,24 +261,20 @@ export default function PressPage() {
               Colin Marry was a pig farmer by trade, having taken over a family farm in Ireland.
               During that time he developed a belief that there was a need for a global meat
               brand. He created that brand, Olive Pork, but it was liquidated in 2023 after
-              costs across the industry &mdash; feed among them &mdash; rose following Russia&apos;s
-              invasion of Ukraine. Creditors lost money. This is addressed directly in the film.
+              costs across the industry rose. This is addressed directly in the film.
             </p>
             <p style={para}>
-              He intends in future to bring a pork product to market under the Posh Pork name.
-              No such product currently exists or is for sale.
-            </p>
-            <p style={para}>
-              The film was self-funded. It received no industry, commercial, institutional or
-              advocacy funding, and no company had any involvement in or sight of its contents.
+              He still believes a natural food brand is needed to counter the marketing of
+              processed food brands. It will only come to exist if enough people demonstrate
+              they want it, by joining the waitlist and paying €1.
             </p>
             <p style={{ ...para, marginBottom: 0 }}>
-              He holds a Masters Degree in Agricultural Economics from the University of London.
+              The film was self-funded. It received no industry, commercial, institutional or
+              advocacy funding, and no company had any involvement in or sight of its contents.
             </p>
           </div>
         </div>
       </section>
-
       {/* DIRECTOR */}
       <section style={section}>
         <div style={wrap}>
