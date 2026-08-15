@@ -23,7 +23,7 @@ export async function POST(req: Request) {
   }
 
   const { secret, email, outlet } = body;
-
+console.log("ADMIN_SECRET present:", !!process.env.ADMIN_SECRET, "length:", process.env.ADMIN_SECRET?.length);
   if (!process.env.ADMIN_SECRET || secret !== process.env.ADMIN_SECRET) {
     return NextResponse.json({ error: "Not authorised" }, { status: 401 });
   }
