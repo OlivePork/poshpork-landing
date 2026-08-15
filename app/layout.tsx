@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Script from "next/script";
 import SiteHeader from "@/components/SiteHeader";
+import Footer from "@/components/Footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,7 +18,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Which Food Is Killing You?",
     description:
-      "Inside the Greatest Fraud In Human History. A film that puts you on the jury — watch the evidence, deliver your verdict.",
+      "Inside the Greatest Fraud In Human History. A film that puts you on the jury &mdash; watch the evidence, deliver your verdict.",
     url: "https://www.poshpork.com",
     siteName: "Posh Pork",
     type: "video.movie",
@@ -64,10 +65,8 @@ export default function RootLayout({
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            
             // Google Analytics
             gtag('config', 'G-GC1QGCDZ0Z');
-            
             // Google Ads Conversion Tracking
             gtag('config', 'AW-18073746528');
           `}
@@ -76,6 +75,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <SiteHeader />
         {children}
+        <Footer />
       </body>
     </html>
   );
