@@ -21,7 +21,7 @@ export default function Article() {
           </p>
 
           <p style={{fontSize: '18px', marginBottom: '25px'}}>
-            The name is a clue. Somewhere in the evidence sits an explanation for why one of the most vilified foods on the list may be innocent — and why the thing that replaced it was never examined nearly as closely.
+            The name is a clue. Somewhere in the evidence sits an explanation for why one of the most vilified foods on the list may be innocent &mdash; and why the thing that replaced it was never examined nearly as closely.
           </p>
 
           <p style={{fontSize: '18px', marginBottom: '40px'}}>
@@ -47,7 +47,7 @@ export default function Article() {
             </h3>
 
             <p style={{fontSize: '16px', marginBottom: '10px'}}>
-              <strong>What:</strong> Which Food Is Killing You? — a feature film with interactive questions
+              <strong>What:</strong> Which Food Is Killing You? &mdash; a feature film with interactive questions
             </p>
             <p style={{fontSize: '16px', marginBottom: '10px'}}>
               <strong>Where:</strong> Streamed here, on any device. Watch on a phone, laptop or television.
@@ -59,7 +59,7 @@ export default function Article() {
               <strong>Who:</strong> One purchase covers your household. Watch alone or gather everyone round.
             </p>
             <p style={{fontSize: '16px', marginBottom: '10px'}}>
-              <strong>Duration:</strong> 1 hour 26 minutes
+              <strong>Duration:</strong> 1 hour 27 minutes
             </p>
             <p style={{fontSize: '16px', marginBottom: '20px'}}>
               <strong>Language:</strong> English
@@ -69,10 +69,12 @@ export default function Article() {
               Price:
             </p>
             <p style={{fontSize: '16px', marginBottom: '10px'}}>
-              €15 — one payment, permanent access. One purchase covers your household. Rewatch as often as you like.
+              &euro;15 &mdash; one payment, permanent access. One purchase covers your household. Rewatch as often as you like.
             </p>
             <p style={{fontSize: '16px', marginBottom: '20px'}}>
               Screening it for a school, workplace, clinic or community group?{' '}
+              <a href="/contact" style={{color: '#a67c00'}}>Get in touch about group and educational licences.</a>
+            </p>
 
             <p style={{fontSize: '16px', fontStyle: 'italic'}}>
               This film is about evidence and how it is made. It is not medical advice, and nothing in it should replace a conversation with your doctor.
