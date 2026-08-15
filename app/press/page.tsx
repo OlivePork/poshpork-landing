@@ -16,11 +16,12 @@ export default function PressPage() {
           </h1>
           <p style={{ fontSize: "18px", lineHeight: 1.6, opacity: .8, maxWidth: "60ch", margin: 0 }}>
             Everything a writer needs: the film, the facts, the sources behind every claim,
-            and how it was made. Free viewing access for press is below — no payment, no account.
+            and how it was made. Free viewing access for press is below.
           </p>
         </div>
       </header>
-{/* TRAILER */}
+
+      {/* TRAILER */}
       <section style={{ ...section, paddingBottom: 0 }}>
         <div style={wrap}>
           <div style={{
@@ -40,10 +41,11 @@ export default function PressPage() {
             />
           </div>
           <p style={{ ...para, fontSize: "14px", opacity: .65, marginTop: "14px" }}>
-            Trailer — free to embed. <a href="https://vimeo.com/1218266606" style={link}>vimeo.com/1218266606</a>
+            Trailer &mdash; free to embed. <a href="https://vimeo.com/1218266606" style={link}>vimeo.com/1218266606</a>
           </p>
         </div>
       </section>
+
       {/* AT A GLANCE */}
       <section style={section}>
         <div style={wrap}>
@@ -76,8 +78,8 @@ export default function PressPage() {
           <h3 style={h3}>100 words</h3>
           <p style={para}>
             Three out of five people die from chronic inflammatory disease. Its drivers are
-            lifestyle, and the largest lifestyle factor for most of us is food. So which food
-            is it? <em>Which Food Is Killing You?</em> puts four suspects on trial — and puts
+            lifestyle, and for most of us the largest lifestyle factor is food. So which food
+            is it? <em>Which Food Is Killing You?</em> puts four suspects on trial &mdash; and puts
             the viewer on the jury. Questions appear during the film; viewers commit to an
             answer before they learn whether they were right, and their verdicts join a running
             tally counted alongside every other viewer&apos;s. Animated, family-watchable, and
@@ -86,12 +88,39 @@ export default function PressPage() {
 
           <h3 style={h3}>300 words</h3>
           <p style={para}>
-            [TO WRITE — expand the 100-word version. Cover: the four suspects and why each is
-            accused; what the trial structure lets you do that a conventional documentary
-            cannot; the interactive verdict mechanic and why committing to an answer before
-            the reveal changes what a viewer remembers; who made it and under what conditions.
-            Aim for 280–320 words. This is the version an editor will paste into a listing,
-            so it should read as finished prose rather than a pitch.]
+            The court is in session. The defendant is your dinner.
+          </p>
+          <p style={para}>
+            <em>Which Food Is Killing You?</em> opens on four suspects in the dock: refined
+            carbohydrates, industrial seed oils, a syndicate of food engineers, and one animal
+            fat that has carried the blame for sixty years and is now asking for a retrial.
+          </p>
+          <p style={para}>
+            The witnesses are the scientists, the executives and the regulators who built the
+            world we eat in. Their accounts contradict each other. Working out which is which
+            is the viewer&apos;s job, because the viewer is on the jury.
+          </p>
+          <p style={para}>
+            At points throughout the film, the evidence stops and a question appears. You commit
+            to an answer before you learn whether you were right &mdash; and that turns out to
+            matter more than it sounds. You remember what you got wrong. You notice the moment
+            your mind changed and what changed it. At the end, you deliver a verdict on each
+            suspect, and see how the rest of the jury voted.
+          </p>
+          <p style={para}>
+            Three out of five people die from chronic inflammatory disease. Its drivers are
+            lifestyle, and the largest lifestyle factor for most of us is food. Ask ten people
+            which food and you get ten confident answers, each with studies attached. They cannot
+            all be right. Why they cannot all be right is the actual subject of the film.
+          </p>
+          <p style={para}>
+            It is animated, and deliberately so. The subject is heavy; the film is not. A
+            fourteen-year-old follows every step and laughs at the pirates.
+          </p>
+          <p style={para}>
+            Written and directed by Colin Marry, an Irish pig farmer with an MSc in Agricultural
+            Economics and no filmmaking background, working alone for a year with AI animation
+            tools and no budget. Sources cited on screen throughout.
           </p>
         </div>
       </section>
@@ -100,8 +129,8 @@ export default function PressPage() {
       <section style={section}>
         <div style={wrap}>
           <h2 style={h2}>Watch the film</h2>
-          <p style={para}>
-            Free, unrestricted access for press. No payment step, no account creation.
+          <p style={{ ...para, maxWidth: "60ch" }}>
+            Free, unrestricted access for press. No payment.
           </p>
           <div style={{
             border: "1px solid rgba(212,175,55,.35)",
@@ -111,12 +140,12 @@ export default function PressPage() {
             maxWidth: "60ch",
           }}>
             <p style={{ ...para, marginBottom: "16px" }}>
-              <strong style={{ color: "#d4af37" }}>Press access code:</strong> [CODE]
+              Write to <a href="mailto:colin@poshpork.com?subject=Press%20access" style={link}>colin@poshpork.com</a> with
+              the outlet you write for, and I&apos;ll set up access the same day. You will get a
+              single link that signs you in and starts the film.
             </p>
             <p style={{ ...para, fontSize: "15px", marginBottom: 0, opacity: .8 }}>
-              Enter at <a href="/movie" style={link}>poshpork.com/movie</a>, or write to{" "}
-              <a href="mailto:colin@poshpork.com" style={link}>colin@poshpork.com</a> and
-              I&apos;ll send a direct link.
+              No conditions attached, and no embargo &mdash; write whenever suits you, or not at all.
             </p>
           </div>
         </div>
@@ -194,20 +223,26 @@ export default function PressPage() {
             hours a day starting at 4:30am. There was no studio, no crew and no budget.
           </p>
           <p style={{ ...para, maxWidth: "62ch" }}>
-            <strong>Every frame of the animation was generated using AI tools.</strong> There was
-            no animation team, because there was no money to pay one — the alternative was not a
-            hand-drawn version of this film, it was no film at all.
+            <strong>Every frame of the animation was generated using AI.</strong> There was no
+            animation team, because there was no money to pay one &mdash; the alternative was
+            not a hand-drawn version of this film, it was no film at all.
           </p>
+
+          <h3 style={h3}>The tools</h3>
+          <ul style={{ margin: "0 0 24px", padding: 0, listStyle: "none", maxWidth: "62ch" }}>
+            <Tool name="Grok Imagine" use="Image and video generation &mdash; every frame of the animation." />
+            <Tool name="Claude Code" use="Prompting, and building this website." />
+            <Tool name="Gemini" use="The soundtrack." />
+            <Tool name="CapCut" use="Editing." />
+          </ul>
+
           <p style={{ ...para, maxWidth: "62ch" }}>
-            The tools did not do the research, the reading, the script, the characters, the
-            structure of the trial, the questions put to the jury, or any decision about what a
-            piece of evidence means and where it sits. That is the part that took the year.
+            <strong>The script was written word for word by Colin Marry.</strong> So were the
+            research, the argument, the characters, the structure of the trial, the questions
+            put to the jury, and every decision about what a piece of evidence means and where
+            it sits. No part of the script was generated.
           </p>
-          <p style={{ ...para, maxWidth: "62ch" }}>
-            <strong>Tools used:</strong> [TO FILL — name them specifically. Which model or
-            product generated the animation, which was used for voice, which for editing.
-            Being precise here is better than being vague.]
-          </p>
+
           <p style={{ ...para, maxWidth: "62ch", opacity: .8 }}>
             It may be the first feature-length documentary animated this way. The director would
             rather be corrected on that than overstate it.
@@ -225,8 +260,10 @@ export default function PressPage() {
             maxWidth: "62ch",
           }}>
             <p style={para}>
-              Colin Marry is a pig farmer by trade. He previously ran Olive Pork, a pork
-              business that was liquidated in [YEAR] after feed prices rose following the
+              Colin Marry was a pig farmer by trade, having taken over a family farm in Ireland.
+              During that time he developed a belief that there was a need for a global meat
+              brand. He created that brand, Olive Pork, but it was liquidated in 2023 after
+              costs across the industry &mdash; feed among them &mdash; rose following Russia&apos;s
               invasion of Ukraine. Creditors lost money. This is addressed directly in the film.
             </p>
             <p style={para}>
@@ -238,7 +275,7 @@ export default function PressPage() {
               advocacy funding, and no company had any involvement in or sight of its contents.
             </p>
             <p style={{ ...para, marginBottom: 0 }}>
-              He is not a doctor, a scientist or a nutritionist, and has never claimed to be.
+              He holds a Masters Degree in Agricultural Economics from the University of London.
             </p>
           </div>
         </div>
@@ -249,12 +286,23 @@ export default function PressPage() {
         <div style={wrap}>
           <h2 style={h2}>Director</h2>
           <p style={{ ...para, maxWidth: "62ch" }}>
-            <strong>Colin Marry.</strong> Irish, based in Mallorca. Spent his twenties trying to
-            work out why the family pig farm had stopped paying for itself, and concluded the
-            problem was not in the field but in the mind of whoever stood in the supermarket
-            aisle deciding. Founded Olive Pork in 2018, feeding pigs on olive pomace — a waste
-            product of oil pressing — and exported to six countries before the business failed.
-            <em> Which Food Is Killing You?</em> is his first film.
+            <strong>Colin Marry has no film or directing experience of any kind.</strong> He had
+            never made a film before this one, had no training in it, and has never worked in
+            the industry.
+          </p>
+          <p style={{ ...para, maxWidth: "62ch" }}>
+            He is Irish, based in Mallorca, and was a pig farmer by trade. He spent his twenties
+            trying to work out why the family farm had stopped paying for itself, and concluded
+            the problem was not in the field but in the mind of whoever stood in the supermarket
+            aisle deciding. He founded Olive Pork in 2018, feeding pigs on olive pomace &mdash;
+            a waste product of oil pressing &mdash; and exported to six countries before the
+            business failed in 2023.
+          </p>
+          <p style={{ ...para, maxWidth: "62ch" }}>
+            He holds a Masters Degree in Agricultural Economics from the University of London.
+          </p>
+          <p style={{ ...para, maxWidth: "62ch" }}>
+            <em>Which Food Is Killing You?</em> is his first film.
           </p>
           <p style={{ ...para, maxWidth: "62ch" }}>
             Longer version: <a href="/about" style={link}>The Back Story</a>.
@@ -270,11 +318,14 @@ export default function PressPage() {
             All images are high resolution and free to use in coverage of the film.
           </p>
           <ul style={{ listStyle: "none", padding: 0, margin: "28px 0 0", maxWidth: "60ch" }}>
-            <Asset label="Press release (PDF)" href="/press/press-release.pdf" note="[TO ADD]" />
-            <Asset label="Stills — full set (ZIP)" href="/press/stills.zip" note="[TO ADD — 6–10 images, 300dpi, horizontal, named sensibly]" />
-            <Asset label="Poster / key art" href="/press/key-art.jpg" note="[TO ADD]" />
-            <Asset label="Director headshot" href="/press/colin-marry.jpg" note="[TO ADD]" />
-            <Asset label="The suspects" href="/press/suspects.jpg" note="[TO ADD]" />
+            <Asset label="The suspects — lineup" href="/press/posh-pork-suspects-lineup.jpg" note="[TO ADD]" />
+            <Asset label="Lady Posh Pork" href="/press/posh-pork-lady-posh-pork.jpg" note="[TO ADD]" />
+            <Asset label="Mr Carbohydrates" href="/press/posh-pork-mr-carbohydrates.jpg" note="[TO ADD]" />
+            <Asset label="Mr Vegetable Oils" href="/press/posh-pork-mr-vegetable-oils.jpg" note="[TO ADD]" />
+            <Asset label="The Bliss Brothers" href="/press/posh-pork-bliss-brothers.jpg" note="[TO ADD]" />
+            <Asset label="The judge" href="/press/posh-pork-judge.jpg" note="[TO ADD]" />
+            <Asset label="Key art / poster" href="/press/posh-pork-key-art.jpg" note="[TO ADD]" />
+            <Asset label="Colin Marry" href="/press/colin-marry.jpg" note="[TO ADD]" />
           </ul>
         </div>
       </section>
@@ -285,7 +336,7 @@ export default function PressPage() {
           <h2 style={h2}>Contact</h2>
           <p style={{ ...para, maxWidth: "62ch" }}>
             All press enquiries go directly to the director. There is no publicist and no
-            agency — you will be talking to the person who made it.
+            agency &mdash; you will be talking to the person who made it.
           </p>
           <p style={{ ...para, fontSize: "18px" }}>
             <a href="mailto:colin@poshpork.com" style={link}>colin@poshpork.com</a>
@@ -326,6 +377,23 @@ function ClaimRow({ time, claim, status, source }: { time: string; claim: string
       <td style={{ ...td, whiteSpace: "nowrap" }}>{status}</td>
       <td style={{ ...td, fontSize: "14px", opacity: .85 }}>{source}</td>
     </tr>
+  );
+}
+
+function Tool({ name, use }: { name: string; use: string }) {
+  return (
+    <li style={{
+      display: "grid",
+      gridTemplateColumns: "minmax(120px, 160px) 1fr",
+      gap: "16px",
+      padding: "12px 0",
+      borderBottom: "1px solid rgba(232,226,213,.12)",
+      alignItems: "baseline",
+    }}>
+      <span style={{ fontFamily: "Cinzel, serif", fontSize: "15px", color: "#d4af37" }}>{name}</span>
+      <span style={{ fontSize: "15px", lineHeight: 1.6, opacity: .85 }}
+        dangerouslySetInnerHTML={{ __html: use }} />
+    </li>
   );
 }
 

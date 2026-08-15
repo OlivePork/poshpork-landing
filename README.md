@@ -1,3 +1,23 @@
+## Grant press access
+
+    .\scripts\grant-press.ps1 -Email "reporter@nyt.com" -Outlet "The New York Times"
+
+Creates the account, grants access, and sends the branded email with a
+one-click link to the film. Safe to run twice — re-sends rather than duplicating.
+
+If it complains about the secret:
+
+    setx POSHPORK_ADMIN_SECRET "your-secret"
+
+then open a new terminal.
+
+See who has press access:
+
+    select u.email, p.created_at
+    from purchases p join auth.users u on u.id = p.user_id
+    where p.source = 'press' order by p.created_at desc;
+
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
