@@ -30,7 +30,7 @@ export default function TermsAndConditions() {
             <strong>Trading as:</strong> Posh Pork<br/>
             <strong>NIF:</strong> Z4356082W<br/>
             <strong>Registered address:</strong> [ADDRESS PENDING — see note below]<br/>
-            <strong>Email:</strong> mystery@poshpork.com
+            <strong>Email:</strong> colin@poshpork.com
           </p>
           <p style={{...para, fontSize: '13px', opacity: 0.75, marginBottom: 0}}>
             Colin Marry trades as a sole trader (autónomo) registered in Spain.
@@ -109,11 +109,6 @@ export default function TermsAndConditions() {
             <li>Sell, rent, sub-licence or otherwise transfer your access</li>
             <li>Use the Film or any part of it for any commercial purpose</li>
           </ul>
-          <p style={para}>
-            <strong>4.3 Group and educational screenings.</strong> Screenings outside a household require a
-            separate licence. We offer these and are glad to arrange them — contact us at
-            mystery@poshpork.com.
-          </p>
           <p style={para}>
             We may suspend or terminate access, without refund, where these terms are breached.
           </p>
@@ -283,7 +278,7 @@ export default function TermsAndConditions() {
         <section style={{marginBottom: '40px'}}>
           <h2 style={sectionHeading}>17. Contact</h2>
           <p style={para}>
-            <strong>Email:</strong> mystery@poshpork.com<br/>
+            <strong>Email:</strong> colin@poshpork.com<br/>
             <strong>Post:</strong> [ADDRESS PENDING]
           </p>
         </section>

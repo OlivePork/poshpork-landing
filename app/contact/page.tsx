@@ -1,51 +1,70 @@
 export const metadata = {
-  title: "Group & Educational Licences | Which Food Is Killing You?",
+  title: "Contact | Which Food Is Killing You?",
   description:
-    "Screening licences for schools, workplaces, clinics and community groups. Published pricing, invoices available.",
+    "Get in touch about the film, or about screening licences for schools, workplaces, clinics and community groups.",
 };
 
-export default function LicensingPage() {
+export default function ContactPage() {
   return (
     <main style={{ background: "#0f0f0f", color: "#e8e2d5", minHeight: "100vh" }}>
       {/* HEADER */}
       <header style={{ background: "#1a1a1a", padding: "clamp(56px,8vw,96px) 20px", borderBottom: "1px solid rgba(212,175,55,.25)" }}>
         <div style={wrap}>
-          <p style={eyebrow}>Group &amp; Educational Licences</p>
+          <p style={eyebrow}>Contact</p>
           <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "clamp(30px,5vw,48px)", color: "#d4af37", lineHeight: 1.15, margin: "0 0 20px" }}>
-            Show it to a room
+            Write to me
           </h1>
-          <p style={{ fontSize: "18px", lineHeight: 1.6, opacity: .82, maxWidth: "58ch", margin: 0 }}>
-            The €15 purchase covers your household. Showing the film to a class, a workplace,
-            a clinic or a community group needs a screening licence — and they are
-            straightforward and inexpensive.
+          <p style={{ fontSize: "18px", lineHeight: 1.6, opacity: .82, maxWidth: "56ch", margin: 0 }}>
+            There is no team and no agency. Everything here comes straight to me,
+            and I answer it myself.
           </p>
         </div>
       </header>
 
-      {/* WHY IT SUITS A GROUP */}
+      {/* DIRECT CONTACT */}
       <section style={section}>
         <div style={wrap}>
-          <h2 style={h2}>Why it works with an audience</h2>
+          <div style={{ display: "grid", gap: "20px", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))" }}>
+            <Box
+              label="Anything at all"
+              email="colin@poshpork.com"
+              note="Questions, corrections, disagreements, problems watching the film. I read all of it."
+            />
+            <Box
+              label="Screenings &amp; licences"
+              email="screenings@poshpork.com"
+              note="Schools, workplaces, clinics and community groups. Details and prices below."
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* WHY IT WORKS WITH A GROUP */}
+      <section style={{ ...section, background: "#141414" }}>
+        <div style={wrap}>
+          <p style={eyebrow}>Group &amp; Educational Licences</p>
+          <h2 style={h2}>Show it to a room</h2>
           <p style={{ ...para, maxWidth: "62ch" }}>
-            The film is built to be argued with. At points throughout, the evidence stops and a
-            question appears on screen. Everyone watching answers, and the room finds out how it
-            voted before the film moves on.
+            The €15 purchase covers your household. Showing the film to a class, a workplace,
+            a clinic or a community group needs a screening licence — and they are
+            straightforward and inexpensive.
           </p>
           <p style={{ ...para, maxWidth: "62ch" }}>
-            In a classroom that turns a documentary into a lesson in how evidence works — how
-            studies get funded, how a strong claim differs from a loud one, and how to notice
-            the moment your own mind changes. In a workplace it starts the conversation that
-            health programmes usually struggle to start at all.
+            The film is built to be argued with. At points throughout, the evidence stops and
+            a question appears on screen. Everyone watching answers, and the room finds out how
+            it voted before the film moves on. In a classroom that turns a documentary into a
+            lesson in how evidence works. In a workplace it starts the conversation that health
+            programmes usually struggle to start at all.
           </p>
           <p style={{ ...para, maxWidth: "62ch" }}>
-            It is animated, runs 1 hour 27 minutes, and is suitable for a general audience from
-            around fourteen upwards.
+            It is animated, runs 1 hour 27 minutes, and suits a general audience from around
+            fourteen upwards.
           </p>
         </div>
       </section>
 
       {/* PRICING */}
-      <section style={{ ...section, background: "#141414" }}>
+      <section style={section}>
         <div style={wrap}>
           <h2 style={h2}>Licences</h2>
           <p style={{ ...para, maxWidth: "62ch", marginBottom: "40px" }}>
@@ -101,9 +120,9 @@ export default function LicensingPage() {
       </section>
 
       {/* HOW IT WORKS */}
-      <section style={section}>
+      <section style={{ ...section, background: "#141414" }}>
         <div style={wrap}>
-          <h2 style={h2}>How it works</h2>
+          <h2 style={h2}>How a licence works</h2>
           <ol style={{ margin: 0, padding: 0, listStyle: "none", maxWidth: "60ch" }}>
             <Step n="1" text="Email screenings@poshpork.com with your organisation, which licence you need, and a billing address." />
             <Step n="2" text="You get an invoice, usually the same day. Pay by bank transfer or card." />
@@ -112,21 +131,6 @@ export default function LicensingPage() {
           <p style={{ ...para, marginTop: "32px", maxWidth: "60ch", opacity: .8 }}>
             No account to create, no platform to learn. If you need a licence agreement in
             writing for your procurement process, ask and I will send one.
-          </p>
-        </div>
-      </section>
-
-      {/* CONTACT */}
-      <section style={{ ...section, background: "#141414", paddingBottom: "clamp(72px,10vw,110px)" }}>
-        <div style={wrap}>
-          <h2 style={h2}>Get in touch</h2>
-          <p style={{ ...para, maxWidth: "60ch" }}>
-            Enquiries come straight to me — there is no sales team and no agency.
-          </p>
-          <p style={{ ...para, fontSize: "20px" }}>
-            <a href="mailto:screenings@poshpork.com?subject=Screening%20licence%20enquiry" style={link}>
-              screenings@poshpork.com
-            </a>
           </p>
 
           <div style={{
@@ -149,6 +153,31 @@ export default function LicensingPage() {
 }
 
 /* ---------- components ---------- */
+
+function Box({ label, email, note }: { label: string; email: string; note: string }) {
+  return (
+    <div style={{
+      border: "1px solid rgba(212,175,55,.3)",
+      borderRadius: "8px",
+      padding: "28px 24px",
+    }}>
+      <p style={{
+        fontFamily: "Cinzel, serif",
+        fontSize: "13px",
+        letterSpacing: ".16em",
+        textTransform: "uppercase",
+        color: "#d4af37",
+        margin: "0 0 14px",
+      }}
+        dangerouslySetInnerHTML={{ __html: label }}
+      />
+      <p style={{ margin: "0 0 14px" }}>
+        <a href={`mailto:${email}`} style={{ ...link, fontSize: "18px" }}>{email}</a>
+      </p>
+      <p style={{ fontSize: "15px", lineHeight: 1.6, opacity: .75, margin: 0 }}>{note}</p>
+    </div>
+  );
+}
 
 function Tier({
   name, price, period, who, includes, featured,
@@ -226,7 +255,6 @@ function Step({ n, text }: { n: string; text: string }) {
 /* ---------- styles ---------- */
 
 const wrap: React.CSSProperties = { maxWidth: "900px", margin: "0 auto" };
-
 const section: React.CSSProperties = { padding: "clamp(56px,7vw,88px) 20px" };
 
 const eyebrow: React.CSSProperties = {

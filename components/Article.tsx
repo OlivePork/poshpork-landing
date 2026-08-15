@@ -73,8 +73,6 @@ export default function Article() {
             </p>
             <p style={{fontSize: '16px', marginBottom: '20px'}}>
               Screening it for a school, workplace, clinic or community group?{' '}
-              <a href="/licensing" style={{color: '#a67c00'}}>Get in touch about group and educational licences.</a>
-            </p>
 
             <p style={{fontSize: '16px', fontStyle: 'italic'}}>
               This film is about evidence and how it is made. It is not medical advice, and nothing in it should replace a conversation with your doctor.

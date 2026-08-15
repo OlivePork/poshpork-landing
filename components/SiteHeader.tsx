@@ -32,7 +32,8 @@ export default async function SiteHeader() {
       zIndex: 50,
       display: "flex",
       alignItems: "center",
-      gap: "20px",
+      flexWrap: "wrap",
+      gap: "10px 20px",
       padding: "14px 24px",
       background: "rgba(10,10,10,.86)",
       backdropFilter: "blur(8px)",
@@ -48,17 +49,16 @@ export default async function SiteHeader() {
         POSH PORK
       </a>
 
-      <a href="/about" style={{
-        fontFamily: "Cinzel, serif",
-        fontSize: "12px",
-        letterSpacing: "0.1em",
-        color: "#f2ece1",
-        opacity: 0.6,
-        textDecoration: "none",
+      <nav style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "clamp(14px, 3vw, 26px)",
         marginLeft: "auto",
       }}>
-        THE BACK STORY
-      </a>
+        <a href="/about" style={navLink}>THE BACK STORY</a>
+        <a href="/press" style={navLink}>PRESS</a>
+        <a href="/contact" style={navLink}>CONTACT</a>
+      </nav>
 
       <a href={href} style={{
         fontFamily: "Cinzel, serif",
@@ -79,3 +79,13 @@ export default async function SiteHeader() {
     </header>
   );
 }
+
+const navLink: React.CSSProperties = {
+  fontFamily: "Cinzel, serif",
+  fontSize: "12px",
+  letterSpacing: "0.1em",
+  color: "#f2ece1",
+  opacity: 0.6,
+  textDecoration: "none",
+  whiteSpace: "nowrap",
+};
