@@ -39,22 +39,47 @@ export default function ContactPage() {
         </div>
       </section>
 
-      {/* WHY IT WORKS WITH A GROUP */}
+      {/* WHY IT SUITS A GROUP */}
       <section style={{ ...section, background: "#141414" }}>
         <div style={wrap}>
           <p style={eyebrow}>Group &amp; Educational Licences</p>
           <h2 style={h2}>Show it to a room</h2>
           <p style={{ ...para, maxWidth: "62ch" }}>
             The €15 purchase covers your household. Showing the film to a class, a workplace,
-            a clinic or a community group needs a screening licence — and they are
+            a clinic or a community group needs a screening licence &mdash; and they are
             straightforward and inexpensive.
           </p>
+
+          <h3 style={h3}>How it works in a room</h3>
           <p style={{ ...para, maxWidth: "62ch" }}>
-            The film is built to be argued with. At points throughout, the evidence stops and
-            a question appears on screen. Everyone watching answers, and the room finds out how
-            it voted before the film moves on. In a classroom that turns a documentary into a
-            lesson in how evidence works. In a workplace it starts the conversation that health
-            programmes usually struggle to start at all.
+            Split the room into tables of four. You open a room on the screen and everyone
+            joins on their phone with a six-character code &mdash; no app, no accounts,
+            no sign-up.
+          </p>
+          <p style={{ ...para, maxWidth: "62ch" }}>
+            Then you just play the film. When the evidence stops and a question appears,
+            it appears on every phone at the same moment. <strong>Each table answers once.</strong>{" "}
+            They have to talk it through and agree, and anyone at the table can put the
+            answer in &mdash; or change it, if they think the table got it wrong. Everyone at
+            that table sees who put what in, which is usually where the argument starts.
+          </p>
+          <p style={{ ...para, maxWidth: "62ch" }}>
+            You can see the answers arriving on your screen. When the room is in, you carry
+            on. At the end, every person delivers their own verdict on each of the four
+            suspects, and the tables are ranked on how they did.
+          </p>
+          <p style={{ ...para, maxWidth: "62ch" }}>
+            No phones in the room? There is a show-of-hands mode instead &mdash; take the
+            count, type it in, carry on.
+          </p>
+
+          <h3 style={h3}>What it is for</h3>
+          <p style={{ ...para, maxWidth: "62ch" }}>
+            In a classroom, one answer per table turns a documentary into an argument about
+            evidence &mdash; how studies get funded, how a strong claim differs from a loud
+            one. In a workplace it starts the conversation that health programmes usually
+            struggle to start at all, and the table format does the team-building work at
+            the same time.
           </p>
           <p style={{ ...para, maxWidth: "62ch" }}>
             It is animated, runs 1 hour 27 minutes, and suits a general audience from around
@@ -69,7 +94,7 @@ export default function ContactPage() {
           <h2 style={h2}>Licences</h2>
           <p style={{ ...para, maxWidth: "62ch", marginBottom: "40px" }}>
             All prices in euros, excluding VAT where applicable. Invoices and purchase orders
-            are no problem — most institutions need one, and it will not slow anything down.
+            are no problem &mdash; most institutions need one, and it will not slow anything down.
           </p>
 
           <div style={{ display: "grid", gap: "20px", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))" }}>
@@ -87,13 +112,13 @@ export default function ContactPage() {
             <Tier
               name="School licence"
               price="€295"
-              period="Two years"
+              period="two years"
               who="Primary and secondary schools, sixth forms, teacher training."
               includes={[
-                "Unlimited classroom use, no expiry",
+                "Unlimited classroom use for two years",
                 "One school site",
                 "Teaching notes and question sheet",
-                "Repeat use for two years",
+                "Renewable",
               ]}
               featured
             />
@@ -112,7 +137,7 @@ export default function ContactPage() {
           </div>
 
           <p style={{ ...para, fontSize: "15px", opacity: .7, marginTop: "32px", maxWidth: "62ch" }}>
-            Multi-site organisations, school districts, national bodies or anything larger —
+            Multi-site organisations, school districts, national bodies or anything larger &mdash;
             write to me and we will work something out. The same is true if you want the film
             and cannot afford it; say so and we will find a way.
           </p>
@@ -273,6 +298,16 @@ const h2: React.CSSProperties = {
   color: "#d4af37",
   lineHeight: 1.2,
   margin: "0 0 24px",
+};
+
+const h3: React.CSSProperties = {
+  fontFamily: "Cinzel, serif",
+  fontSize: "15px",
+  letterSpacing: ".1em",
+  textTransform: "uppercase",
+  color: "#d4af37",
+  opacity: .75,
+  margin: "32px 0 12px",
 };
 
 const para: React.CSSProperties = {
