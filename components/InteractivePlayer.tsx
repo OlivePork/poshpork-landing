@@ -23,9 +23,11 @@ const FIRE_WINDOW = 4;
 export default function InteractivePlayer({
   videoId,
   questions,
+  lang = "en",
 }: {
   videoId: string;
   questions: Question[];
+  lang?: string;
 }) {
   const mountRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<HTMLDivElement>(null);
@@ -53,11 +55,13 @@ export default function InteractivePlayer({
   const picksRef = useRef(picks);
   const countsRef = useRef(counts);
   const groupSizeRef = useRef(groupSize);
+  const langRef = useRef(lang);
   useEffect(() => void (modeRef.current = mode), [mode]);
   useEffect(() => void (screenRef.current = screen), [screen]);
   useEffect(() => void (picksRef.current = picks), [picks]);
   useEffect(() => void (countsRef.current = counts), [counts]);
   useEffect(() => void (groupSizeRef.current = groupSize), [groupSize]);
+  useEffect(() => void (langRef.current = lang), [lang]);
 
   useEffect(() => {
     const saved = window.localStorage.getItem(MODE_KEY) as Mode | null;
@@ -89,6 +93,7 @@ export default function InteractivePlayer({
           answer,
           vote_count: voteCount,
           answer_mode: modeRef.current,
+          lang: langRef.current,
           group_size: groupSizeRef.current,
           seconds_to_answer: Number(((Date.now() - askedAtRef.current) / 1000).toFixed(1)),
         }),
@@ -187,6 +192,12 @@ export default function InteractivePlayer({
   const askRef = useRef(ask);
   useEffect(() => void (questionsRef.current = questions), [questions]);
   useEffect(() => void (askRef.current = ask), [ask]);
+
+  // Switching language swaps the video, so previously fired questions
+  // must be allowed to fire again on the new one.
+  useEffect(() => {
+    firedRef.current = new Set();
+  }, [videoId]);
 
   useEffect(() => {
     if (!mountRef.current || playerRef.current) return;
@@ -350,6 +361,7 @@ export default function InteractivePlayer({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           video_id: videoId,
+          lang,
           mode: chosen,
           group_size: size,
           disclaimer_accepted: true,

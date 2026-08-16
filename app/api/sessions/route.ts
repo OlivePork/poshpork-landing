@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
+const LANGS = ["en", "es", "pt", "de", "ro"];
+
 export async function POST(req: Request) {
   const supabase = await createClient();
   const {
@@ -21,7 +23,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "No purchase found" }, { status: 403 });
   }
 
-  const { video_id, mode, group_size, disclaimer_accepted } = await req.json();
+  const { video_id, lang, mode, group_size, disclaimer_accepted } = await req.json();
 
   // No session exists without acceptance. The UI already enforces this;
   // this makes it true for any future code path as well.
@@ -34,6 +36,7 @@ export async function POST(req: Request) {
     .insert({
       user_id: user.id,
       video_id,
+      lang: LANGS.includes(lang) ? lang : "en",
       mode: ["interactive", "group", "off"].includes(mode) ? mode : "interactive",
       group_size: Math.min(Math.max(Number(group_size) || 1, 1), 200),
       // Timestamp comes from the server, not the browser clock.

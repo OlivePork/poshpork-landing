@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
+const LANGS = ["en", "es", "pt", "de", "ro"];
+
 export async function POST(req: Request) {
   const supabase = await createClient();
   const {
@@ -15,13 +17,14 @@ export async function POST(req: Request) {
     answer,
     vote_count,
     answer_mode,
+    lang,
     group_size,
     seconds_to_answer,
   } = await req.json();
 
   const { data: session } = await supabase
     .from("watch_sessions")
-    .select("id")
+    .select("id, lang")
     .eq("id", session_id)
     .eq("user_id", user.id)
     .maybeSingle();
@@ -29,14 +32,25 @@ export async function POST(req: Request) {
   if (!session) return NextResponse.json({ error: "Unknown session" }, { status: 403 });
 
   // Scoring happens here — correct_answer never reaches the browser.
+  // Correct answers are language-independent: they live on `questions`,
+  // and the translated equivalent is stored per language. Compare against
+  // the translation the viewer was actually shown.
+  const { data: translation } = await supabase
+    .from("question_translations")
+    .select("correct_answer")
+    .eq("question_id", question_id)
+    .eq("lang", session.lang ?? "en")
+    .maybeSingle();
+
   const { data: question } = await supabase
     .from("questions")
     .select("correct_answer")
     .eq("id", question_id)
     .maybeSingle();
 
-  const isCorrect =
-    question?.correct_answer && answer ? answer === question.correct_answer : null;
+  const expected = translation?.correct_answer ?? question?.correct_answer ?? null;
+
+  const isCorrect = expected && answer ? answer === expected : null;
 
   // A room can't cast more votes than it has people.
   const size = Math.min(Math.max(Number(group_size) || 1, 1), 200);
@@ -51,6 +65,7 @@ export async function POST(req: Request) {
       vote_count: votes,
       is_correct: isCorrect,
       answer_mode,
+      lang: LANGS.includes(lang) ? lang : (session.lang ?? "en"),
       group_size: size,
       seconds_to_answer,
     },
