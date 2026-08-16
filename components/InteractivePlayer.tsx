@@ -15,6 +15,16 @@ export type Question = {
 
 type Mode = "interactive" | "group" | "off";
 
+export type Tally = Record<string, { total: number; byAnswer: Record<string, number> }>;
+
+type Reveal = {
+  questions: Question[];
+  mine: Record<string, string | null>;   // question_id -> the answer given
+  correct: Record<string, boolean | null>;
+  tally: Tally | null;
+  isVerdict: boolean;
+};
+
 const MODE_KEY = "poshpork.answerMode";
 const SIZE_KEY = "poshpork.groupSize";
 const DEFAULT_HOLD = 10;
@@ -50,6 +60,7 @@ export default function InteractivePlayer({
   // The remainder are treated as having chosen options[1].
   const [counts, setCounts] = useState<Record<string, number>>({});
   const [sent, setSent] = useState(false);
+  const [reveal, setReveal] = useState<Reveal | null>(null);
 
   const modeRef = useRef(mode);
   const screenRef = useRef(screen);
@@ -84,8 +95,8 @@ export default function InteractivePlayer({
   const submit = useCallback(
     (questionId: string, answer: string | null, voteCount = 1) => {
       const sid = sessionIdRef.current;
-      if (!sid) return;
-      fetch("/api/answers", {
+      if (!sid) return Promise.resolve(null);
+      return fetch("/api/answers", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -99,45 +110,112 @@ export default function InteractivePlayer({
           seconds_to_answer: Number(((Date.now() - askedAtRef.current) / 1000).toFixed(1)),
         }),
         keepalive: true,
-      }).catch(() => {});
+      })
+        .then((r) => (r.ok ? r.json() : null))
+        .catch(() => null);
     },
     [],
   );
 
-  const closeScreen = useCallback(
-    (record: boolean) => {
-      const qs = screenRef.current;
-      if (qs && record) {
-        const size = groupSizeRef.current;
-        const groupVote = modeRef.current === "group" && size > 1;
+  // Aggregate tally for the questions just answered. Counts only — no
+  // individual answers are exposed by the endpoint.
+  const fetchResults = useCallback(async (ids: string[]) => {
+    try {
+      const r = await fetch("/api/results", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question_ids: ids }),
+      });
+      if (!r.ok) return null;
+      const json = await r.json();
+      return (json.results ?? null) as Tally | null;
+    } catch {
+      return null;
+    }
+  }, []);
 
-        if (groupVote) {
-          const c = countsRef.current;
-          qs.forEach((q) => {
-            const first = c[q.id];
-            if (first === undefined) {
-              submit(q.id, null, 1);
-              return;
-            }
-            const second = size - first;
-            if (first > 0) submit(q.id, q.options[0], first);
-            if (second > 0) submit(q.id, q.options[1], second);
-          });
-        } else {
-          const current = picksRef.current;
-          qs.forEach((q) => submit(q.id, current[q.id] ?? null, 1));
-        }
-      }
+  const closeScreen = useCallback(
+    async (record: boolean) => {
+      const qs = screenRef.current;
       stopTick();
+
+      if (!qs || !record) {
+        setScreen(null);
+        setPicks({});
+        setCounts({});
+        setHeld(false);
+        setSent(false);
+        playerRef.current?.play().catch(() => {});
+        return;
+      }
+
+      const size = groupSizeRef.current;
+      const groupVote = modeRef.current === "group" && size > 1;
+      const mine: Record<string, string | null> = {};
+      const correct: Record<string, boolean | null> = {};
+      const pending: Promise<unknown>[] = [];
+
+      if (groupVote) {
+        const c = countsRef.current;
+        qs.forEach((q) => {
+          const first = c[q.id];
+          if (first === undefined) {
+            mine[q.id] = null;
+            pending.push(submit(q.id, null, 1));
+            return;
+          }
+          // The room's majority stands as "our" answer for the reveal.
+          mine[q.id] = first >= size - first ? q.options[0] : q.options[1];
+          const second = size - first;
+          if (first > 0) pending.push(submit(q.id, q.options[0], first));
+          if (second > 0) pending.push(submit(q.id, q.options[1], second));
+        });
+      } else {
+        const current = picksRef.current;
+        qs.forEach((q) => {
+          const a = current[q.id] ?? null;
+          mine[q.id] = a;
+          pending.push(
+            submit(q.id, a, 1).then((res) => {
+              const r = res as { is_correct?: boolean | null } | null;
+              correct[q.id] = r?.is_correct ?? null;
+            }),
+          );
+        });
+      }
+
+      const answeredAny = Object.values(mine).some((v) => v !== null);
+
       setScreen(null);
       setPicks({});
       setCounts({});
       setHeld(false);
       setSent(false);
-      playerRef.current?.play().catch(() => {});
+
+      // Skipped entirely — nothing to show, just carry on.
+      if (!answeredAny) {
+        playerRef.current?.play().catch(() => {});
+        return;
+      }
+
+      await Promise.allSettled(pending);
+      const tally = await fetchResults(qs.map((q) => q.id));
+
+      setReveal({
+        questions: qs,
+        mine,
+        correct,
+        tally,
+        isVerdict: qs.length > 1,
+      });
     },
-    [stopTick, submit],
+    [stopTick, submit, fetchResults],
   );
+
+  const dismissReveal = useCallback(() => {
+    setReveal(null);
+    playerRef.current?.play().catch(() => {});
+  }, []);
 
   const pick = useCallback((questionId: string, option: string) => {
     setPicks((prev) => ({ ...prev, [questionId]: option }));
@@ -656,6 +734,70 @@ export default function InteractivePlayer({
             </div>
           </div>
         )}
+        {reveal && (
+          <div className="pp-veil">
+            <div className={`pp-card ${reveal.isVerdict ? "pp-card-wide" : ""}`}>
+              <p className="pp-eyebrow">
+                {reveal.isVerdict ? "The jury has spoken" : "The jury so far"}
+              </p>
+              <h2 className="pp-title">
+                {reveal.isVerdict ? "How everyone else found them" : "How everyone else answered"}
+              </h2>
+
+              <div className={reveal.isVerdict ? "pp-grid" : ""}>
+                {reveal.questions.map((q) => {
+                  const t = reveal.tally?.[q.id];
+                  const total = t?.total ?? 0;
+                  const mine = reveal.mine[q.id];
+                  const wasRight = reveal.correct[q.id];
+
+                  return (
+                    <div key={q.id} className="pp-result">
+                      {reveal.isVerdict && <p className="pp-suspect-name">{q.question_text}</p>}
+
+                      {q.options.map((opt) => {
+                        const votes = t?.byAnswer?.[opt] ?? 0;
+                        const pct = total > 0 ? Math.round((votes / total) * 100) : 0;
+                        const isMine = mine === opt;
+
+                        return (
+                          <div key={opt} className={`pp-result-row ${isMine ? "is-mine" : ""}`}>
+                            <div className="pp-result-head">
+                              <span>
+                                {opt}
+                                {isMine && <span className="pp-result-you">you</span>}
+                              </span>
+                              <span className="pp-result-pct">{pct}%</span>
+                            </div>
+                            <div className="pp-result-track">
+                              <div className="pp-result-fill" style={{ width: `${pct}%` }} />
+                            </div>
+                          </div>
+                        );
+                      })}
+
+                      {!reveal.isVerdict && wasRight !== null && wasRight !== undefined && (
+                        <p className={`pp-verdict-flag ${wasRight ? "is-right" : "is-wrong"}`}>
+                          {wasRight ? "You were right." : "Not this time."}
+                        </p>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
+              <p className="pp-result-total">
+                {reveal.tally
+                  ? `Counted across every viewer so far.`
+                  : `The tally is unavailable just now — your answer was still recorded.`}
+              </p>
+
+              <button className="pp-deliver" onClick={dismissReveal}>
+                {reveal.isVerdict ? "Finish" : "Continue the film"}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {!showSetup && (
@@ -722,6 +864,22 @@ const CSS = `
 .pp-tally-of { padding-bottom: 18px; font-size: 12px; letter-spacing: .16em; text-transform: uppercase; opacity: .45; white-space: nowrap; }
 .pp-tally-bar { height: 4px; margin-top: 14px; background: rgba(255,255,255,.12); border-radius: 2px; overflow: hidden; }
 .pp-tally-fill { height: 100%; background: #d4af37; transition: width .2s ease; }
+
+/* jury tally reveal */
+.pp-result { text-align: left; }
+.pp-result + .pp-result { margin-top: 18px; }
+.pp-result-row { margin-bottom: 14px; }
+.pp-result-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font-size: 15px; margin-bottom: 6px; opacity: .8; }
+.pp-result-row.is-mine .pp-result-head { opacity: 1; color: #d4af37; }
+.pp-result-you { margin-left: 8px; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; border: 1px solid currentColor; border-radius: 3px; padding: 1px 5px; vertical-align: middle; }
+.pp-result-pct { font-family: Cinzel, serif; font-size: 17px; font-variant-numeric: tabular-nums; }
+.pp-result-track { height: 8px; background: rgba(255,255,255,.1); border-radius: 4px; overflow: hidden; }
+.pp-result-fill { height: 100%; background: rgba(212,175,55,.45); transition: width .6s cubic-bezier(.2,.8,.2,1); }
+.pp-result-row.is-mine .pp-result-fill { background: #d4af37; }
+.pp-verdict-flag { margin: 14px 0 0; font-size: 13px; letter-spacing: .16em; text-transform: uppercase; }
+.pp-verdict-flag.is-right { color: #7fa87f; }
+.pp-verdict-flag.is-wrong { color: #c98b5e; }
+.pp-result-total { margin: 22px 0 24px; font-size: 13px; opacity: .5; }
 
 .pp-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 28px; }
 .pp-suspect { border: 1px solid rgba(212,175,55,.3); border-radius: 8px; padding: 18px 16px; background: rgba(255,255,255,.02); }
