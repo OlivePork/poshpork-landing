@@ -28,15 +28,21 @@ type State = {
   status: string;
   question_open: boolean;
   question: Question | null;
+  table_mode: boolean;
   tally: Record<string, number>;
   answered: number;
+  expected: number;
   players: number;
   mine: string | null;
+  set_by: string | null;
   player_id: string | null;
+  table_id: string | null;
+  table_name: string | null;
 };
 
 const TOKEN_KEY = "poshpork.deviceToken";
 const CODE_KEY = "poshpork.roomCode";
+const NAME_KEY = "poshpork.playerName";
 const POLL_MS = 1500;
 
 function deviceToken() {
@@ -60,14 +66,16 @@ export default function JoinPage() {
   const [state, setState] = useState<State | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-  const [lastAnswered, setLastAnswered] = useState<string | null>(null);
+  const [pendingAnswer, setPendingAnswer] = useState<string | null>(null);
 
   const tokenRef = useRef<string>("");
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const lastQuestionRef = useRef<string | null>(null);
 
   useEffect(() => {
     tokenRef.current = deviceToken();
-    // Rejoin automatically if this device was already in a room.
+    const savedName = window.localStorage.getItem(NAME_KEY);
+    if (savedName) setName(savedName);
     const saved = window.localStorage.getItem(CODE_KEY);
     if (saved) {
       setCode(saved);
@@ -145,6 +153,7 @@ export default function JoinPage() {
       }
 
       window.localStorage.setItem(CODE_KEY, code);
+      window.localStorage.setItem(NAME_KEY, name.trim());
       setStep("playing");
     } catch {
       setError("Something went wrong. Try again.");
@@ -166,6 +175,14 @@ export default function JoinPage() {
         );
         if (!r.ok) return;
         const json = (await r.json()) as State;
+
+        // A new question clears any optimistic local state.
+        const qid = json.question?.id ?? null;
+        if (qid !== lastQuestionRef.current) {
+          lastQuestionRef.current = qid;
+          setPendingAnswer(null);
+        }
+
         setState(json);
       } catch {
         /* a missed poll simply succeeds on the next one */
@@ -183,9 +200,9 @@ export default function JoinPage() {
 
   const answer = useCallback(
     async (option: string) => {
-      setLastAnswered(option);
+      setPendingAnswer(option);
       try {
-        await fetch("/api/room/answer", {
+        const r = await fetch("/api/room/answer", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -194,8 +211,9 @@ export default function JoinPage() {
             answer: option,
           }),
         });
+        if (!r.ok) setPendingAnswer(null);
       } catch {
-        setLastAnswered(null);
+        setPendingAnswer(null);
       }
     },
     [code],
@@ -206,13 +224,18 @@ export default function JoinPage() {
     setStep("code");
     setRoom(null);
     setState(null);
-    setName("");
     setTableId(null);
   };
 
   /* ---------------- render ---------------- */
 
-  const chosen = state?.mine ?? lastAnswered;
+  // What is currently in: the confirmed answer, or the one just tapped.
+  const current = state?.mine ?? pendingAnswer;
+  const isMine = !!pendingAnswer && pendingAnswer === state?.mine;
+  const setBy = state?.set_by ?? null;
+  const myName = name.trim();
+  const someoneElseSetIt =
+    !!state?.table_mode && !!setBy && !!myName && setBy.toLowerCase() !== myName.toLowerCase();
 
   return (
     <main className="pj">
@@ -286,6 +309,9 @@ export default function JoinPage() {
                     );
                   })}
                 </div>
+                <p className="pj-hint">
+                  Your table answers together. Talk it through, then anyone can put it in.
+                </p>
               </>
             )}
 
@@ -308,33 +334,58 @@ export default function JoinPage() {
               <div className="pj-card">
                 <p className="pj-eyebrow">
                   {state.question.verdict_group
-                    ? "The verdict"
+                    ? "Your verdict"
                     : `Evidence ${String(state.question.order_number).padStart(2, "0")}`}
                 </p>
+
+                {state.table_mode && state.table_name && (
+                  <p className="pj-table-tag">{state.table_name} — answer together</p>
+                )}
+
                 <h1 className="pj-question">{state.question.question_text}</h1>
 
                 <div className="pj-options">
                   {state.question.options.map((opt) => (
                     <button
                       key={opt}
-                      className={`pj-option ${chosen === opt ? "is-chosen" : ""}`}
+                      className={`pj-option ${current === opt ? "is-chosen" : ""}`}
                       onClick={() => answer(opt)}
                     >
                       {opt}
+                      {current === opt && <span className="pj-tick">✓</span>}
                     </button>
                   ))}
                 </div>
 
-                {chosen && (
-                  <p className="pj-locked">
-                    Answer in. Tap again to change while it&apos;s open.
-                  </p>
+                {current && (
+                  <div className={`pj-status ${someoneElseSetIt ? "is-other" : ""}`}>
+                    {state.table_mode ? (
+                      someoneElseSetIt ? (
+                        <>
+                          <strong>{setBy}</strong> put in <strong>{current}</strong> for the table.
+                          <span className="pj-status-sub">Disagree? Tap another — the last one stands.</span>
+                        </>
+                      ) : (
+                        <>
+                          Your table&apos;s answer is in.
+                          <span className="pj-status-sub">Anyone can change it while it&apos;s open.</span>
+                        </>
+                      )
+                    ) : (
+                      <>
+                        Answer in.
+                        <span className="pj-status-sub">Tap another to change it.</span>
+                      </>
+                    )}
+                  </div>
                 )}
               </div>
             ) : (
               <div className="pj-card pj-waiting">
                 <div className="pj-pulse" />
-                <p className="pj-eyebrow">You&apos;re in</p>
+                <p className="pj-eyebrow">
+                  {state?.table_name ? state.table_name : "You're in"}
+                </p>
                 <h1 className="pj-title">Watch the screen</h1>
                 <p className="pj-lede">
                   The next question will appear here. Keep this open.
@@ -372,9 +423,16 @@ const CSS = `
 .pj-title { font-family: Cinzel, serif; font-size: clamp(24px, 6vw, 32px);
   color: #d4af37; margin: 0 0 12px; line-height: 1.15; }
 .pj-question { font-family: Cinzel, serif; font-size: clamp(21px, 5.5vw, 28px);
-  color: #f2ece1; margin: 0 0 28px; line-height: 1.25; }
+  color: #f2ece1; margin: 0 0 26px; line-height: 1.25; }
 .pj-lede { font-size: 15px; line-height: 1.6; opacity: .7; margin: 0 0 24px; }
 .pj-meta { font-size: 13px; opacity: .45; margin: 20px 0 0; }
+.pj-hint { font-size: 13px; line-height: 1.5; opacity: .55; margin: 14px 0 0;
+  text-align: left; }
+
+.pj-table-tag { display: inline-block; font-size: 11px; letter-spacing: .16em;
+  text-transform: uppercase; color: #d4af37; opacity: .65;
+  border: 1px solid rgba(212,175,55,.35); border-radius: 3px;
+  padding: 4px 10px; margin: 0 0 18px; }
 
 .pj-code { width: 100%; padding: 18px 12px; margin: 0 0 16px;
   font-family: Cinzel, serif; font-size: clamp(28px, 9vw, 40px);
@@ -403,15 +461,24 @@ const CSS = `
   letter-spacing: .1em; text-transform: uppercase; }
 
 .pj-options { display: grid; gap: 12px; }
-.pj-option { width: 100%; padding: 22px 16px; font-family: Cinzel, serif;
-  font-size: clamp(17px, 4.5vw, 21px); cursor: pointer; color: #f2ece1;
-  background: rgba(255,255,255,.04);
+.pj-option { position: relative; width: 100%; padding: 22px 16px;
+  font-family: Cinzel, serif; font-size: clamp(17px, 4.5vw, 21px);
+  cursor: pointer; color: #f2ece1; background: rgba(255,255,255,.04);
   border: 1px solid rgba(212,175,55,.4); border-radius: 8px;
   transition: background .15s ease, border-color .15s ease; }
 .pj-option:active { background: rgba(212,175,55,.2); }
 .pj-option.is-chosen { background: rgba(212,175,55,.26);
   border-color: #d4af37; color: #fff; }
-.pj-locked { font-size: 13px; opacity: .55; margin: 20px 0 0; }
+.pj-tick { position: absolute; right: 16px; top: 50%;
+  transform: translateY(-50%); font-size: 18px; color: #d4af37; }
+
+.pj-status { margin: 20px 0 0; padding: 14px 16px; font-size: 14px;
+  line-height: 1.55; border-radius: 6px;
+  background: rgba(212,175,55,.08); border: 1px solid rgba(212,175,55,.2); }
+.pj-status.is-other { background: rgba(201,139,94,.12);
+  border-color: rgba(201,139,94,.35); }
+.pj-status strong { color: #d4af37; }
+.pj-status-sub { display: block; margin-top: 6px; font-size: 12.5px; opacity: .6; }
 
 .pj-btn { width: 100%; margin-top: 22px; padding: 17px;
   font-family: Cinzel, serif; font-size: 17px; font-weight: bold;
