@@ -25,13 +25,12 @@ export async function GET(req: Request) {
 
   const { data: room } = await admin
     .from("rooms")
-    .select("id, code, status, current_question_id, question_open, question_opened_at, lang")
+    .select("id, code, status, current_question_id, question_open, lang, answer_mode")
     .eq("code", code)
     .maybeSingle();
 
   if (!room) return NextResponse.json({ error: "No such room" }, { status: 404 });
 
-  // The question currently on screen, if any.
   let question:
     | { id: string; question_text: string; options: string[]; order_number: number; verdict_group: string | null }
     | null = null;
@@ -59,8 +58,10 @@ export async function GET(req: Request) {
     }
   }
 
-  // Live count for the host's screen.
-  let tally: Record<string, number> = {};
+  // Verdict questions are always individual, whatever the room setting.
+  const tableMode = room.answer_mode === "table" && !question?.verdict_group;
+
+  const tally: Record<string, number> = {};
   let answered = 0;
 
   if (room.current_question_id) {
@@ -74,35 +75,51 @@ export async function GET(req: Request) {
     }
   }
 
+  // How many units should answer — tables with someone at them, or people.
+  const { data: expectedRaw } = await admin.rpc("room_expected", {
+    r_id: room.id,
+    table_mode: tableMode,
+  });
+  const expected = Number(expectedRaw ?? 0);
+
   const { count: playerCount } = await admin
     .from("room_players")
     .select("id", { count: "exact", head: true })
     .eq("room_id", room.id);
 
-  // Has this device already answered the open question?
+  // This device: its own answer, or its table's.
   let mine: string | null = null;
+  let setByName: string | null = null;
   let playerId: string | null = null;
+  let tableId: string | null = null;
+  let tableName: string | null = null;
 
   if (token) {
     const { data: player } = await admin
       .from("room_players")
-      .select("id, table_id, name")
+      .select("id, table_id, name, room_tables(name)")
       .eq("room_id", room.id)
       .eq("device_token", token)
       .maybeSingle();
 
     playerId = player?.id ?? null;
+    tableId = player?.table_id ?? null;
+    tableName =
+      (player as unknown as { room_tables?: { name: string } | null })?.room_tables?.name ?? null;
 
     if (playerId && room.current_question_id) {
-      const { data: answer } = await admin
+      const q = admin
         .from("room_answers")
-        .select("answer")
+        .select("answer, set_by_name")
         .eq("room_id", room.id)
-        .eq("question_id", room.current_question_id)
-        .eq("player_id", playerId)
-        .maybeSingle();
+        .eq("question_id", room.current_question_id);
+
+      const { data: answer } = tableMode && tableId
+        ? await q.eq("table_id", tableId).eq("is_table_answer", true).maybeSingle()
+        : await q.eq("player_id", playerId).eq("is_table_answer", false).maybeSingle();
 
       mine = answer?.answer ?? null;
+      setByName = answer?.set_by_name ?? null;
     }
   }
 
@@ -110,10 +127,15 @@ export async function GET(req: Request) {
     status: room.status,
     question_open: room.question_open,
     question,
+    table_mode: tableMode,
     tally,
     answered,
+    expected,
     players: playerCount ?? 0,
     mine,
+    set_by: setByName,
     player_id: playerId,
+    table_id: tableId,
+    table_name: tableName,
   });
 }
