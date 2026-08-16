@@ -7,6 +7,7 @@ import FilmSection from '@/components/FilmSection';
 import GiftButton from '@/components/GiftButton';
 import Article from '@/components/Article';
 import CookieBanner from '@/components/CookieBanner';
+import GroupScreenings from '@/components/GroupScreenings';
 
 export default function Home() {
   return (
@@ -125,6 +126,9 @@ export default function Home() {
       </section>
 
       {process.env.NEXT_PUBLIC_LIVE_EVENTS_ENABLED === 'true' ? <BookingTabs /> : <FilmSection />}
+      {process.env.NEXT_PUBLIC_LIVE_EVENTS_ENABLED === 'true' ? <BookingTabs /> : <FilmSection />}
+
+      <GroupScreenings />
 
       {/* NEW SECTION: states the AI production plainly and discloses the commercial
           interest. Both were previously absent from the site. */}
