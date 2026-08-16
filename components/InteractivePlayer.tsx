@@ -46,7 +46,8 @@ export default function InteractivePlayer({
   const [remaining, setRemaining] = useState(0);
   const [held, setHeld] = useState(false);
   const [picks, setPicks] = useState<Record<string, string>>({});
-  // Verdict counts: how many chose options[0]. The rest chose options[1].
+  // Group counts: how many of the room chose options[0] for this question.
+  // The remainder are treated as having chosen options[1].
   const [counts, setCounts] = useState<Record<string, number>>({});
   const [sent, setSent] = useState(false);
 
@@ -108,7 +109,7 @@ export default function InteractivePlayer({
       const qs = screenRef.current;
       if (qs && record) {
         const size = groupSizeRef.current;
-        const groupVote = qs.length > 1 && modeRef.current === "group" && size > 1;
+        const groupVote = modeRef.current === "group" && size > 1;
 
         if (groupVote) {
           const c = countsRef.current;
@@ -142,18 +143,19 @@ export default function InteractivePlayer({
     setPicks((prev) => ({ ...prev, [questionId]: option }));
   }, []);
 
-  // Each tap adds a person. Cycles back to zero so nobody gets stuck.
-  const tapVerdict = useCallback((q: Question, optIdx: number) => {
+  // Group mode: the room's count for options[0]. Entered directly rather than
+  // tapped once per person — a class of thirty would otherwise need 120 taps.
+  const setCount = useCallback((questionId: string, value: number) => {
     const size = groupSizeRef.current;
+    const clamped = Math.min(Math.max(Math.round(value), 0), size);
+    setCounts((prev) => ({ ...prev, [questionId]: clamped }));
+  }, []);
+
+  const clearCount = useCallback((questionId: string) => {
     setCounts((prev) => {
-      const cur = prev[q.id];
-      if (optIdx === 0) {
-        const next = cur === undefined ? 1 : (cur + 1) % (size + 1);
-        return { ...prev, [q.id]: next };
-      }
-      const curSecond = cur === undefined ? undefined : size - cur;
-      const nextSecond = curSecond === undefined ? 1 : (curSecond + 1) % (size + 1);
-      return { ...prev, [q.id]: size - nextSecond };
+      const next = { ...prev };
+      delete next[questionId];
+      return next;
     });
   }, []);
 
@@ -187,7 +189,6 @@ export default function InteractivePlayer({
     [stopTick, closeScreen],
   );
 
-  // Kept in refs so the player effect never needs rebuilding.
   const questionsRef = useRef(questions);
   const askRef = useRef(ask);
   useEffect(() => void (questionsRef.current = questions), [questions]);
@@ -236,7 +237,6 @@ export default function InteractivePlayer({
     });
 
     player.on("ended", () => {
-      // Last chance: if they reached the credits without voting, ask now.
       const unvoted = questionsRef.current.filter(
         (q) => q.verdict_group && !firedRef.current.has(q.id),
       );
@@ -295,10 +295,10 @@ export default function InteractivePlayer({
       const qs = screenRef.current;
       if (!qs) return;
 
-      const size = groupSizeRef.current;
-      const groupVote = qs.length > 1 && modeRef.current === "group" && size > 1;
+      // In group mode the number keys belong to the count fields, so the
+      // keyboard shortcuts only apply to solo viewing.
+      const groupVote = modeRef.current === "group" && groupSizeRef.current > 1;
 
-      // Enter always resumes the film. On the verdict screen it delivers first.
       if (e.key === "Enter") {
         e.preventDefault();
         if (qs.length > 1) {
@@ -310,23 +310,22 @@ export default function InteractivePlayer({
         return;
       }
 
+      if (groupVote) return;
+
       const n = Number(e.key);
       if (n >= 1) {
         if (qs.length === 1) {
           if (n <= qs[0].options.length) {
             e.preventDefault();
             pick(qs[0].id, qs[0].options[n - 1]);
-            if (modeRef.current !== "group") {
-              window.setTimeout(() => closeScreen(true), 700);
-            }
+            window.setTimeout(() => closeScreen(true), 700);
           }
         } else {
           const idx = Math.floor((n - 1) / 2);
           const optIdx = (n - 1) % 2;
           if (idx < qs.length) {
             e.preventDefault();
-            if (groupVote) tapVerdict(qs[idx], optIdx);
-            else pick(qs[idx].id, qs[idx].options[optIdx]);
+            pick(qs[idx].id, qs[idx].options[optIdx]);
           }
         }
         return;
@@ -343,10 +342,10 @@ export default function InteractivePlayer({
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [pick, tapVerdict, closeScreen, stopTick]);
+  }, [pick, closeScreen, stopTick]);
 
   const begin = async (chosen: Mode, size: number) => {
-    if (!agreed) return; // belt and braces: the buttons are disabled too
+    if (!agreed) return;
 
     setMode(chosen);
     modeRef.current = chosen;
@@ -377,7 +376,7 @@ export default function InteractivePlayer({
   };
 
   const isVerdict = !!screen && screen.length > 1;
-  const groupVote = isVerdict && mode === "group" && groupSize > 1;
+  const groupVote = mode === "group" && groupSize > 1;
   const hold = screen?.[0]?.hold_seconds ?? DEFAULT_HOLD;
   const answeredCount = screen
     ? groupVote
@@ -388,6 +387,61 @@ export default function InteractivePlayer({
   const shareText = encodeURIComponent(
     "I have just delivered my verdict on Which Food Is Killing You? See if you agree at poshpork.com",
   );
+
+  /* ---------- group count entry ---------- */
+
+  const CountEntry = ({ q }: { q: Question }) => {
+    const first = counts[q.id];
+    const second = first === undefined ? undefined : groupSize - first;
+
+    return (
+      <div className="pp-tally">
+        <div className="pp-tally-row">
+          <label className="pp-tally-side">
+            <span className="pp-tally-label">{q.options[0]}</span>
+            <input
+              type="number"
+              inputMode="numeric"
+              min={0}
+              max={groupSize}
+              value={first ?? ""}
+              placeholder="0"
+              onChange={(e) => {
+                const v = e.target.value;
+                if (v === "") clearCount(q.id);
+                else setCount(q.id, Number(v));
+              }}
+            />
+          </label>
+
+          <span className="pp-tally-of">of {groupSize}</span>
+
+          <label className="pp-tally-side">
+            <span className="pp-tally-label">{q.options[1]}</span>
+            <input
+              type="number"
+              inputMode="numeric"
+              min={0}
+              max={groupSize}
+              value={second ?? ""}
+              placeholder="0"
+              onChange={(e) => {
+                const v = e.target.value;
+                if (v === "") clearCount(q.id);
+                else setCount(q.id, groupSize - Number(v));
+              }}
+            />
+          </label>
+        </div>
+
+        {first !== undefined && (
+          <div className="pp-tally-bar" aria-hidden="true">
+            <div className="pp-tally-fill" style={{ width: `${(first / groupSize) * 100}%` }} />
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
     <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "24px 16px 64px" }}>
@@ -431,8 +485,8 @@ export default function InteractivePlayer({
                 <button className="pp-choice" disabled={!agreed} onClick={() => begin("group", Math.max(groupSize, 2))}>
                   <span className="pp-choice-name">Watching as a group</span>
                   <span className="pp-choice-note">
-                    One answer per room during the film, then everyone votes at the end.
-                    Number keys answer, T holds the clock, Enter continues.
+                    A show of hands, typed in. Enter how many chose each answer and the
+                    film moves on. One screen, one device.
                   </span>
                 </button>
 
@@ -449,7 +503,7 @@ export default function InteractivePlayer({
                 <input
                   type="number"
                   min={1}
-                  max={200}
+                  max={500}
                   value={groupSize}
                   onChange={(e) => setGroupSize(Math.max(1, Number(e.target.value) || 1))}
                 />
@@ -466,22 +520,29 @@ export default function InteractivePlayer({
               </p>
               <h2 className="pp-title pp-title-lg">{screen[0].question_text}</h2>
 
-              <div className="pp-options">
-                {screen[0].options.map((opt, i) => (
-                  <button
-                    key={opt}
-                    className={`pp-option ${picks[screen[0].id] === opt ? "is-picked" : ""}`}
-                    onClick={() => {
-                      pick(screen[0].id, opt);
-                      if (mode !== "group") window.setTimeout(() => closeScreen(true), 700);
-                    }}
-                    disabled={!!picks[screen[0].id]}
-                  >
-                    <span className="pp-key">{i + 1}</span>
-                    <span>{opt}</span>
-                  </button>
-                ))}
-              </div>
+              {groupVote ? (
+                <>
+                  <p className="pp-lede">Hands up. Type the numbers in.</p>
+                  <CountEntry q={screen[0]} />
+                </>
+              ) : (
+                <div className="pp-options">
+                  {screen[0].options.map((opt, i) => (
+                    <button
+                      key={opt}
+                      className={`pp-option ${picks[screen[0].id] === opt ? "is-picked" : ""}`}
+                      onClick={() => {
+                        pick(screen[0].id, opt);
+                        window.setTimeout(() => closeScreen(true), 700);
+                      }}
+                      disabled={!!picks[screen[0].id]}
+                    >
+                      <span className="pp-key">{i + 1}</span>
+                      <span>{opt}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
 
               {mode === "group" && (
                 <div className="pp-timer">
@@ -493,7 +554,7 @@ export default function InteractivePlayer({
                     <span className="pp-timer-actions">
                       {!held && <button onClick={() => { stopTick(); setHeld(true); }}>More time</button>}
                       <button onClick={() => closeScreen(true)}>
-                        {picks[screen[0].id] ? "Continue" : "Skip"}
+                        {counts[screen[0].id] !== undefined ? "Continue" : "Skip"}
                       </button>
                     </span>
                   </div>
@@ -518,39 +579,35 @@ export default function InteractivePlayer({
 
               {groupVote && (
                 <p className="pp-lede">
-                  Tap once per person. All {groupSize} of you vote on every suspect.
+                  A show of hands for each suspect. Type how many of the {groupSize} say guilty.
                 </p>
               )}
 
               <div className="pp-grid">
                 {screen.map((q, idx) => {
-                  const c = counts[q.id];
-                  const decided = groupVote ? c !== undefined : !!picks[q.id];
+                  const decided = groupVote ? counts[q.id] !== undefined : !!picks[q.id];
 
                   return (
                     <div key={q.id} className={`pp-suspect ${decided ? "is-done" : ""}`}>
                       <p className="pp-suspect-name">{q.question_text}</p>
-                      <div className="pp-verdict-row">
-                        {q.options.map((opt, oi) => {
-                          const shown = c === undefined ? null : oi === 0 ? c : groupSize - c;
-                          const active = groupVote ? (shown ?? 0) > 0 : picks[q.id] === opt;
 
-                          return (
+                      {groupVote ? (
+                        <CountEntry q={q} />
+                      ) : (
+                        <div className="pp-verdict-row">
+                          {q.options.map((opt, oi) => (
                             <button
                               key={opt}
-                              className={`pp-verdict ${active ? `is-${opt.toLowerCase()}` : ""}`}
-                              onClick={() => (groupVote ? tapVerdict(q, oi) : pick(q.id, opt))}
+                              className={`pp-verdict ${picks[q.id] === opt ? `is-${opt.toLowerCase()}` : ""}`}
+                              onClick={() => pick(q.id, opt)}
                               disabled={sent}
                             >
                               <span className="pp-key-sm">{idx * 2 + oi + 1}</span>
                               {opt}
-                              {groupVote && shown !== null && (
-                                <span className="pp-count">{shown}</span>
-                              )}
                             </button>
-                          );
-                        })}
-                      </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   );
                 })}
@@ -647,13 +704,25 @@ const CSS = `
 .pp-choice-name { font-family: Cinzel, serif; font-size: 17px; color: #d4af37; }
 .pp-choice-note { font-size: 13px; opacity: .65; }
 .pp-size { display: flex; gap: 10px; align-items: center; justify-content: center; margin-top: 22px; font-size: 13px; opacity: .7; }
-.pp-size input { width: 64px; padding: 6px 8px; background: #000; color: inherit; border: 1px solid rgba(212,175,55,.4); border-radius: 4px; text-align: center; }
+.pp-size input { width: 72px; padding: 6px 8px; background: #000; color: inherit; border: 1px solid rgba(212,175,55,.4); border-radius: 4px; text-align: center; font: inherit; }
 .pp-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
 .pp-option { display: flex; align-items: center; gap: 14px; text-align: left; cursor: pointer; padding: 18px 20px; font-size: clamp(16px, 2vw, 21px); border: 1px solid rgba(212,175,55,.4); border-radius: 6px; background: rgba(255,255,255,.03); color: #f2ece1; }
 .pp-option:hover:not(:disabled) { border-color: #d4af37; background: rgba(212,175,55,.14); }
 .pp-option:disabled { cursor: default; opacity: .45; }
 .pp-option.is-picked { opacity: 1; border-color: #d4af37; background: rgba(212,175,55,.24); }
 .pp-key { flex: none; width: 34px; height: 34px; display: grid; place-items: center; font-family: Cinzel, serif; font-size: 15px; border: 1px solid rgba(212,175,55,.5); border-radius: 50%; color: #d4af37; }
+
+/* group count entry */
+.pp-tally { margin-top: 4px; }
+.pp-tally-row { display: flex; align-items: flex-end; justify-content: center; gap: 14px; }
+.pp-tally-side { display: grid; gap: 8px; justify-items: center; flex: 1; min-width: 0; }
+.pp-tally-label { font-family: Cinzel, serif; font-size: clamp(13px, 1.5vw, 15px); color: #f2ece1; opacity: .85; }
+.pp-tally-side input { width: 100%; max-width: 120px; padding: 14px 8px; font-family: Cinzel, serif; font-size: clamp(22px, 3vw, 30px); text-align: center; background: #000; color: #d4af37; border: 1px solid rgba(212,175,55,.45); border-radius: 6px; }
+.pp-tally-side input:focus { outline: none; border-color: #d4af37; background: rgba(212,175,55,.08); }
+.pp-tally-of { padding-bottom: 18px; font-size: 12px; letter-spacing: .16em; text-transform: uppercase; opacity: .45; white-space: nowrap; }
+.pp-tally-bar { height: 4px; margin-top: 14px; background: rgba(255,255,255,.12); border-radius: 2px; overflow: hidden; }
+.pp-tally-fill { height: 100%; background: #d4af37; transition: width .2s ease; }
+
 .pp-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 28px; }
 .pp-suspect { border: 1px solid rgba(212,175,55,.3); border-radius: 8px; padding: 18px 16px; background: rgba(255,255,255,.02); }
 .pp-suspect.is-done { border-color: rgba(212,175,55,.7); }
@@ -664,8 +733,6 @@ const CSS = `
 .pp-verdict.is-guilty { background: rgba(160,40,40,.45); border-color: #c05050; color: #fff; }
 .pp-verdict.is-innocent { background: rgba(212,175,55,.28); border-color: #d4af37; color: #fff; }
 .pp-key-sm { font-size: 11px; opacity: .5; border: 1px solid currentColor; border-radius: 50%; width: 18px; height: 18px; display: grid; place-items: center; }
-.pp-count { min-width: 24px; padding: 2px 6px; border-radius: 999px; font-size: 13px; font-weight: bold; font-variant-numeric: tabular-nums; background: rgba(255,255,255,.14); }
-.pp-verdict.is-guilty .pp-count, .pp-verdict.is-innocent .pp-count { background: rgba(0,0,0,.35); }
 .pp-deliver { width: 100%; padding: 18px; cursor: pointer; font-family: Cinzel, serif; font-size: 18px; font-weight: bold; color: #0a0a0a; background: linear-gradient(135deg,#a67c00,#d4af37 50%,#a67c00); border: none; border-radius: 6px; }
 .pp-deliver:disabled { opacity: .35; cursor: default; }
 .pp-timer { margin-top: 22px; }
