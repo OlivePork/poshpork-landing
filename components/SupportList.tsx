@@ -14,7 +14,7 @@ export default function SupportList() {
   const [country, setCountry] = useState("");
   const [busy, setBusy] = useState(false);
 
-  const ready = supermarket.trim() && country;
+  const ready = Boolean(supermarket.trim() && country);
 
   const go = async () => {
     if (!ready) return;
@@ -68,12 +68,12 @@ export default function SupportList() {
       </p>
 
       <p style={{ fontSize: "16px", lineHeight: 1.7, opacity: .75, margin: "0 0 28px" }}>
-        It costs <strong>€1</strong>. Not because a euro is worth having, but because a
-        free list means nothing and everyone knows it. A euro is the difference between
+        It costs <strong>&euro;1</strong>. Not because a euro is worth having, but because
+        a free list means nothing and everyone knows it. A euro is the difference between
         a name and someone who meant it.
       </p>
 
-      <div style={{ display: "grid", gap: "10px", marginBottom: "16px" }}>
+      <div style={{ display: "grid", gap: "10px", marginBottom: "14px" }}>
         <input
           value={supermarket}
           onChange={(e) => setSupermarket(e.target.value)}
@@ -92,18 +92,44 @@ export default function SupportList() {
         </select>
       </div>
 
+      {/* Say why the button is inactive rather than leaving it faded and unexplained. */}
+      {!ready && !busy && (
+        <p style={{
+          fontSize: "13px",
+          letterSpacing: ".1em",
+          textTransform: "uppercase",
+          opacity: .45,
+          margin: "0 0 14px",
+        }}>
+          {!supermarket.trim() && !country
+            ? "Name your shop and country to continue"
+            : !supermarket.trim()
+              ? "Name your shop to continue"
+              : "Choose your country to continue"}
+        </p>
+      )}
+
       <button
         onClick={go}
         disabled={busy || !ready}
         style={{
-          width: "100%", padding: "16px", cursor: "pointer",
-          fontFamily: "Cinzel, serif", fontSize: "17px", fontWeight: "bold",
-          background: "linear-gradient(135deg,#a67c00,#d4af37 50%,#a67c00)",
-          color: "#141414", border: "none", borderRadius: "6px",
-          opacity: busy || !ready ? .45 : 1,
+          width: "100%",
+          padding: "16px",
+          cursor: busy || !ready ? "not-allowed" : "pointer",
+          fontFamily: "Cinzel, serif",
+          fontSize: "17px",
+          fontWeight: "bold",
+          background: ready
+            ? "linear-gradient(135deg,#a67c00,#d4af37 50%,#a67c00)"
+            : "transparent",
+          color: ready ? "#141414" : "rgba(242,236,225,.4)",
+          border: ready ? "none" : "1px solid rgba(212,175,55,.3)",
+          borderRadius: "6px",
+          opacity: busy ? .5 : 1,
+          transition: "background .2s ease, color .2s ease",
         }}
       >
-        {busy ? "Opening…" : "Add my name — €1"}
+        {busy ? "Opening..." : "Add my name for \u20AC1"}
       </button>
 
       <p style={{ fontSize: "13px", lineHeight: 1.6, opacity: .5, margin: "18px 0 0" }}>
