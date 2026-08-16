@@ -32,7 +32,7 @@ export default function ContactPage() {
             />
             <Box
               label="Screenings &amp; licences"
-              email="screenings@poshpork.com"
+              email="screening@poshpork.com"
               note="Schools, workplaces, clinics and community groups. Details and prices below."
             />
           </div>
@@ -75,7 +75,7 @@ export default function ContactPage() {
           <div style={{ display: "grid", gap: "20px", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))" }}>
             <Tier
               name="Single screening"
-              price="€95"
+              price="€249"
               period="one event"
               who="Community groups, clubs, libraries, clinics, conferences, film societies."
               includes={[
@@ -87,13 +87,13 @@ export default function ContactPage() {
             <Tier
               name="School licence"
               price="€295"
-              period="in perpetuity"
+              period="Two years"
               who="Primary and secondary schools, sixth forms, teacher training."
               includes={[
                 "Unlimited classroom use, no expiry",
                 "One school site",
                 "Teaching notes and question sheet",
-                "Repeat use year after year",
+                "Repeat use for two years",
               ]}
               featured
             />
@@ -124,7 +124,7 @@ export default function ContactPage() {
         <div style={wrap}>
           <h2 style={h2}>How a licence works</h2>
           <ol style={{ margin: 0, padding: 0, listStyle: "none", maxWidth: "60ch" }}>
-            <Step n="1" text="Email screenings@poshpork.com with your organisation, which licence you need, and a billing address." />
+            <Step n="1" text="Email screening@poshpork.com with your organisation, which licence you need, and a billing address." />
             <Step n="2" text="You get an invoice, usually the same day. Pay by bank transfer or card." />
             <Step n="3" text="You get a viewing link that works for the term of your licence, plus any teaching or discussion materials." />
           </ol>

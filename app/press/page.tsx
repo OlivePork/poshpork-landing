@@ -671,7 +671,7 @@ export default function PressPage() {
           </p>
           <p style={{ ...para, fontSize: "15px", opacity: .7 }}>
             Group and educational screening licences:{" "}
-            <a href="mailto:screenings@poshpork.com" style={link}>screenings@poshpork.com</a>
+            <a href="mailto:screening@poshpork.com" style={link}>screening@poshpork.com</a>
           </p>
         </div>
       </section>

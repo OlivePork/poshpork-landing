@@ -156,3 +156,76 @@ export async function sendPressEmail(email: string, outlet?: string) {
     }),
   });
 }
+
+/* ------------------------------------------------------------------ */
+/* Screening licence                                                   */
+/* ------------------------------------------------------------------ */
+
+export async function sendLicenceEmail(
+  email: string,
+  opts: {
+    organisation: string;
+    licenceLabel: string;
+    blurb: string;
+    expiresAt: Date | null;
+    invoiceRef?: string;
+  },
+) {
+  const link = await buildSignInLink(email);
+
+  const expiryLine = opts.expiresAt
+    ? `Your licence runs until <strong>${opts.expiresAt.toLocaleDateString("en-GB", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      })}</strong>.`
+    : `Your licence has no expiry date.`;
+
+  const invoiceLine = opts.invoiceRef
+    ? `<p style="font-size: 14px; line-height: 1.6; color: #888;">Invoice reference: ${opts.invoiceRef}</p>`
+    : "";
+
+  return resend.emails.send({
+    from: "Colin Marry <colin@poshpork.com>",
+    replyTo: "screening@poshpork.com",
+    to: email,
+    subject: `Your screening licence — Which Food Is Killing You?`,
+    html: shell({
+      tagline: "Join the jury. Weigh the evidence.",
+      body: `
+        <p style="font-size: 16px; line-height: 1.6;">
+          <strong>Thank you.</strong> The ${opts.licenceLabel.toLowerCase()} for
+          <strong>${opts.organisation}</strong> is now active &mdash; ${opts.blurb}.
+        </p>
+        <p style="font-size: 16px; line-height: 1.6;">${expiryLine}</p>
+        ${button(link, "Watch the Film")}
+        <p style="font-size: 14px; line-height: 1.6; color: #888;">
+          That link works once. To return at any time during your licence, go to
+          <a href="${SITE_URL}/login" style="color: #a67c00;">poshpork.com/login</a>
+          and sign in with <strong>${email}</strong>.
+        </p>
+        ${invoiceLine}
+        <h2 style="color: #d4af37; font-size: 18px; margin: 32px 0 12px; font-family: Georgia, serif;">Showing it to a room</h2>
+        <p style="font-size: 15px; line-height: 1.6;">
+          The film pauses at points and puts a question on screen. Choose
+          <strong>Watching as a group</strong> when it starts, and tell it how many
+          people are in the room. Number keys answer, <strong>T</strong> holds the
+          clock if you want longer, and <strong>Enter</strong> moves on.
+        </p>
+        <p style="font-size: 15px; line-height: 1.6;">
+          You only need one screen and one device. Take the room's answer, tap it in,
+          and carry on. At the end everyone votes on each of the four suspects.
+        </p>
+        <p style="font-size: 15px; line-height: 1.6;">
+          Every claim in the film is published with its source at
+          <a href="${SITE_URL}/press" style="color: #a67c00;">poshpork.com/press</a>
+          &mdash; useful if you want to set follow-up work.
+        </p>
+        <p style="font-size: 15px; line-height: 1.6; color: #666;">
+          Anything at all, just reply to this. It comes straight to me.
+        </p>
+        <p style="font-size: 16px; line-height: 1.6; margin-top: 26px;">Colin Marry</p>
+      `,
+    }),
+  });
+}
