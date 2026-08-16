@@ -124,19 +124,25 @@ export default function ContactPage() {
             />
             <Tier
               name="Organisation licence"
-              price="€595"
-              period="per year"
+              price="€8"
+              period="per person, per year"
               who="Workplaces, wellness programmes, universities, health services."
               includes={[
                 "Unlimited internal viewing for 12 months",
-                "One site or organisation",
                 "Screening events included",
-                "Renewable annually",
+                "Minimum 25 people (€200)",
+                "€6 per person over 100, €4 over 500",
               ]}
             />
           </div>
 
-          <p style={{ ...para, fontSize: "15px", opacity: .7, marginTop: "32px", maxWidth: "62ch" }}>
+          <p style={{ ...para, fontSize: "15px", opacity: .8, marginTop: "32px", maxWidth: "62ch" }}>
+            Organisations are priced per person because a firm of forty and a firm of four
+            thousand are not buying the same thing. Count everyone who could watch it, not
+            everyone who will. Schools are a flat site licence &mdash; a school should not be
+            charged by the pupil.
+          </p>
+          <p style={{ ...para, fontSize: "15px", opacity: .7, maxWidth: "62ch" }}>
             Multi-site organisations, school districts, national bodies or anything larger &mdash;
             write to me and we will work something out. The same is true if you want the film
             and cannot afford it; say so and we will find a way.
