@@ -191,40 +191,92 @@ export async function sendLicenceEmail(
     to: email,
     subject: `Your screening licence — Which Food Is Killing You?`,
     html: shell({
-      tagline: "Join the jury. Weigh the evidence.",
+      tagline: "Put a room on the jury.",
       body: `
         <p style="font-size: 16px; line-height: 1.6;">
           <strong>Thank you.</strong> The ${opts.licenceLabel.toLowerCase()} for
           <strong>${opts.organisation}</strong> is now active &mdash; ${opts.blurb}.
         </p>
         <p style="font-size: 16px; line-height: 1.6;">${expiryLine}</p>
-        ${button(link, "Watch the Film")}
+
+        ${button(link, "Open the film")}
+
         <p style="font-size: 14px; line-height: 1.6; color: #888;">
           That link works once. To return at any time during your licence, go to
           <a href="${SITE_URL}/login" style="color: #a67c00;">poshpork.com/login</a>
           and sign in with <strong>${email}</strong>.
         </p>
         ${invoiceLine}
-        <h2 style="color: #d4af37; font-size: 18px; margin: 32px 0 12px; font-family: Georgia, serif;">Showing it to a room</h2>
-        <p style="font-size: 15px; line-height: 1.6;">
-          The film pauses at points and puts a question on screen. Choose
-          <strong>Watching as a group</strong> when it starts, and tell it how many
-          people are in the room. Number keys answer, <strong>T</strong> holds the
-          clock if you want longer, and <strong>Enter</strong> moves on.
-        </p>
-        <p style="font-size: 15px; line-height: 1.6;">
-          You only need one screen and one device. Take the room's answer, tap it in,
-          and carry on. At the end everyone votes on each of the four suspects.
-        </p>
-        <p style="font-size: 15px; line-height: 1.6;">
-          Every claim in the film is published with its source at
-          <a href="${SITE_URL}/press" style="color: #a67c00;">poshpork.com/press</a>
-          &mdash; useful if you want to set follow-up work.
-        </p>
-        <p style="font-size: 15px; line-height: 1.6; color: #666;">
-          Anything at all, just reply to this. It comes straight to me.
-        </p>
-        <p style="font-size: 16px; line-height: 1.6; margin-top: 26px;">Colin Marry</p>
+
+        <div style="border-top: 2px solid #d4af37; margin: 34px 0 0; padding-top: 26px;">
+          <h2 style="color: #d4af37; font-size: 19px; margin: 0 0 16px; font-family: Georgia, serif;">
+            Running it with a room
+          </h2>
+
+          <p style="font-size: 15px; line-height: 1.7;">
+            <strong>1. Sit them in fours.</strong> Tables of four argue; tables of six
+            have a quiet person in them.
+          </p>
+
+          <p style="font-size: 15px; line-height: 1.7;">
+            <strong>2. Open a room.</strong> Before you press play, choose
+            <em>Open a room</em>, set how many tables you have, and a six-character code
+            appears. Put it on the screen or read it out.
+          </p>
+
+          <p style="font-size: 15px; line-height: 1.7;">
+            <strong>3. Everyone joins.</strong> They go to
+            <a href="${SITE_URL}/join" style="color: #a67c00;"><strong>poshpork.com/join</strong></a>
+            on their phone and type the code. No app, no accounts, no sign-up. They pick
+            a name and a table, and that is it.
+          </p>
+
+          <p style="font-size: 15px; line-height: 1.7;">
+            <strong>4. Play the film.</strong> When a question comes up it appears on
+            every phone at the same moment. Each table answers once &mdash; so they have
+            to talk it through. Anyone at the table can put the answer in, or change it,
+            and everyone at that table can see who did.
+          </p>
+
+          <p style="font-size: 15px; line-height: 1.7;">
+            <strong>5. Watch the bar.</strong> Your screen shows the answers arriving.
+            When the room is in, press continue and the film carries on. That is the only
+            button you need to touch.
+          </p>
+
+          <p style="font-size: 15px; line-height: 1.7;">
+            <strong>6. The verdict.</strong> At the end, every person votes individually
+            on each of the four suspects, and the tables are ranked. Leave that on the
+            screen while they argue about it.
+          </p>
+
+          <p style="font-size: 15px; line-height: 1.7; color: #666;">
+            <strong>No phones allowed?</strong> Choose <em>Watching as a group</em>
+            instead. Take a show of hands, type the number in, carry on. Works with any
+            size of room and needs nothing but your own screen.
+          </p>
+
+          <p style="font-size: 15px; line-height: 1.7;">
+            The full guide, with the questions and what to do with them, is at
+            <a href="${SITE_URL}/facilitator" style="color: #a67c00;">poshpork.com/facilitator</a>.
+          </p>
+        </div>
+
+        <div style="border-top: 1px solid #d9d2c4; margin-top: 30px; padding-top: 22px;">
+          <p style="font-size: 15px; line-height: 1.7;">
+            Every claim in the film is published with its source and its status at
+            <a href="${SITE_URL}/press" style="color: #a67c00;">poshpork.com/press</a>
+            &mdash; useful if you want to set follow-up work, or if someone challenges
+            something.
+          </p>
+
+          <p style="font-size: 15px; line-height: 1.7; color: #666;">
+            Anything at all &mdash; a question, a problem on the day, a room that will not
+            connect &mdash; just reply to this. It comes straight to me.
+          </p>
+
+          <p style="font-size: 16px; line-height: 1.6; margin-top: 26px;">Colin Marry</p>
+        </div>
       `,
     }),
   });
