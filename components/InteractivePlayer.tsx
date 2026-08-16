@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Player from "@vimeo/player";
+import { useRoomHost, RoomSetup, RoomBanner, ROOM_CSS } from "@/components/RoomHost";
 
 export type Question = {
   id: string;
@@ -61,6 +62,11 @@ export default function InteractivePlayer({
   const [counts, setCounts] = useState<Record<string, number>>({});
   const [sent, setSent] = useState(false);
   const [reveal, setReveal] = useState<Reveal | null>(null);
+
+  // Live room: everyone answers on their own phone.
+  const room = useRoomHost(lang);
+  const roomRef = useRef(room);
+  useEffect(() => void (roomRef.current = room), [room]);
 
   const modeRef = useRef(mode);
   const screenRef = useRef(screen);
@@ -140,6 +146,7 @@ export default function InteractivePlayer({
       stopTick();
 
       if (!qs || !record) {
+        if (roomRef.current.code) roomRef.current.closeQuestion();
         setScreen(null);
         setPicks({});
         setCounts({});
@@ -148,6 +155,8 @@ export default function InteractivePlayer({
         playerRef.current?.play().catch(() => {});
         return;
       }
+
+      if (roomRef.current.code) roomRef.current.closeQuestion();
 
       const size = groupSizeRef.current;
       const groupVote = modeRef.current === "group" && size > 1;
@@ -247,6 +256,11 @@ export default function InteractivePlayer({
       setHeld(false);
       setSent(false);
       playerRef.current?.pause().catch(() => {});
+
+      // Push it to the phones, if a room is running.
+      if (roomRef.current.code) {
+        roomRef.current.openQuestion(group[0].id);
+      }
 
       if (modeRef.current !== "group") return;
 
@@ -586,6 +600,12 @@ export default function InteractivePlayer({
                   onChange={(e) => setGroupSize(Math.max(1, Number(e.target.value) || 1))}
                 />
               </label>
+
+              <RoomSetup
+                onCreate={room.create}
+                creating={room.creating}
+                code={room.code}
+              />
             </div>
           </div>
         )}
@@ -639,11 +659,24 @@ export default function InteractivePlayer({
                 </div>
               )}
 
-              {mode === "interactive" && !picks[screen[0].id] && (
+              {mode === "interactive" && !picks[screen[0].id] && !room.code && (
                 <div className="pp-timer-row" style={{ marginTop: "26px" }}>
                   <span>The film is paused.</span>
                   <button onClick={() => closeScreen(true)}>Skip this one</button>
                 </div>
+              )}
+
+              {room.code && (
+                <>
+                  <RoomBanner code={room.code} state={room.state} options={screen[0].options} />
+                  <button
+                    className="pp-deliver"
+                    style={{ marginTop: "18px" }}
+                    onClick={() => closeScreen(true)}
+                  >
+                    Everyone in — continue
+                  </button>
+                </>
               )}
             </div>
           </div>
@@ -705,15 +738,19 @@ export default function InteractivePlayer({
                 </div>
               ) : (
                 <>
+                  {room.code && <RoomBanner code={room.code} state={room.state} />}
+
                   <button
                     className="pp-deliver"
-                    disabled={answeredCount === 0}
+                    disabled={answeredCount === 0 && !room.code}
                     onClick={() => {
                       setSent(true);
                       window.setTimeout(() => closeScreen(true), 700);
                     }}
                   >
-                    Deliver the verdict ({answeredCount}/{screen.length})
+                    {room.code
+                      ? "Deliver the verdict"
+                      : `Deliver the verdict (${answeredCount}/${screen.length})`}
                   </button>
 
                   {mode === "group" && (
@@ -825,7 +862,7 @@ export default function InteractivePlayer({
   );
 }
 
-const CSS = `
+const CSS = ROOM_CSS + `
 .pp-frame { position: relative; border: 1px solid #d4af37; border-radius: 10px; overflow: hidden; background: #000; }
 .pp-veil { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(10,10,10,.9); padding: 20px; z-index: 20; overflow-y: auto; }
 .pp-card { width: min(760px, 100%); text-align: center; color: #f2ece1; border: 1px solid rgba(212,175,55,.45); border-radius: 8px; background: linear-gradient(180deg, rgba(24,24,24,.97), rgba(14,14,14,.97)); padding: clamp(20px, 4vw, 40px); }
