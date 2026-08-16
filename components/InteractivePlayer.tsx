@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Player from "@vimeo/player";
-import { useRoomHost, RoomSetup, RoomBanner, ROOM_CSS } from "@/components/RoomHost";
+import { useRoomHost, RoomSetup, RoomBanner, RoomStandings, ROOM_CSS } from "@/components/RoomHost";
 
 export type Question = {
   id: string;
@@ -221,10 +221,21 @@ export default function InteractivePlayer({
     [stopTick, submit, fetchResults],
   );
 
-  const dismissReveal = useCallback(() => {
+  const [showStandings, setShowStandings] = useState(false);
+
+  const dismissReveal = useCallback(async () => {
+    const wasVerdict = reveal?.isVerdict;
     setReveal(null);
+
+    // A live room ends on the table standings rather than the film resuming.
+    if (wasVerdict && roomRef.current.code) {
+      await roomRef.current.finish();
+      setShowStandings(true);
+      return;
+    }
+
     playerRef.current?.play().catch(() => {});
-  }, []);
+  }, [reveal]);
 
   const pick = useCallback((questionId: string, option: string) => {
     setPicks((prev) => ({ ...prev, [questionId]: option }));
@@ -771,6 +782,20 @@ export default function InteractivePlayer({
             </div>
           </div>
         )}
+        {showStandings && room.standings && (
+          <div className="pp-veil">
+            <div className="pp-card pp-card-wide">
+              <RoomStandings
+                standings={room.standings}
+                onDone={() => {
+                  setShowStandings(false);
+                  playerRef.current?.play().catch(() => {});
+                }}
+              />
+            </div>
+          </div>
+        )}
+
         {reveal && (
           <div className="pp-veil">
             <div className={`pp-card ${reveal.isVerdict ? "pp-card-wide" : ""}`}>

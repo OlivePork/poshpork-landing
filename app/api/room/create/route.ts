@@ -27,7 +27,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "No access found" }, { status: 403 });
   }
 
-  let body: { name?: string; tables?: number; lang?: string };
+  let body: { name?: string; tables?: number; lang?: string; answer_mode?: string };
   try {
     body = await req.json();
   } catch {
@@ -49,6 +49,7 @@ export async function POST(req: Request) {
         host_user_id: user.id,
         name: body.name?.slice(0, 120) ?? null,
         lang: body.lang ?? "en",
+        answer_mode: body.answer_mode === "individual" ? "individual" : "table",
         status: "lobby",
       })
       .select("id, code")
