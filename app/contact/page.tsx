@@ -123,23 +123,23 @@ export default function ContactPage() {
               featured
             />
             <Tier
-              name="Organisation licence"
-              price="€8"
-              period="per person, per year"
-              who="Workplaces, wellness programmes, universities, health services."
+              name="Organisation"
+              price="€12"
+              period="per person, per event"
+              who="Workplaces, wellness programmes, team days, universities, health services."
               includes={[
-                "Unlimited internal viewing for 12 months",
-                "Screening events included",
-                "Minimum 25 people (€200)",
-                "€6 per person over 100, €4 over 500",
+                "€10 per person over 50",
+                "Minimum charge €249",
+                "One event, any format",
+                "Facilitator notes and discussion sheet",
               ]}
             />
           </div>
 
           <p style={{ ...para, fontSize: "15px", opacity: .8, marginTop: "32px", maxWidth: "62ch" }}>
-            Organisations are priced per person because a firm of forty and a firm of four
-            thousand are not buying the same thing. Count everyone who could watch it, not
-            everyone who will. Schools are a flat site licence &mdash; a school should not be
+            Organisations pay per person, per event &mdash; the same way team days are normally
+            priced, and fairer than a flat fee that charges a firm of forty the same as a firm
+            of four hundred. Schools are a flat site licence instead; a school should not be
             charged by the pupil.
           </p>
           <p style={{ ...para, fontSize: "15px", opacity: .7, maxWidth: "62ch" }}>

@@ -1,4 +1,4 @@
-    import { NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { sendLicenceEmail } from "@/lib/email";
 
@@ -8,15 +8,16 @@ import { sendLicenceEmail } from "@/lib/email";
  * POST /api/admin/grant-licence
  *   {
  *     "secret": "...",
- *     "email": "head@stmarys.ie",
- *     "organisation": "St Mary's Secondary School",
- *     "type": "school",            // single | school | organisation
- *     "invoiceRef": "INV-2026-014" // optional
+ *     "email": "hr@acme.com",
+ *     "organisation": "Acme Ltd",
+ *     "type": "organisation",       // single | school | organisation
+ *     "headcount": 40,              // organisations only
+ *     "invoiceRef": "INV-2026-014"
  *   }
  *
- * single       — one event, no expiry on access but a one-off licence
- * school       — two years
- * organisation — one year, renewable
+ * single       — one event, community rate, 3 months' access
+ * school       — two years, unlimited classroom use, one site
+ * organisation — one event, priced per person, 3 months' access
  */
 
 const TERMS: Record<string, { label: string; months: number | null; blurb: string }> = {
@@ -31,11 +32,17 @@ const TERMS: Record<string, { label: string; months: number | null; blurb: strin
     blurb: "unlimited classroom use for two years, at one school site",
   },
   organisation: {
-    label: "Organisation licence",
-    months: 12,
-    blurb: "unlimited internal viewing for twelve months, at one site or organisation",
+    label: "Organisation screening",
+    months: 3,
+    blurb: "one event, priced per person",
   },
 };
+
+/** €12 a head, €10 over fifty, never less than the €249 single-screening rate. */
+function priceOrganisation(headcount: number) {
+  const rate = headcount > 50 ? 1000 : 1200; // cents
+  return Math.max(headcount * rate, 24900);
+}
 
 export async function POST(req: Request) {
   let body: {
@@ -43,6 +50,7 @@ export async function POST(req: Request) {
     email?: string;
     organisation?: string;
     type?: string;
+    headcount?: number;
     invoiceRef?: string;
     amountCents?: number;
   };
@@ -53,7 +61,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const { secret, email, organisation, type, invoiceRef, amountCents } = body;
+  const { secret, email, organisation, type, headcount, invoiceRef } = body;
 
   if (!process.env.ADMIN_SECRET || secret !== process.env.ADMIN_SECRET) {
     return NextResponse.json({ error: "Not authorised" }, { status: 401 });
@@ -74,6 +82,24 @@ export async function POST(req: Request) {
       { status: 400 },
     );
   }
+
+  const heads = Number(headcount) || 0;
+
+  if (type === "organisation" && heads < 1) {
+    return NextResponse.json(
+      { error: "Organisations are priced per person — give a headcount." },
+      { status: 400 },
+    );
+  }
+
+  // Work out what was charged, unless it was given explicitly.
+  const amountCents =
+    body.amountCents ??
+    (type === "organisation"
+      ? priceOrganisation(heads)
+      : type === "school"
+        ? 29500
+        : 24900);
 
   const normalised = email.trim().toLowerCase();
 
@@ -110,7 +136,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Could not resolve the account." }, { status: 500 });
   }
 
-  // 2. Work out the expiry.
+  // 2. Expiry.
   const startsAt = new Date();
   const expiresAt = terms.months
     ? new Date(new Date().setMonth(startsAt.getMonth() + terms.months))
@@ -122,8 +148,9 @@ export async function POST(req: Request) {
     email: normalised,
     organisation,
     licence_type: type,
+    headcount: heads || null,
     invoice_ref: invoiceRef ?? null,
-    amount_cents: amountCents ?? null,
+    amount_cents: amountCents,
     starts_at: startsAt.toISOString(),
     expires_at: expiresAt?.toISOString() ?? null,
   });
@@ -133,7 +160,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Could not record the licence." }, { status: 500 });
   }
 
-  // 4. Grant access. Keyed so a renewal updates rather than duplicates.
+  // 4. Grant access. Keyed so a repeat booking updates rather than duplicates.
   const { error: purchaseErr } = await admin.from("purchases").upsert(
     {
       user_id: userId,
@@ -155,7 +182,9 @@ export async function POST(req: Request) {
     await sendLicenceEmail(normalised, {
       organisation,
       licenceLabel: terms.label,
-      blurb: terms.blurb,
+      blurb: heads
+        ? `${terms.blurb}, for ${heads} ${heads === 1 ? "person" : "people"}`
+        : terms.blurb,
       expiresAt,
       invoiceRef,
     });
@@ -173,6 +202,8 @@ export async function POST(req: Request) {
     email: normalised,
     organisation,
     type,
+    headcount: heads || null,
+    amount: `€${(amountCents / 100).toFixed(2)}`,
     expires: expiresAt?.toISOString().slice(0, 10) ?? "never",
   });
 }

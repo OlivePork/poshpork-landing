@@ -92,7 +92,7 @@ export default function GroupScreenings() {
             margin: '16px 0 0',
           }}>
             Single screenings from €249. School licences €295 for two years.
-            Workplaces priced per person.
+            Workplaces €12 per person, per event.
           </p>
         </div>
 
