@@ -59,8 +59,6 @@ export default function Home() {
               </p>
             </div>
 
-            {/* CHANGED: heading and body rewritten — the old version claimed a single
-                culprit, which contradicts the combination thesis. */}
             <div style={{ textAlign: 'center' }}>
               <div style={numberCircle}>3</div>
               <h3 style={stepHeading}>AND NOBODY NAMED THE PATTERN</h3>
@@ -96,7 +94,6 @@ export default function Home() {
               <GiftButton />
             </div>
 
-            {/* CHANGED: access terms now match the wording used everywhere else. */}
             <p style={{
               fontSize: '14px',
               lineHeight: '1.7',
@@ -105,10 +102,11 @@ export default function Home() {
               color: '#888888'
             }}>
               €15 — one payment, permanent access. One purchase covers your household.<br />
-              Sources cited on screen throughout the film.
+              <a href="/press#evidence" style={{ color: '#a67c00' }}>
+                Sources cited on screen throughout the film
+              </a>
             </p>
 
-            {/* NEW: medical disclaimer beside the purchase point, not only in the footer. */}
             <p style={{
               fontSize: '13px',
               lineHeight: '1.7',
@@ -126,12 +124,10 @@ export default function Home() {
       </section>
 
       {process.env.NEXT_PUBLIC_LIVE_EVENTS_ENABLED === 'true' ? <BookingTabs /> : <FilmSection />}
-      {process.env.NEXT_PUBLIC_LIVE_EVENTS_ENABLED === 'true' ? <BookingTabs /> : <FilmSection />}
 
       <GroupScreenings />
 
-      {/* NEW SECTION: states the AI production plainly and discloses the commercial
-          interest. Both were previously absent from the site. */}
+      {/* HOW THIS FILM WAS MADE */}
       <section style={{
         padding: '128px 40px',
         background: '#111111'
@@ -187,8 +183,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Article is now trimmed to "The Mystery Within the Mystery" + Practical Details.
-          Its duplicated sections were removed in components/Article.tsx. */}
       <Article />
     </>
   );

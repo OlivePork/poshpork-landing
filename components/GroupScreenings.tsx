@@ -21,8 +21,9 @@ export default function GroupScreenings() {
 
         <h2 style={{
           fontFamily: 'Cinzel, serif',
-          fontSize: 'clamp(30px, 4.5vw, 44px)',
-          lineHeight: 1.15,
+          fontSize: 'clamp(36px, 5vw, 48px)',
+          lineHeight: 1.2,
+          fontWeight: 'bold',
           color: '#d4af37',
           margin: '0 0 28px',
         }}>
