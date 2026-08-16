@@ -34,19 +34,36 @@ export default async function SiteHeader() {
       alignItems: "center",
       flexWrap: "wrap",
       gap: "10px 20px",
-      padding: "14px 24px",
+      padding: "12px 24px",
       background: "rgba(10,10,10,.86)",
       backdropFilter: "blur(8px)",
       borderBottom: "1px solid rgba(212,175,55,.2)",
     }}>
-      <a href="/" style={{
-        fontFamily: "Cinzel, serif",
-        fontSize: "15px",
-        letterSpacing: "0.14em",
-        color: "#d4af37",
-        textDecoration: "none",
-      }}>
-        POSH PORK
+      <a
+        href="/"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "10px",
+          textDecoration: "none",
+        }}
+      >
+        <span style={{
+          fontFamily: "Cinzel, serif",
+          fontSize: "15px",
+          letterSpacing: "0.14em",
+          color: "#d4af37",
+        }}>
+          POSH PORK
+        </span>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/posh-pork-pig.png"
+          alt=""
+          width={54}
+          height={28}
+          style={{ display: "block", height: "28px", width: "auto" }}
+        />
       </a>
 
       <nav style={{
