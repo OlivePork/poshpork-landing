@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import SignOutButton from "@/components/SignOutButton";
 
 export const dynamic = "force-dynamic";
 
@@ -75,6 +76,7 @@ export default async function SiteHeader() {
         <a href="/about" style={navLink}>THE BACK STORY</a>
         <a href="/press" style={navLink}>PRESS</a>
         <a href="/contact" style={navLink}>CONTACT</a>
+        {user && <SignOutButton email={user.email} />}
       </nav>
 
       <a href={href} style={{
