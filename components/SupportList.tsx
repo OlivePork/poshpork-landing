@@ -80,14 +80,20 @@ export default function SupportList() {
           placeholder="Which supermarket?"
           style={fieldStyle}
         />
+        {/* Options need an explicit background as well as a colour. Some browsers
+            apply one and not the other, which is how you end up with invisible text. */}
         <select
           value={country}
           onChange={(e) => setCountry(e.target.value)}
           style={{ ...fieldStyle, color: country ? "#f2ece1" : "rgba(242,236,225,.4)" }}
         >
-          <option value="">Which country?</option>
+          <option value="" style={{ color: "rgba(242,236,225,.5)", background: "#0a0a0a" }}>
+            Which country?
+          </option>
           {COUNTRIES.map((c) => (
-            <option key={c} value={c} style={{ color: "#000" }}>{c}</option>
+            <option key={c} value={c} style={{ color: "#f2ece1", background: "#0a0a0a" }}>
+              {c}
+            </option>
           ))}
         </select>
       </div>
