@@ -185,11 +185,11 @@ const CLAIMS: { time: string; claim: string; status: Status; source: string }[] 
   },
 
   /* ---------------- MANIPULATION ---------------- */
-  {
+ {
     time: "36:00",
-    claim: "A baby's IQ increases by 6% when breastfed.",
+    claim: "A baby's IQ increases by 6% when it drinks its mother's milk.",
     status: "Contested",
-    source: "The breastfeeding–IQ association is repeatedly observed (Horta et al., Acta Paediatrica 104, 2015) but heavily confounded by maternal education and socioeconomic status; sibling-controlled studies find much smaller effects. The specific 6% figure is not one the director can source precisely.",
+    source: "Hou et al., Breastfeeding Medicine (2021), a network meta-analysis of 15 studies and 12,316 subjects, found children breastfed for more than 6 months scored 1.06-fold higher on intelligence tests than never-breastfed children (ratio of means 1.06, 95% CI 1.05–1.08); under 6 months gave 1.04. So the 6% figure is precisely sourced. It remains marked Contested because the association is heavily confounded by maternal education and socioeconomic status, and sibling-controlled designs find smaller effects (Horta et al., Acta Paediatrica 104, 2015). The number is real; the causal attribution is what is disputed.",
   },
   {
     time: "37:00",
