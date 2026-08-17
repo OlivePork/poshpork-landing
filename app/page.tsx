@@ -103,7 +103,7 @@ export default function Home() {
             }}>
               €15 — one payment, permanent access. One purchase covers your household.<br />
               <a href="/press#evidence" style={{ color: '#a67c00' }}>
-                Sources cited on screen throughout the film
+                Sources cited here
               </a>
             </p>
 
