@@ -601,7 +601,7 @@ export default function PressPage() {
             <a href="mailto:colin@poshpork.com" style={link}>colin@poshpork.com</a>.
           </p>
           <ul style={{ listStyle: "none", padding: 0, margin: "28px 0 0", maxWidth: "60ch" }}>
-            <Asset label="The Suspects — lineup" href="/press/posh-pork-suspects-lineup.jpg" />
+            <Asset label="The Suspects — Lineup" href="/press/posh-pork-suspects-lineup.jpg" />
             <Asset label="Lady Posh Pork" href="/press/posh-pork-lady-posh-pork.jpg" />
             <Asset label="Mr Carbohydrates" href="/press/posh-pork-mr-carbohydrates.jpg" />
             <Asset label="Mr Vegetable Oils" href="/press/posh-pork-mr-vegetable-oils.jpg" />
