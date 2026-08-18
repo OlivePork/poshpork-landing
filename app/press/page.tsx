@@ -174,11 +174,11 @@ const CLAIMS: { time: string; claim: string; status: Status; source: string }[] 
   },
 
   /* ---------------- ORIGINAL ARGUMENT: IRELAND ---------------- */
-  {
+{
     time: "31:00",
     claim: "Britain industrialised first in part because it imported large quantities of high-quality animal protein and fat from Ireland. This raised omega-3 and nutrient intake among its population, and over generations contributed to the cognitive and physical capacity that industrialisation required.",
     status: "Synthesis",
-    source: "ORIGINAL ARGUMENT — the director's own, not published, tested or peer-reviewed. The component facts are documented: large-scale Irish cattle and provisions exports to Britain through the sixteenth and seventeenth centuries; the Cattle Acts of 1663 and 1667, in which English landowners successfully pressured Parliament to ban Irish livestock imports; the subsequent Irish provisions trade in salted beef, butter and pork; and omega-3's established role in neurodevelopment. The causal chain connecting these to British industrialisation is the film's argument. It is offered for examination, not as a finding.",
+    source: "ORIGINAL ARGUMENT — the director's own, not published, tested or peer-reviewed. The component facts are documented: large-scale Irish cattle and provisions exports to Britain through the sixteenth and seventeenth centuries, given in the film as roughly 100,000 head a year, a figure drawn from Colin Spencer, British Food: An Extraordinary Thousand Years of History (Grub Street) — page reference to follow; the Cattle Acts of 1663 and 1667, in which English landowners successfully pressured Parliament to ban Irish livestock imports; the subsequent Irish provisions trade in salted beef, butter and pork; and omega-3's established role in neurodevelopment. The causal chain connecting these to British industrialisation is the film's argument. It is offered for examination, not as a finding.",
   },
   {
     time: "35:00",
@@ -389,7 +389,7 @@ export default function PressPage() {
             background: "#000",
           }}>
             <iframe
-              src="https://player.vimeo.com/video/1218266606?title=0&byline=0&portrait=0&dnt=1"
+              src="https://player.vimeo.com/video/1218849286?title=0&byline=0&portrait=0&dnt=1"
               title="Which Food Is Killing You? — trailer"
               allow="autoplay; fullscreen; picture-in-picture"
               allowFullScreen
@@ -626,7 +626,7 @@ export default function PressPage() {
           </p>
           <p style={{ ...para, fontSize: "15px", opacity: .7 }}>
             Group and educational screening licences:{" "}
-            <a href="mailto:screenings@poshpork.com" style={link}>screenings@poshpork.com</a>
+            <a href="mailto:screening@poshpork.com" style={link}>screening@poshpork.com</a>
           </p>
         </div>
       </section>
