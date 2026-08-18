@@ -168,10 +168,11 @@ export default function TermsAndConditions() {
         <section style={{marginBottom: '40px'}}>
           <h2 style={sectionHeading}>8. Interactive questions and your answers</h2>
           <p style={para}>
-            The Film includes optional questions, and a closing verdict on each of the four suspects. Your
-            answers are recorded against your account and shown to other viewers only in aggregate as a
-            running tally. We do not publish or share individual answers, and no viewer can see how another
-            has voted. The questions can be switched off, and doing so does not affect the Film.
+            The Film includes optional questions, and a closing verdict on each of the four
+            suspects. Your answers are recorded against your account so that the Film knows
+            where you are. They are not shown to other viewers, and no viewer can see how
+            another has answered. The questions can be switched off, and doing so does not
+            affect the Film.
           </p>
           <p style={para}>
             See our <a href="/privacy" style={link}>Privacy Policy</a> for how we handle this data.

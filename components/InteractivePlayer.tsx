@@ -16,16 +16,6 @@ export type Question = {
 
 type Mode = "interactive" | "group" | "off";
 
-export type Tally = Record<string, { total: number; byAnswer: Record<string, number> }>;
-
-type Reveal = {
-  questions: Question[];
-  mine: Record<string, string | null>;   // question_id -> the answer given
-  correct: Record<string, boolean | null>;
-  tally: Tally | null;
-  isVerdict: boolean;
-};
-
 const MODE_KEY = "poshpork.answerMode";
 const SIZE_KEY = "poshpork.groupSize";
 const DEFAULT_HOLD = 10;
@@ -52,34 +42,30 @@ export default function InteractivePlayer({
   const [groupSize, setGroupSize] = useState(1);
   const [showSetup, setShowSetup] = useState(true);
   const [agreed, setAgreed] = useState(false);
+  const [isFull, setIsFull] = useState(false);
 
   const [screen, setScreen] = useState<Question[] | null>(null);
   const [remaining, setRemaining] = useState(0);
   const [held, setHeld] = useState(false);
   const [picks, setPicks] = useState<Record<string, string>>({});
-  // Group counts: how many of the room chose options[0] for this question.
-  // The remainder are treated as having chosen options[1].
-  const [counts, setCounts] = useState<Record<string, number>>({});
   const [sent, setSent] = useState(false);
-  const [reveal, setReveal] = useState<Reveal | null>(null);
-
-  // Live room: everyone answers on their own phone.
-  const room = useRoomHost(lang);
-  const roomRef = useRef(room);
-  useEffect(() => void (roomRef.current = room), [room]);
+  const [showStandings, setShowStandings] = useState(false);
 
   const modeRef = useRef(mode);
   const screenRef = useRef(screen);
   const picksRef = useRef(picks);
-  const countsRef = useRef(counts);
   const groupSizeRef = useRef(groupSize);
   const langRef = useRef(lang);
   useEffect(() => void (modeRef.current = mode), [mode]);
   useEffect(() => void (screenRef.current = screen), [screen]);
   useEffect(() => void (picksRef.current = picks), [picks]);
-  useEffect(() => void (countsRef.current = counts), [counts]);
   useEffect(() => void (groupSizeRef.current = groupSize), [groupSize]);
   useEffect(() => void (langRef.current = lang), [lang]);
+
+  // Live room: everyone answers on their own phone.
+  const room = useRoomHost(lang);
+  const roomRef = useRef(room);
+  useEffect(() => void (roomRef.current = room), [room]);
 
   useEffect(() => {
     const saved = window.localStorage.getItem(MODE_KEY) as Mode | null;
@@ -101,8 +87,8 @@ export default function InteractivePlayer({
   const submit = useCallback(
     (questionId: string, answer: string | null, voteCount = 1) => {
       const sid = sessionIdRef.current;
-      if (!sid) return Promise.resolve(null);
-      return fetch("/api/answers", {
+      if (!sid) return;
+      fetch("/api/answers", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -116,145 +102,37 @@ export default function InteractivePlayer({
           seconds_to_answer: Number(((Date.now() - askedAtRef.current) / 1000).toFixed(1)),
         }),
         keepalive: true,
-      })
-        .then((r) => (r.ok ? r.json() : null))
-        .catch(() => null);
+      }).catch(() => {});
     },
     [],
   );
 
-  // Aggregate tally for the questions just answered. Counts only — no
-  // individual answers are exposed by the endpoint.
-  const fetchResults = useCallback(async (ids: string[]) => {
-    try {
-      const r = await fetch("/api/results", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question_ids: ids }),
-      });
-      if (!r.ok) return null;
-      const json = await r.json();
-      return (json.results ?? null) as Tally | null;
-    } catch {
-      return null;
-    }
-  }, []);
-
   const closeScreen = useCallback(
-    async (record: boolean) => {
+    (record: boolean) => {
       const qs = screenRef.current;
       stopTick();
 
-      if (!qs || !record) {
-        if (roomRef.current.code) roomRef.current.closeQuestion();
-        setScreen(null);
-        setPicks({});
-        setCounts({});
-        setHeld(false);
-        setSent(false);
-        playerRef.current?.play().catch(() => {});
-        return;
+      if (qs && record) {
+        // A group answers once. The room agreed, so the answer is recorded
+        // on behalf of everyone in it.
+        const votes = modeRef.current === "group" ? Math.max(groupSizeRef.current, 1) : 1;
+        const current = picksRef.current;
+        qs.forEach((q) => submit(q.id, current[q.id] ?? null, votes));
       }
 
       if (roomRef.current.code) roomRef.current.closeQuestion();
 
-      const size = groupSizeRef.current;
-      const groupVote = modeRef.current === "group" && size > 1;
-      const mine: Record<string, string | null> = {};
-      const correct: Record<string, boolean | null> = {};
-      const pending: Promise<unknown>[] = [];
-
-      if (groupVote) {
-        const c = countsRef.current;
-        qs.forEach((q) => {
-          const first = c[q.id];
-          if (first === undefined) {
-            mine[q.id] = null;
-            pending.push(submit(q.id, null, 1));
-            return;
-          }
-          // The room's majority stands as "our" answer for the reveal.
-          mine[q.id] = first >= size - first ? q.options[0] : q.options[1];
-          const second = size - first;
-          if (first > 0) pending.push(submit(q.id, q.options[0], first));
-          if (second > 0) pending.push(submit(q.id, q.options[1], second));
-        });
-      } else {
-        const current = picksRef.current;
-        qs.forEach((q) => {
-          const a = current[q.id] ?? null;
-          mine[q.id] = a;
-          pending.push(
-            submit(q.id, a, 1).then((res) => {
-              const r = res as { is_correct?: boolean | null } | null;
-              correct[q.id] = r?.is_correct ?? null;
-            }),
-          );
-        });
-      }
-
-      const answeredAny = Object.values(mine).some((v) => v !== null);
-
       setScreen(null);
       setPicks({});
-      setCounts({});
       setHeld(false);
       setSent(false);
-
-      // Skipped entirely — nothing to show, just carry on.
-      if (!answeredAny) {
-        playerRef.current?.play().catch(() => {});
-        return;
-      }
-
-      await Promise.allSettled(pending);
-      const tally = await fetchResults(qs.map((q) => q.id));
-
-      setReveal({
-        questions: qs,
-        mine,
-        correct,
-        tally,
-        isVerdict: qs.length > 1,
-      });
+      playerRef.current?.play().catch(() => {});
     },
-    [stopTick, submit, fetchResults],
+    [stopTick, submit],
   );
-
-  const [showStandings, setShowStandings] = useState(false);
-
-  const dismissReveal = useCallback(async () => {
-    const wasVerdict = reveal?.isVerdict;
-    setReveal(null);
-
-    // A live room ends on the table standings rather than the film resuming.
-    if (wasVerdict && roomRef.current.code) {
-      await roomRef.current.finish();
-      setShowStandings(true);
-      return;
-    }
-
-    playerRef.current?.play().catch(() => {});
-  }, [reveal]);
 
   const pick = useCallback((questionId: string, option: string) => {
     setPicks((prev) => ({ ...prev, [questionId]: option }));
-  }, []);
-
-  // Group mode: the room's count for options[0]. Entered directly rather than
-  // tapped once per person — a class of thirty would otherwise need 120 taps.
-  const setCount = useCallback((questionId: string, value: number) => {
-    const size = groupSizeRef.current;
-    const clamped = Math.min(Math.max(Math.round(value), 0), size);
-    setCounts((prev) => ({ ...prev, [questionId]: clamped }));
-  }, []);
-
-  const clearCount = useCallback((questionId: string) => {
-    setCounts((prev) => {
-      const next = { ...prev };
-      delete next[questionId];
-      return next;
-    });
   }, []);
 
   const ask = useCallback(
@@ -263,7 +141,6 @@ export default function InteractivePlayer({
       askedAtRef.current = Date.now();
       setScreen(group);
       setPicks({});
-      setCounts({});
       setHeld(false);
       setSent(false);
       playerRef.current?.pause().catch(() => {});
@@ -365,42 +242,46 @@ export default function InteractivePlayer({
     };
   }, [videoId]);
 
-  // Vimeo's own fullscreen button puts the *iframe* fullscreen, which hides
-  // every overlay — the questions simply never appear. Redirect it to the
-  // frame, which contains both the player and the overlays.
-  //
-  // Note: on iOS Safari, and when casting to a TV, the platform forces its own
-  // native player and no web overlay can be shown on top. That is not fixable
-  // from here.
+  /* ------------------------------------------------------------------ */
+  /* Fullscreen                                                          */
+  /*                                                                     */
+  /* We put the *frame* fullscreen, not the iframe, so the question       */
+  /* overlays come with it. This has to happen inside a real click —      */
+  /* browsers reject a fullscreen request that isn't tied to a user       */
+  /* gesture, which is why intercepting Vimeo's own button failed.        */
+  /* ------------------------------------------------------------------ */
+
+  const toggleFullscreen = useCallback(() => {
+    const el = frameRef.current;
+    if (!el) return;
+
+    if (document.fullscreenElement) {
+      document.exitFullscreen().catch(() => {});
+    } else {
+      el.requestFullscreen().catch(() => {
+        /* browser refused; nothing to do but stay windowed */
+      });
+    }
+  }, []);
+
   useEffect(() => {
-    const player = playerRef.current;
-    if (!player) return;
-
-    const onVimeoFs = async (data: { fullscreen: boolean }) => {
-      if (!data.fullscreen) return;
-      if (document.fullscreenElement === frameRef.current) return;
-      try {
-        await player.exitFullscreen();
-        await frameRef.current?.requestFullscreen();
-      } catch {
-        /* browser refused the swap; native fullscreen stands */
-      }
-    };
-
-    player.on("fullscreenchange", onVimeoFs);
-    return () => {
-      player.off("fullscreenchange", onVimeoFs);
-    };
-  }, [videoId]);
+    const onChange = () => setIsFull(document.fullscreenElement === frameRef.current);
+    document.addEventListener("fullscreenchange", onChange);
+    return () => document.removeEventListener("fullscreenchange", onChange);
+  }, []);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const qs = screenRef.current;
-      if (!qs) return;
 
-      // In group mode the number keys belong to the count fields, so the
-      // keyboard shortcuts only apply to solo viewing.
-      const groupVote = modeRef.current === "group" && groupSizeRef.current > 1;
+      // F toggles fullscreen whether or not a question is open.
+      if (e.key.toLowerCase() === "f" && !qs) {
+        e.preventDefault();
+        toggleFullscreen();
+        return;
+      }
+
+      if (!qs) return;
 
       if (e.key === "Enter") {
         e.preventDefault();
@@ -412,8 +293,6 @@ export default function InteractivePlayer({
         }
         return;
       }
-
-      if (groupVote) return;
 
       const n = Number(e.key);
       if (n >= 1) {
@@ -445,7 +324,7 @@ export default function InteractivePlayer({
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [pick, closeScreen, stopTick]);
+  }, [pick, closeScreen, stopTick, toggleFullscreen]);
 
   const begin = async (chosen: Mode, size: number) => {
     if (!agreed) return;
@@ -479,72 +358,12 @@ export default function InteractivePlayer({
   };
 
   const isVerdict = !!screen && screen.length > 1;
-  const groupVote = mode === "group" && groupSize > 1;
   const hold = screen?.[0]?.hold_seconds ?? DEFAULT_HOLD;
-  const answeredCount = screen
-    ? groupVote
-      ? screen.filter((q) => counts[q.id] !== undefined).length
-      : screen.filter((q) => picks[q.id]).length
-    : 0;
+  const answeredCount = screen ? screen.filter((q) => picks[q.id]).length : 0;
 
   const shareText = encodeURIComponent(
     "I have just delivered my verdict on Which Food Is Killing You? See if you agree at poshpork.com",
   );
-
-  /* ---------- group count entry ---------- */
-
-  const CountEntry = ({ q }: { q: Question }) => {
-    const first = counts[q.id];
-    const second = first === undefined ? undefined : groupSize - first;
-
-    return (
-      <div className="pp-tally">
-        <div className="pp-tally-row">
-          <label className="pp-tally-side">
-            <span className="pp-tally-label">{q.options[0]}</span>
-            <input
-              type="number"
-              inputMode="numeric"
-              min={0}
-              max={groupSize}
-              value={first ?? ""}
-              placeholder="0"
-              onChange={(e) => {
-                const v = e.target.value;
-                if (v === "") clearCount(q.id);
-                else setCount(q.id, Number(v));
-              }}
-            />
-          </label>
-
-          <span className="pp-tally-of">of {groupSize}</span>
-
-          <label className="pp-tally-side">
-            <span className="pp-tally-label">{q.options[1]}</span>
-            <input
-              type="number"
-              inputMode="numeric"
-              min={0}
-              max={groupSize}
-              value={second ?? ""}
-              placeholder="0"
-              onChange={(e) => {
-                const v = e.target.value;
-                if (v === "") clearCount(q.id);
-                else setCount(q.id, groupSize - Number(v));
-              }}
-            />
-          </label>
-        </div>
-
-        {first !== undefined && (
-          <div className="pp-tally-bar" aria-hidden="true">
-            <div className="pp-tally-fill" style={{ width: `${(first / groupSize) * 100}%` }} />
-          </div>
-        )}
-      </div>
-    );
-  };
 
   return (
     <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "24px 16px 64px" }}>
@@ -559,8 +378,8 @@ export default function InteractivePlayer({
               <p className="pp-eyebrow">Before the film begins</p>
               <h2 className="pp-title">How is the jury sitting tonight?</h2>
               <p className="pp-lede">
-                Questions appear during the film. Your verdicts are counted alongside every
-                other viewer&apos;s.
+                Questions appear during the film. There are no right answers &mdash;
+                only what you make of the evidence.
               </p>
 
               <label className="pp-agree">
@@ -588,8 +407,8 @@ export default function InteractivePlayer({
                 <button className="pp-choice" disabled={!agreed} onClick={() => begin("group", Math.max(groupSize, 2))}>
                   <span className="pp-choice-name">Watching as a group</span>
                   <span className="pp-choice-note">
-                    A show of hands, typed in. Enter how many chose each answer and the
-                    film moves on. One screen, one device.
+                    Talk it over, agree an answer, and the film moves on. One screen,
+                    one answer for the room.
                   </span>
                 </button>
 
@@ -629,31 +448,24 @@ export default function InteractivePlayer({
               </p>
               <h2 className="pp-title pp-title-lg">{screen[0].question_text}</h2>
 
-              {groupVote ? (
-                <>
-                  <p className="pp-lede">Hands up. Type the numbers in.</p>
-                  <CountEntry q={screen[0]} />
-                </>
-              ) : (
-                <div className="pp-options">
-                  {screen[0].options.map((opt, i) => (
-                    <button
-                      key={opt}
-                      className={`pp-option ${picks[screen[0].id] === opt ? "is-picked" : ""}`}
-                      onClick={() => {
-                        pick(screen[0].id, opt);
-                        window.setTimeout(() => closeScreen(true), 700);
-                      }}
-                      disabled={!!picks[screen[0].id]}
-                    >
-                      <span className="pp-key">{i + 1}</span>
-                      <span>{opt}</span>
-                    </button>
-                  ))}
-                </div>
-              )}
+              <div className="pp-options">
+                {screen[0].options.map((opt, i) => (
+                  <button
+                    key={opt}
+                    className={`pp-option ${picks[screen[0].id] === opt ? "is-picked" : ""}`}
+                    onClick={() => {
+                      pick(screen[0].id, opt);
+                      window.setTimeout(() => closeScreen(true), 700);
+                    }}
+                    disabled={!!picks[screen[0].id]}
+                  >
+                    <span className="pp-key">{i + 1}</span>
+                    <span>{opt}</span>
+                  </button>
+                ))}
+              </div>
 
-              {mode === "group" && (
+              {mode === "group" && !room.code && (
                 <div className="pp-timer">
                   <div className="pp-timer-track">
                     <div className="pp-timer-fill" style={{ width: `${held ? 100 : (remaining / hold) * 100}%` }} />
@@ -663,7 +475,7 @@ export default function InteractivePlayer({
                     <span className="pp-timer-actions">
                       {!held && <button onClick={() => { stopTick(); setHeld(true); }}>More time</button>}
                       <button onClick={() => closeScreen(true)}>
-                        {counts[screen[0].id] !== undefined ? "Continue" : "Skip"}
+                        {picks[screen[0].id] ? "Continue" : "Skip"}
                       </button>
                     </span>
                   </div>
@@ -685,7 +497,7 @@ export default function InteractivePlayer({
                     style={{ marginTop: "18px" }}
                     onClick={() => closeScreen(true)}
                   >
-                    Everyone in — continue
+                    Everyone in &mdash; continue
                   </button>
                 </>
               )}
@@ -699,40 +511,25 @@ export default function InteractivePlayer({
               <p className="pp-eyebrow">The verdict</p>
               <h2 className="pp-title pp-title-lg">How do you find each of them?</h2>
 
-              {groupVote && (
-                <p className="pp-lede">
-                  A show of hands for each suspect. Type how many of the {groupSize} say guilty.
-                </p>
-              )}
-
               <div className="pp-grid">
-                {screen.map((q, idx) => {
-                  const decided = groupVote ? counts[q.id] !== undefined : !!picks[q.id];
-
-                  return (
-                    <div key={q.id} className={`pp-suspect ${decided ? "is-done" : ""}`}>
-                      <p className="pp-suspect-name">{q.question_text}</p>
-
-                      {groupVote ? (
-                        <CountEntry q={q} />
-                      ) : (
-                        <div className="pp-verdict-row">
-                          {q.options.map((opt, oi) => (
-                            <button
-                              key={opt}
-                              className={`pp-verdict ${picks[q.id] === opt ? `is-${opt.toLowerCase()}` : ""}`}
-                              onClick={() => pick(q.id, opt)}
-                              disabled={sent}
-                            >
-                              <span className="pp-key-sm">{idx * 2 + oi + 1}</span>
-                              {opt}
-                            </button>
-                          ))}
-                        </div>
-                      )}
+                {screen.map((q, idx) => (
+                  <div key={q.id} className={`pp-suspect ${picks[q.id] ? "is-done" : ""}`}>
+                    <p className="pp-suspect-name">{q.question_text}</p>
+                    <div className="pp-verdict-row">
+                      {q.options.map((opt, oi) => (
+                        <button
+                          key={opt}
+                          className={`pp-verdict ${picks[q.id] === opt ? `is-${opt.toLowerCase()}` : ""}`}
+                          onClick={() => pick(q.id, opt)}
+                          disabled={sent}
+                        >
+                          <span className="pp-key-sm">{idx * 2 + oi + 1}</span>
+                          {opt}
+                        </button>
+                      ))}
                     </div>
-                  );
-                })}
+                  </div>
+                ))}
               </div>
 
               {sent ? (
@@ -764,7 +561,7 @@ export default function InteractivePlayer({
                       : `Deliver the verdict (${answeredCount}/${screen.length})`}
                   </button>
 
-                  {mode === "group" && (
+                  {mode === "group" && !room.code && (
                     <div className="pp-timer">
                       <div className="pp-timer-track">
                         <div className="pp-timer-fill" style={{ width: `${held ? 100 : (remaining / hold) * 100}%` }} />
@@ -782,6 +579,7 @@ export default function InteractivePlayer({
             </div>
           </div>
         )}
+
         {showStandings && room.standings && (
           <div className="pp-veil">
             <div className="pp-card pp-card-wide">
@@ -795,75 +593,14 @@ export default function InteractivePlayer({
             </div>
           </div>
         )}
-
-        {reveal && (
-          <div className="pp-veil">
-            <div className={`pp-card ${reveal.isVerdict ? "pp-card-wide" : ""}`}>
-              <p className="pp-eyebrow">
-                {reveal.isVerdict ? "The jury has spoken" : "The jury so far"}
-              </p>
-              <h2 className="pp-title">
-                {reveal.isVerdict ? "How everyone else found them" : "How everyone else answered"}
-              </h2>
-
-              <div className={reveal.isVerdict ? "pp-grid" : ""}>
-                {reveal.questions.map((q) => {
-                  const t = reveal.tally?.[q.id];
-                  const total = t?.total ?? 0;
-                  const mine = reveal.mine[q.id];
-                  const wasRight = reveal.correct[q.id];
-
-                  return (
-                    <div key={q.id} className="pp-result">
-                      {reveal.isVerdict && <p className="pp-suspect-name">{q.question_text}</p>}
-
-                      {q.options.map((opt) => {
-                        const votes = t?.byAnswer?.[opt] ?? 0;
-                        const pct = total > 0 ? Math.round((votes / total) * 100) : 0;
-                        const isMine = mine === opt;
-
-                        return (
-                          <div key={opt} className={`pp-result-row ${isMine ? "is-mine" : ""}`}>
-                            <div className="pp-result-head">
-                              <span>
-                                {opt}
-                                {isMine && <span className="pp-result-you">you</span>}
-                              </span>
-                              <span className="pp-result-pct">{pct}%</span>
-                            </div>
-                            <div className="pp-result-track">
-                              <div className="pp-result-fill" style={{ width: `${pct}%` }} />
-                            </div>
-                          </div>
-                        );
-                      })}
-
-                      {!reveal.isVerdict && wasRight !== null && wasRight !== undefined && (
-                        <p className={`pp-verdict-flag ${wasRight ? "is-right" : "is-wrong"}`}>
-                          {wasRight ? "You were right." : "Not this time."}
-                        </p>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-
-              <p className="pp-result-total">
-                {reveal.tally
-                  ? `Counted across every viewer so far.`
-                  : `The tally is unavailable just now — your answer was still recorded.`}
-              </p>
-
-              <button className="pp-deliver" onClick={dismissReveal}>
-                {reveal.isVerdict ? "Finish" : "Continue the film"}
-              </button>
-            </div>
-          </div>
-        )}
       </div>
 
       {!showSetup && (
         <div className="pp-bar">
+          <button className="pp-full" onClick={toggleFullscreen}>
+            {isFull ? "Exit full screen" : "Full screen"}
+          </button>
+
           <span className="pp-bar-label">Questions</span>
           <div className="pp-bar-modes">
             {(["interactive", "group", "off"] as Mode[]).map((m) => (
@@ -915,34 +652,6 @@ const CSS = ROOM_CSS + `
 .pp-option:disabled { cursor: default; opacity: .45; }
 .pp-option.is-picked { opacity: 1; border-color: #d4af37; background: rgba(212,175,55,.24); }
 .pp-key { flex: none; width: 34px; height: 34px; display: grid; place-items: center; font-family: Cinzel, serif; font-size: 15px; border: 1px solid rgba(212,175,55,.5); border-radius: 50%; color: #d4af37; }
-
-/* group count entry */
-.pp-tally { margin-top: 4px; }
-.pp-tally-row { display: flex; align-items: flex-end; justify-content: center; gap: 14px; }
-.pp-tally-side { display: grid; gap: 8px; justify-items: center; flex: 1; min-width: 0; }
-.pp-tally-label { font-family: Cinzel, serif; font-size: clamp(13px, 1.5vw, 15px); color: #f2ece1; opacity: .85; }
-.pp-tally-side input { width: 100%; max-width: 120px; padding: 14px 8px; font-family: Cinzel, serif; font-size: clamp(22px, 3vw, 30px); text-align: center; background: #000; color: #d4af37; border: 1px solid rgba(212,175,55,.45); border-radius: 6px; }
-.pp-tally-side input:focus { outline: none; border-color: #d4af37; background: rgba(212,175,55,.08); }
-.pp-tally-of { padding-bottom: 18px; font-size: 12px; letter-spacing: .16em; text-transform: uppercase; opacity: .45; white-space: nowrap; }
-.pp-tally-bar { height: 4px; margin-top: 14px; background: rgba(255,255,255,.12); border-radius: 2px; overflow: hidden; }
-.pp-tally-fill { height: 100%; background: #d4af37; transition: width .2s ease; }
-
-/* jury tally reveal */
-.pp-result { text-align: left; }
-.pp-result + .pp-result { margin-top: 18px; }
-.pp-result-row { margin-bottom: 14px; }
-.pp-result-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font-size: 15px; margin-bottom: 6px; opacity: .8; }
-.pp-result-row.is-mine .pp-result-head { opacity: 1; color: #d4af37; }
-.pp-result-you { margin-left: 8px; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; border: 1px solid currentColor; border-radius: 3px; padding: 1px 5px; vertical-align: middle; }
-.pp-result-pct { font-family: Cinzel, serif; font-size: 17px; font-variant-numeric: tabular-nums; }
-.pp-result-track { height: 8px; background: rgba(255,255,255,.1); border-radius: 4px; overflow: hidden; }
-.pp-result-fill { height: 100%; background: rgba(212,175,55,.45); transition: width .6s cubic-bezier(.2,.8,.2,1); }
-.pp-result-row.is-mine .pp-result-fill { background: #d4af37; }
-.pp-verdict-flag { margin: 14px 0 0; font-size: 13px; letter-spacing: .16em; text-transform: uppercase; }
-.pp-verdict-flag.is-right { color: #7fa87f; }
-.pp-verdict-flag.is-wrong { color: #c98b5e; }
-.pp-result-total { margin: 22px 0 24px; font-size: 13px; opacity: .5; }
-
 .pp-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 28px; }
 .pp-suspect { border: 1px solid rgba(212,175,55,.3); border-radius: 8px; padding: 18px 16px; background: rgba(255,255,255,.02); }
 .pp-suspect.is-done { border-color: rgba(212,175,55,.7); }
@@ -964,6 +673,8 @@ const CSS = ROOM_CSS + `
 .pp-logged { margin: 24px 0 0; font-size: 13px; letter-spacing: .2em; text-transform: uppercase; color: #d4af37; }
 .pp-bar { display: flex; align-items: center; gap: 14px; justify-content: flex-end; padding: 12px 2px 0; font-size: 12px; color: #f2ece1; }
 .pp-bar-label { letter-spacing: .22em; text-transform: uppercase; opacity: .5; }
+.pp-full { margin-right: auto; padding: 7px 14px; font: inherit; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; background: none; color: #d4af37; border: 1px solid rgba(212,175,55,.35); border-radius: 4px; cursor: pointer; }
+.pp-full:hover { background: rgba(212,175,55,.12); }
 .pp-bar-modes { display: flex; border: 1px solid rgba(212,175,55,.3); border-radius: 4px; overflow: hidden; }
 .pp-bar-modes button { padding: 7px 14px; background: none; border: none; border-right: 1px solid rgba(212,175,55,.2); color: inherit; opacity: .6; cursor: pointer; font: inherit; }
 .pp-bar-modes button:last-child { border-right: none; }
@@ -975,7 +686,7 @@ const CSS = ROOM_CSS + `
 .pp-passiton-wa { padding: 14px 30px; font-family: Cinzel, serif; font-size: 16px; color: #f2ece1; border: 1px solid rgba(255,255,255,.25); border-radius: 6px; text-decoration: none; }
 
 /* Fullscreen: the frame goes fullscreen, not the iframe, so the overlays
-   stay on top of the film. Without this, questions never appear. */
+   stay on top of the film. */
 .pp-frame:fullscreen { border: none; border-radius: 0; background: #000; display: grid; place-items: center; }
 .pp-frame:fullscreen > div:first-child { width: 100%; }
 .pp-frame:fullscreen .pp-veil { position: fixed; }

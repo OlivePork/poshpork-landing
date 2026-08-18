@@ -38,7 +38,7 @@ export default function FilmSection() {
           marginBottom: '48px'
         }}>
           The evidence is laid out in full, the witnesses contradict each other,
-          and you deliver the verdict — counted alongside every other viewer&apos;s.
+          and you deliver the verdict.
         </p>
 
         <div style={{
@@ -72,7 +72,7 @@ export default function FilmSection() {
               Answer as you watch
             </h3>
             <p style={{ fontSize: '16px', lineHeight: '1.6', color: '#999999' }}>
-              Questions appear during the film. Your verdicts join the running tally.
+              Questions appear during the film. You become a member of the jury and vote.
             </p>
           </div>
 
@@ -123,7 +123,7 @@ export default function FilmSection() {
           marginTop: '24px'
         }}>
           €15 — one payment, permanent access. One purchase covers your household.<br />
-          1 hour 26 minutes.
+          1 hour 27 minutes.
         </p>
       </div>
     </section>
