@@ -646,14 +646,14 @@ export default function PressPage() {
             All images are high resolution and free to use in coverage of the film.
           </p>
           <ul style={{ listStyle: "none", padding: 0, margin: "28px 0 0", maxWidth: "60ch" }}>
-            <Asset label="The suspects — lineup" href="/press/posh-pork-suspects-lineup.jpg" note="[TO ADD]" />
-            <Asset label="Lady Posh Pork" href="/press/posh-pork-lady-posh-pork.jpg" note="[TO ADD]" />
-            <Asset label="Mr Carbohydrates" href="/press/posh-pork-mr-carbohydrates.jpg" note="[TO ADD]" />
-            <Asset label="Mr Vegetable Oils" href="/press/posh-pork-mr-vegetable-oils.jpg" note="[TO ADD]" />
-            <Asset label="The Bliss Brothers" href="/press/posh-pork-bliss-brothers.jpg" note="[TO ADD]" />
-            <Asset label="The judge" href="/press/posh-pork-judge.jpg" note="[TO ADD]" />
-            <Asset label="Key art / poster" href="/press/posh-pork-key-art.jpg" note="[TO ADD]" />
-            <Asset label="Colin Marry" href="/press/colin-marry.jpg" note="[TO ADD]" />
+            <Asset label="The suspects — lineup" href="/press/posh-pork-suspects-lineup.jpg" />
+            <Asset label="Lady Posh Pork" href="/press/posh-pork-lady-posh-pork.jpg"  />
+            <Asset label="Mr Carbohydrates" href="/press/posh-pork-mr-carbohydrates.jpg"  />
+            <Asset label="Mr Vegetable Oils" href="/press/posh-pork-mr-vegetable-oils.jpg" />
+            <Asset label="The Bliss Brothers" href="/press/posh-pork-bliss-brothers.jpg" />
+            <Asset label="The judge" href="/press/posh-pork-judge.jpg" />
+            <Asset label="Key art / poster" href="/press/posh-pork-key-art.jpg" />
+            <Asset label="Colin Marry" href="/press/colin-marry.jpg" />
           </ul>
         </div>
       </section>
