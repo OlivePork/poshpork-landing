@@ -601,13 +601,13 @@ export default function PressPage() {
             <a href="mailto:colin@poshpork.com" style={link}>colin@poshpork.com</a>.
           </p>
           <ul style={{ listStyle: "none", padding: 0, margin: "28px 0 0", maxWidth: "60ch" }}>
-            <Asset label="The suspects — lineup" href="/press/posh-pork-suspects-lineup.jpg" />
+            <Asset label="The Suspects — lineup" href="/press/posh-pork-suspects-lineup.jpg" />
             <Asset label="Lady Posh Pork" href="/press/posh-pork-lady-posh-pork.jpg" />
             <Asset label="Mr Carbohydrates" href="/press/posh-pork-mr-carbohydrates.jpg" />
             <Asset label="Mr Vegetable Oils" href="/press/posh-pork-mr-vegetable-oils.jpg" />
             <Asset label="The Bliss Brothers" href="/press/posh-pork-bliss-brothers.jpg" />
-            <Asset label="The judge" href="/press/posh-pork-judge.jpg" />
-            <Asset label="Key art / poster" href="/press/posh-pork-key-art.jpg" />
+            <Asset label="The Judge" href="/press/posh-pork-judge.jpg" />
+            <Asset label="Key Art / Poster" href="/press/posh-pork-key-art.jpg" />
             <Asset label="Colin Marry" href="/press/colin-marry.jpg" />
           </ul>
         </div>

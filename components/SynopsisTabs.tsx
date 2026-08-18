@@ -83,8 +83,8 @@ const ANGLES: Angle[] = [
       "Then Russia invaded Ukraine, feed prices doubled, and the European pig industry collapsed. He went to the supermarkets to save it. They said no, and told him plainly why: nobody has heard of you. The company was liquidated in 2023. Creditors lost money. He says so in the film, out loud, under oath, through a cartoon pig.",
       "The refusal was the answer he had been circling for a decade. The product was never the problem. The problem was that the largest food companies on earth spend billions a year telling people what to eat, and real food replies with a label and a hope.",
       "So he made the case himself. A year, seven hours a day, starting at half past four each morning. No studio, no crew, no budget, and no filmmaking experience of any kind. Every frame of the animation was generated with AI; the script was written word for word by him.",
-      "He holds an MSc in Agricultural Economics from the University of London. He is not a scientist, a clinician or a filmmaker, and says so on the film's own press page.",
-      "It may be the first feature-length documentary animated this way. He would rather be corrected on that than overstate it.",
+      "He holds an MSc in Agricultural Economics from the University of London. He is not a nutrition scientist, a clinician or a filmmaker, and says so on the film's own press page.",
+      "It may be the first feature-length documentary animated this way.",
     ],
   },
 
