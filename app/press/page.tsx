@@ -1,3 +1,6 @@
+import PressNav from "@/components/PressNav";
+import SynopsisTabs from "@/components/SynopsisTabs";
+
 export const metadata = {
   title: "Press | Which Food Is Killing You?",
   description:
@@ -185,11 +188,11 @@ const CLAIMS: { time: string; claim: string; status: Status; source: string }[] 
   },
 
   /* ---------------- MANIPULATION ---------------- */
- {
+  {
     time: "36:00",
-    claim: "A baby's IQ increases by 6% when it drinks its mother's milk.",
+    claim: "A baby's IQ increases by 6% when breastfed.",
     status: "Contested",
-    source: "Hou et al., Breastfeeding Medicine (2021), a network meta-analysis of 15 studies and 12,316 subjects, found children breastfed for more than 6 months scored 1.06-fold higher on intelligence tests than never-breastfed children (ratio of means 1.06, 95% CI 1.05–1.08); under 6 months gave 1.04. So the 6% figure is precisely sourced. It remains marked Contested because the association is heavily confounded by maternal education and socioeconomic status, and sibling-controlled designs find smaller effects (Horta et al., Acta Paediatrica 104, 2015). The number is real; the causal attribution is what is disputed.",
+    source: "The breastfeeding–IQ association is repeatedly observed (Horta et al., Acta Paediatrica 104, 2015) but heavily confounded by maternal education and socioeconomic status; sibling-controlled studies find much smaller effects. The specific 6% figure is not one the director can source precisely.",
   },
   {
     time: "37:00",
@@ -372,8 +375,10 @@ export default function PressPage() {
         </div>
       </header>
 
+      <PressNav />
+
       {/* TRAILER */}
-      <section style={{ ...section, paddingBottom: 0 }}>
+      <section id="trailer" style={{ ...section, paddingBottom: 0 }}>
         <div style={wrap}>
           <div style={{
             width: "100%",
@@ -384,7 +389,7 @@ export default function PressPage() {
             background: "#000",
           }}>
             <iframe
-              src="https://player.vimeo.com/video/1218849286?title=0&byline=0&portrait=0&dnt=1"
+              src="https://player.vimeo.com/video/1218266606?title=0&byline=0&portrait=0&dnt=1"
               title="Which Food Is Killing You? — trailer"
               allow="autoplay; fullscreen; picture-in-picture"
               allowFullScreen
@@ -392,13 +397,13 @@ export default function PressPage() {
             />
           </div>
           <p style={{ ...para, fontSize: "14px", opacity: .65, marginTop: "14px" }}>
-            Trailer &mdash; free to embed. <a href="https://player.vimeo.com/video/1218849286?title=0&byline=0&portrait=0&dnt=1" style={link}>vimeo.com/1218266606</a>
+            Trailer &mdash; free to embed. <a href="https://vimeo.com/1218266606" style={link}>vimeo.com/1218266606</a>
           </p>
         </div>
       </section>
 
       {/* AT A GLANCE */}
-      <section style={section}>
+      <section id="glance" style={section}>
         <div style={wrap}>
           <h2 style={h2}>At a glance</h2>
           <dl style={{ margin: 0 }}>
@@ -416,67 +421,15 @@ export default function PressPage() {
       </section>
 
       {/* SYNOPSES */}
-      <section style={{ ...section, background: "#141414" }}>
+      <section id="synopsis" style={{ ...section, background: "#141414" }}>
         <div style={wrap}>
           <h2 style={h2}>Synopsis</h2>
-
-          <h3 style={h3}>25 words</h3>
-          <p style={para}>
-            A murder trial in which the suspects are foods. The evidence is laid out,
-            the witnesses contradict each other, and the audience delivers the verdict.
-          </p>
-
-          <h3 style={h3}>100 words</h3>
-          <p style={para}>
-            Three out of five people die from chronic inflammatory disease. Its drivers are
-            lifestyle, and for most of us the largest lifestyle factor is food. So which food
-            is it? <em>Which Food Is Killing You?</em> puts four suspects on trial &mdash; and puts
-            the viewer on the jury. Questions appear during the film; viewers commit to an
-            answer before they learn whether they were right, and their verdicts join a running
-            tally counted alongside every other viewer&apos;s. Animated, family-watchable, and
-            built for the argument it starts in the room.
-          </p>
-
-          <h3 style={h3}>300 words</h3>
-          <p style={para}>
-            The court is in session. The defendant is your dinner.
-          </p>
-          <p style={para}>
-            <em>Which Food Is Killing You?</em> opens on four suspects in the dock: refined
-            carbohydrates, industrial seed oils, a syndicate of food engineers, and one animal
-            fat that has carried the blame for sixty years and is now asking for a retrial.
-          </p>
-          <p style={para}>
-            The viewer is on the jury.
-          </p>
-          <p style={para}>
-            At points throughout the film, the evidence stops and a question appears. You commit
-            to an answer before you learn whether you were right &mdash; and that turns out to
-            matter more than it sounds. You remember what you got wrong. You notice the moment
-            your mind changed and what changed it. At the end, you deliver a verdict on each
-            suspect, and see how the rest of the jury voted.
-          </p>
-          <p style={para}>
-            Three out of five people die from chronic inflammatory disease. Its drivers are
-            lifestyle, and the largest lifestyle factor for most of us is food. Ask ten people
-            which food and you get ten confident answers, each with studies attached. They cannot
-            all be right. Why they cannot all be right is the actual subject of the film.
-          </p>
-          <p style={para}>
-            It is animated in order to carry food education to as wide an audience as possible.
-            The subject is heavy; the film is not. A fourteen-year-old follows every step and
-            laughs at the pirates.
-          </p>
-          <p style={para}>
-            Written and directed by Colin Marry, an Irish pig farmer with an MSc in Agricultural
-            Economics and no filmmaking background, working alone for a year with AI animation
-            tools and no budget.
-          </p>
+          <SynopsisTabs />
         </div>
       </section>
 
       {/* PRESS ACCESS */}
-      <section style={section}>
+      <section id="access" style={section}>
         <div style={wrap}>
           <h2 style={h2}>Watch the film</h2>
           <p style={{ ...para, maxWidth: "60ch" }}>
@@ -502,7 +455,7 @@ export default function PressPage() {
       </section>
 
       {/* THE EVIDENCE — CLAIMS AND SOURCES */}
-      <section style={{ ...section, background: "#141414" }}>
+      <section id="evidence" style={{ ...section, background: "#141414" }}>
         <div style={wrap}>
           <p style={eyebrow}>The Evidence</p>
           <h2 style={h2}>Claims and sources</h2>
@@ -546,7 +499,7 @@ export default function PressPage() {
       </section>
 
       {/* HOW IT WAS MADE */}
-      <section style={section}>
+      <section id="made" style={section}>
         <div style={wrap}>
           <h2 style={h2}>How it was made</h2>
           <p style={{ ...para, maxWidth: "62ch" }}>
@@ -582,7 +535,7 @@ export default function PressPage() {
       </section>
 
       {/* DISCLOSURE */}
-      <section style={{ ...section, background: "#141414" }}>
+      <section id="disclosure" style={{ ...section, background: "#141414" }}>
         <div style={wrap}>
           <h2 style={h2}>Disclosure</h2>
           <div style={{
@@ -610,7 +563,7 @@ export default function PressPage() {
       </section>
 
       {/* DIRECTOR */}
-      <section style={section}>
+      <section id="director" style={section}>
         <div style={wrap}>
           <h2 style={h2}>Director</h2>
           <p style={{ ...para, maxWidth: "62ch" }}>
@@ -639,16 +592,18 @@ export default function PressPage() {
       </section>
 
       {/* ASSETS */}
-      <section style={{ ...section, background: "#141414" }}>
+      <section id="downloads" style={{ ...section, background: "#141414" }}>
         <div style={wrap}>
           <h2 style={h2}>Downloads</h2>
           <p style={{ ...para, maxWidth: "62ch" }}>
-            All images are high resolution and free to use in coverage of the film.
+            Free to use in coverage of the film, with credit to Posh Pork. Available at
+            larger sizes on request &mdash; write to{" "}
+            <a href="mailto:colin@poshpork.com" style={link}>colin@poshpork.com</a>.
           </p>
           <ul style={{ listStyle: "none", padding: 0, margin: "28px 0 0", maxWidth: "60ch" }}>
             <Asset label="The suspects — lineup" href="/press/posh-pork-suspects-lineup.jpg" />
-            <Asset label="Lady Posh Pork" href="/press/posh-pork-lady-posh-pork.jpg"  />
-            <Asset label="Mr Carbohydrates" href="/press/posh-pork-mr-carbohydrates.jpg"  />
+            <Asset label="Lady Posh Pork" href="/press/posh-pork-lady-posh-pork.jpg" />
+            <Asset label="Mr Carbohydrates" href="/press/posh-pork-mr-carbohydrates.jpg" />
             <Asset label="Mr Vegetable Oils" href="/press/posh-pork-mr-vegetable-oils.jpg" />
             <Asset label="The Bliss Brothers" href="/press/posh-pork-bliss-brothers.jpg" />
             <Asset label="The judge" href="/press/posh-pork-judge.jpg" />
@@ -659,7 +614,7 @@ export default function PressPage() {
       </section>
 
       {/* CONTACT */}
-      <section style={{ ...section, paddingBottom: "clamp(72px,10vw,120px)" }}>
+      <section id="contact" style={{ ...section, paddingBottom: "clamp(72px,10vw,120px)" }}>
         <div style={wrap}>
           <h2 style={h2}>Contact</h2>
           <p style={{ ...para, maxWidth: "62ch" }}>
@@ -671,7 +626,7 @@ export default function PressPage() {
           </p>
           <p style={{ ...para, fontSize: "15px", opacity: .7 }}>
             Group and educational screening licences:{" "}
-            <a href="mailto:screening@poshpork.com" style={link}>screening@poshpork.com</a>
+            <a href="mailto:screenings@poshpork.com" style={link}>screenings@poshpork.com</a>
           </p>
         </div>
       </section>
