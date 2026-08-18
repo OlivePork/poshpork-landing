@@ -27,7 +27,7 @@ const ANGLES: Angle[] = [
       "At points throughout the film, the evidence stops and a question appears. You commit to an answer before you learn whether you were right — and that turns out to matter more than it sounds. You remember what you got wrong. You notice the moment your mind changed and what changed it. At the end, you deliver a verdict on each suspect, and see how the rest of the jury voted.",
       "Three out of five people die from chronic inflammatory disease. Its drivers are lifestyle, and the largest lifestyle factor for most of us is food. Ask ten people which food and you get ten confident answers, each with studies attached. They cannot all be right. Why they cannot all be right is the actual subject of the film.",
       "It is animated in order to carry food education to as wide an audience as possible. The subject is heavy; the film is not. A fourteen-year-old follows every step and laughs at the pirates.",
-      "Written and directed by Colin Marry, an Irish pig farmer with an MSc in Agricultural Economics and no filmmaking background, working alone for a year with AI animation tools and no budget.",
+      "Written and directed by Colin Marry, an Irish pig farmer with an MSc in Agricultural Economics and no filmmaking background, working alone for a year, but having given it 15 years of thought prior, with AI animation tools and no budget.",
     ],
   },
 
