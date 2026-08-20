@@ -55,6 +55,12 @@ const CLAIMS: { time: string; claim: string; status: Status; source: string }[] 
     source: "FAO DIAAS scoring (2013). Cereals are limiting in lysine, legumes in methionine. Animal proteins score higher on digestibility and completeness.",
   },
   {
+    time: "09:00",
+    claim: "Plants carry defences that interfere with digesting their protein.",
+    status: "Consensus",
+    source: "Protease inhibitors, lectins, phytate and tannins are well documented antinutritional factors in cereals and legumes. Most are substantially reduced by soaking, fermentation and cooking.",
+  },
+  {
     time: "09:30",
     claim: "Phytic acid and tannins in plant foods bind minerals and reduce their absorption; they are also present in tea and coffee.",
     status: "Consensus",
@@ -117,6 +123,12 @@ const CLAIMS: { time: string; claim: string; status: Status; source: string }[] 
     source: "A naming point rather than a scientific one, and accurate. 'Vegetable oil' is extracted from seeds — soybean, rapeseed, sunflower, cottonseed — not from vegetables.",
   },
   {
+    time: "17:00",
+    claim: "There is a blood test for omega-3, and vegans are often below 4%.",
+    status: "Consensus",
+    source: "The Omega-3 Index measures EPA and DHA as a percentage of red blood cell fatty acids and is available as a consumer finger-prick test. Sarter et al., Clinical Nutrition 34 (2015), found a mean index of 3.7% in vegans, against a proposed cardioprotective target of 8%. Conversion of plant ALA to EPA runs at a few percent, and to DHA lower still.",
+  },
+  {
     time: "18:00",
     claim: "Low omega-3 status carries a mortality risk comparable to smoking — a loss of ten, if not twenty, years.",
     status: "Contested",
@@ -131,6 +143,12 @@ const CLAIMS: { time: string; claim: string; status: Status; source: string }[] 
     source: "Wrangham's cooking hypothesis (Catching Fire, 2009) and the expensive tissue hypothesis (Aiello & Wheeler, Current Anthropology 36, 1995). Both are influential and both are actively disputed; the timing of controlled fire use remains unsettled.",
   },
   {
+    time: "23:00",
+    claim: "Dolphins are the only creature close to humans in brain-to-body ratio, and have the highest omega-3 levels in their blood of any creature.",
+    status: "Contested",
+    source: "The brain ratio is sound: the bottlenose dolphin's encephalization quotient of roughly 4.1–5.6 is second only to humans at 7.0–7.8, well above chimpanzees and orcas. The omega-3 superlative goes beyond the evidence. Harris & Ridgway (Prostaglandins Leukotrienes and Essential Fatty Acids, 2013) measured a mean Omega-3 Index of 19.9% in dolphins against 6.0% in humans, but state explicitly that the range in other mammals is unknown; no cross-species survey exists. The defensible version is that dolphins carry more than three times the omega-3 that humans do. Note also that DHA — the fatty acid concentrated in brain tissue — was near-identical in both species, 4.6% against 4.8%; the dolphins' advantage is almost entirely EPA.",
+  },
+  {
     time: "25:00",
     claim: "Stable isotope analysis of nitrogen-15 in fossilised remains shows early humans ate predominantly animal protein.",
     status: "Consensus",
@@ -138,15 +156,15 @@ const CLAIMS: { time: string; claim: string; status: Status; source: string }[] 
   },
   {
     time: "26:00",
-    claim: "Humans evolved to eat seasonal fruit in order to gain weight before winter, and fructose is metabolically suited to fat storage.",
-    status: "Contested",
-    source: "Richard Johnson's fructose survival hypothesis (The Fat Switch, 2012; Johnson et al., Obesity 21, 2013). A published and serious hypothesis, not an established finding.",
+    claim: "Fructose was never meant to reach the liver in quantity, and people now send large amounts there.",
+    status: "Consensus",
+    source: "Hepatic fructose metabolism and de novo lipogenesis are well documented — Softic, Cohen & Kahn, Digestive Diseases and Sciences 61 (2016). Whole fruit delivers fructose slowly and with fibre; juice, blended fruit and added sweeteners deliver it quickly and in quantity.",
   },
   {
     time: "26:30",
-    claim: "Fructose is metabolised in the liver and converted to fat.",
-    status: "Consensus",
-    source: "De novo lipogenesis from fructose is well documented — Softic, Cohen & Kahn, Digestive Diseases and Sciences 61 (2016).",
+    claim: "Humans evolved to eat seasonal fruit in order to gain weight before winter.",
+    status: "Contested",
+    source: "Richard Johnson's fructose survival hypothesis (The Fat Switch, 2012; Johnson et al., Obesity 21, 2013). A published and serious hypothesis, not an established finding.",
   },
   {
     time: "27:30",
@@ -174,11 +192,23 @@ const CLAIMS: { time: string; claim: string; status: Status; source: string }[] 
   },
 
   /* ---------------- ORIGINAL ARGUMENT: IRELAND ---------------- */
-{
+  {
     time: "31:00",
     claim: "Britain industrialised first in part because it imported large quantities of high-quality animal protein and fat from Ireland. This raised omega-3 and nutrient intake among its population, and over generations contributed to the cognitive and physical capacity that industrialisation required.",
     status: "Synthesis",
-    source: "ORIGINAL ARGUMENT — the director's own, not published, tested or peer-reviewed. The component facts are documented: large-scale Irish cattle and provisions exports to Britain through the sixteenth and seventeenth centuries, given in the film as roughly 100,000 head a year, a figure drawn from Colin Spencer, British Food: An Extraordinary Thousand Years of History (Grub Street) — page reference to follow; the Cattle Acts of 1663 and 1667, in which English landowners successfully pressured Parliament to ban Irish livestock imports; the subsequent Irish provisions trade in salted beef, butter and pork; and omega-3's established role in neurodevelopment. The causal chain connecting these to British industrialisation is the film's argument. It is offered for examination, not as a finding.",
+    source: "ORIGINAL ARGUMENT — the director's own, not published, tested or peer-reviewed. The component facts are documented: large-scale Irish cattle and provisions exports to Britain through the sixteenth and seventeenth centuries; the Cattle Acts of 1663 and 1667, in which English landowners successfully pressured Parliament to ban Irish livestock imports; the subsequent Irish provisions trade in salted beef, butter and pork; and omega-3's established role in neurodevelopment. The causal chain connecting these to British industrialisation is the film's argument. It is offered for examination, not as a finding.",
+  },
+  {
+    time: "32:00",
+    claim: "Over 100,000 cattle a year were imported into Britain, much of it from the Boyne Valley and surrounding areas of Ireland.",
+    status: "Synthesis",
+    source: "Part of the Ireland argument above. The figure is drawn from Colin Spencer, British Food: An Extraordinary Thousand Years of History (Grub Street) — page reference to follow. Large-scale Irish cattle exports in this period are documented, and the Cattle Acts of 1663 and 1667 banned them at the request of English landowners. Estimates elsewhere run lower, around 60,000 head annually in the 1660s, so the figure should be read as one historian's estimate rather than a settled number.",
+  },
+  {
+    time: "33:00",
+    claim: "A study found soil quality alone accounts for around 30% of a country's IQ differences.",
+    status: "Contested",
+    source: "Sabit Erşahin, 'Exploring geospatial link between soils and national intelligence quotient', Scientific Reports (2025). Using a Soil Fertility Index, the study found soil fertility accounted for approximately 34% of the variation in national IQ scores, proposing iron, zinc and iodine availability as the pathway. The author stresses that correlation is not causation, warns of ecological fallacy, and describes the pathways as hypothetical and requiring further validation. Supporting mechanism: Feyrer, Politi & Weil on US salt iodisation, which raised IQ by roughly one standard deviation in the most iodine-deficient quarter of the population.",
   },
   {
     time: "35:00",
@@ -192,7 +222,7 @@ const CLAIMS: { time: string; claim: string; status: Status; source: string }[] 
     time: "36:00",
     claim: "A baby's IQ increases by 6% when breastfed.",
     status: "Contested",
-    source: "The breastfeeding–IQ association is repeatedly observed (Horta et al., Acta Paediatrica 104, 2015) but heavily confounded by maternal education and socioeconomic status; sibling-controlled studies find much smaller effects. The specific 6% figure is not one the director can source precisely.",
+    source: "Hou et al., Breastfeeding Medicine (2021), a network meta-analysis of 15 studies and 12,316 subjects, found children breastfed for more than 6 months scored 1.06-fold higher on intelligence tests than never-breastfed children (ratio of means 1.06, 95% CI 1.05–1.08); under 6 months gave 1.04. So the figure is precisely sourced. It remains Contested because the association is heavily confounded by maternal education and socioeconomic status, and sibling-controlled designs find smaller effects (Horta et al., Acta Paediatrica 104, 2015). The number is real; the causal attribution is what is disputed.",
   },
   {
     time: "37:00",
@@ -211,6 +241,12 @@ const CLAIMS: { time: string; claim: string; status: Status; source: string }[] 
     claim: "Animals eat to a protein target; when protein is diluted, they overconsume total energy trying to reach it.",
     status: "Contested",
     source: "The protein leverage hypothesis — Simpson & Raubenheimer, Obesity Reviews 6 (2005). Well published, widely discussed, supported by experimental work in several species and some human trials. Not settled consensus.",
+  },
+  {
+    time: "41:00",
+    claim: "One of the sweetest sugars, high-fructose corn syrup, is widely used across big food brands.",
+    status: "Consensus",
+    source: "Fructose is roughly 1.2–1.7 times as sweet as sucrose depending on temperature and concentration. HFCS is used in soft drinks, sports drinks, ketchup, crackers, bread, soups, cereals and spaghetti sauce — foods not traditionally sweetened (USDA Economic Research Service). US availability rose from its 1967 introduction to a peak of 63.7 pounds per person in 1999, while cane and beet sugar availability fell 33% over the same period. Note that HFCS is largely a United States phenomenon: in Europe it is quota-restricted as isoglucose, and sucrose is the usual sweetener.",
   },
   {
     time: "42:00",
@@ -389,7 +425,7 @@ export default function PressPage() {
             background: "#000",
           }}>
             <iframe
-              src="https://player.vimeo.com/video/1218849286?title=0&byline=0&portrait=0&dnt=1"
+              src="https://player.vimeo.com/video/1218266606?title=0&byline=0&portrait=0&dnt=1"
               title="Which Food Is Killing You? — trailer"
               allow="autoplay; fullscreen; picture-in-picture"
               allowFullScreen
@@ -601,13 +637,13 @@ export default function PressPage() {
             <a href="mailto:colin@poshpork.com" style={link}>colin@poshpork.com</a>.
           </p>
           <ul style={{ listStyle: "none", padding: 0, margin: "28px 0 0", maxWidth: "60ch" }}>
-            <Asset label="The Suspects — Lineup" href="/press/posh-pork-suspects-lineup.jpg" />
+            <Asset label="The suspects — lineup" href="/press/posh-pork-suspects-lineup.jpg" />
             <Asset label="Lady Posh Pork" href="/press/posh-pork-lady-posh-pork.jpg" />
             <Asset label="Mr Carbohydrates" href="/press/posh-pork-mr-carbohydrates.jpg" />
             <Asset label="Mr Vegetable Oils" href="/press/posh-pork-mr-vegetable-oils.jpg" />
             <Asset label="The Bliss Brothers" href="/press/posh-pork-bliss-brothers.jpg" />
-            <Asset label="The Judge" href="/press/posh-pork-judge.jpg" />
-            <Asset label="Key Art / Poster" href="/press/posh-pork-key-art.jpg" />
+            <Asset label="The judge" href="/press/posh-pork-judge.jpg" />
+            <Asset label="Key art / poster" href="/press/posh-pork-key-art.jpg" />
             <Asset label="Colin Marry" href="/press/colin-marry.jpg" />
           </ul>
         </div>
@@ -626,7 +662,7 @@ export default function PressPage() {
           </p>
           <p style={{ ...para, fontSize: "15px", opacity: .7 }}>
             Group and educational screening licences:{" "}
-            <a href="mailto:screening@poshpork.com" style={link}>screening@poshpork.com</a>
+            <a href="mailto:screenings@poshpork.com" style={link}>screenings@poshpork.com</a>
           </p>
         </div>
       </section>
