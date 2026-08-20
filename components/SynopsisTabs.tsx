@@ -13,21 +13,22 @@ type Angle = {
 
 const ANGLES: Angle[] = [
   /* ---------------------------------------------------------------- */
-  {
+    {
     key: "film",
     label: "The film",
     note: "The straight description. Start here if you are covering it as a film.",
-    w25: "A murder trial in which the suspects are foods. The evidence is laid out, the witnesses contradict each other, and the audience delivers the verdict.",
+    w25: "The first family food documentary. Animated, funny, and built for three generations on one sofa — because families shop together, eat together, and never learn about food together.",
     w100:
-      "Three out of five people die from chronic inflammatory disease. Its drivers are lifestyle, and for most of us the largest lifestyle factor is food. So which food is it? Which Food Is Killing You? puts four suspects on trial — and puts the viewer on the jury. Questions appear during the film; viewers commit to an answers and in the finale, vote on who is guilty or innocent. Animated, family-watchable, and built for the argument it starts in the room.",
+      "Families shop together, cook together and eat together. They almost never learn about food together. Food education arrives separately and in pieces — a lesson at school, a leaflet at the surgery, a headline that contradicts last year's. Which Food Is Killing You? is the first food documentary made for the whole family at once. Four foods stand trial, and everyone in the room sits on the jury: the ten-year-old, the teenager, the parents and the grandparents, hearing the same evidence at the same time and arguing about the verdict. Animated, ninety minutes, and food education disguised as an argument worth having.",
     w300: [
-      "The court is in session. The defendant is your dinner.",
-      "Which Food Is Killing You? opens on four suspects in the dock: refined carbohydrates, industrial seed oils, a syndicate of food engineers, and one animal fat that has carried the blame for sixty years and is now asking for a retrial.",
-      "The viewer is on the jury.",
-      "At points throughout the film, the evidence stops and a question appears. You commit to an answer before you learn whether you were right — and that turns out to matter more than it sounds. You remember what you got wrong. You notice the moment your mind changed and what changed it. At the end, you deliver a verdict on each suspect, and see how the rest of the jury voted.",
-      "Three out of five people die from chronic inflammatory disease. Its drivers are lifestyle, and the largest lifestyle factor for most of us is food. Ask ten people which food and you get ten confident answers, each with studies attached. They cannot all be right. Why they cannot all be right is the actual subject of the film.",
-      "It is animated in order to carry food education to as wide an audience as possible. The subject is heavy; the film is not. A fourteen-year-old follows every step and laughs at the pirates.",
-      "Written and directed by Colin Marry, an Irish pig farmer with an MSc in Agricultural Economics and no filmmaking background, working alone for a year, but having given it 15 years of thought prior, with AI animation tools and no budget.",
+      "Families shop together. They cook together, eat together and get ill in the same ways. What they never do is learn about food together.",
+      "Food education arrives in pieces, and always to one person at a time. A lesson at school the parents never hear. A leaflet at the surgery the children never see. A headline that reverses what the last one said. Everybody in the house is being told something different about the same dinner.",
+      "Which Food Is Killing You? is the first food documentary made for all of them at once.",
+      "The structure is a murder trial. Four foods stand accused, the witnesses contradict each other, and the room sits on the jury. Questions appear during the film and each person commits to an answer before the evidence continues — the ten-year-old, the teenager, the parents and the grandparents, all deciding at the same moment and finding out they disagree.",
+      "That disagreement is the point. A child told what to eat forgets it by Thursday. A child who argued about it with their grandmother, in front of everyone, and then watched the evidence go the other way, remembers what changed their mind.",
+      "It is one subject at three ages. Children are heavier and sicker than any generation before them. Teenagers are facing rates of anxiety and depression nobody can fully explain. Their grandparents are living longer with more chronic inflammatory disease, not less. The film's argument is that these are the same story arriving at different times of life — and it makes that case with the whole family in the room rather than to each of them separately.",
+      "It is animated, and deliberately so. The subject is heavy; the film is not. A fourteen-year-old follows every step of the argument and laughs at the pirates. So does their grandmother, and by the second question the two of them are arguing about butter.",
+      "Ninety minutes, one sofa, three generations. Written and directed by Colin Marry, an Irish pig farmer with an MSc in Agricultural Economics and no filmmaking background, working alone for a year.",
     ],
   },
 
