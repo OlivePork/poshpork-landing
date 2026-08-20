@@ -26,19 +26,18 @@ export default function FilmSection() {
           color: '#ffffff',
           marginBottom: '28px'
         }}>
-          SOLVE IT FROM YOUR SOFA
+          FAMILY MOVIE NIGHT
         </h2>
 
-        {/* CHANGED: the "full Posh Pork Murder Mystery" line is removed; "in full"
-            added so the surviving sentence still has a subject. */}
         <p style={{
           fontSize: '19px',
           lineHeight: '1.7',
           color: '#b0b0b0',
           marginBottom: '48px'
         }}>
-          The evidence is laid out in full, the witnesses contradict each other,
-          and you deliver the verdict.
+          Made to be watched together. The evidence is laid out in full, the witnesses
+          contradict each other, and every person in the room delivers their own verdict.
+          Animated, funny, and the argument afterwards is the point.
         </p>
 
         <div style={{
@@ -69,10 +68,10 @@ export default function FilmSection() {
               color: '#d4af37',
               marginBottom: '10px'
             }}>
-              Answer as you watch
+              Everyone answers
             </h3>
             <p style={{ fontSize: '16px', lineHeight: '1.6', color: '#999999' }}>
-              Questions appear during the film. You become a member of the jury and vote.
+              Questions appear during the film. Nobody is told what to think.
             </p>
           </div>
 
@@ -83,10 +82,10 @@ export default function FilmSection() {
               color: '#d4af37',
               marginBottom: '10px'
             }}>
-              Or gather everyone
+              Three generations
             </h3>
             <p style={{ fontSize: '16px', lineHeight: '1.6', color: '#999999' }}>
-              Put it on the big screen and let the whole room answer together.
+              A fourteen-year-old follows every step. So does their grandmother.
             </p>
           </div>
         </div>
@@ -115,7 +114,6 @@ export default function FilmSection() {
           <GiftButton />
         </div>
 
-        {/* CHANGED: access terms now match the wording used everywhere else. */}
         <p style={{
           fontSize: '14px',
           lineHeight: '1.7',

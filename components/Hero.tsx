@@ -37,10 +37,23 @@ export default function Hero() {
           color: '#f2ece1',
           fontFamily: 'var(--font-cinzel), Cinzel, serif',
           letterSpacing: '0.06em',
-          margin: '18px auto 34px',
+          margin: '18px auto 20px',
           opacity: 0.75
         }}>
           Inside the Greatest Fraud In Human History
+        </p>
+
+        {/* Family framing — the film is built to be watched together. */}
+        <p style={{
+          fontFamily: 'var(--font-cinzel), Cinzel, serif',
+          fontSize: 'clamp(12px, 1.7vw, 15px)',
+          letterSpacing: '.16em',
+          textTransform: 'uppercase',
+          color: '#d4af37',
+          opacity: .85,
+          margin: '0 auto 32px'
+        }}>
+          The first family food documentary
         </p>
 
         {/* TRAILER — autoplays muted and loops. Browsers block autoplay with
