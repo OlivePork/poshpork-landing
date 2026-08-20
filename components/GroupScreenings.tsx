@@ -16,7 +16,7 @@ export default function GroupScreenings() {
           opacity: .8,
           margin: '0 0 18px',
         }}>
-          For schools, workplaces and groups
+          For families, schools, workplaces and groups
         </p>
 
         <h2 style={{
@@ -34,6 +34,11 @@ export default function GroupScreenings() {
           Split the room into tables of four. Everyone joins on their phone with a
           six-character code &mdash; no app, no accounts, no sign-up. Then you just
           play the film.
+        </p>
+                <p style={{ ...para, maxWidth: '62ch' }}>
+          It works the same way in a hotel lounge, a community hall or a staff away-day
+          as it does in a living room &mdash; a room of people, one screen, and an
+          argument worth having.
         </p>
 
         <p style={{ ...para, maxWidth: '62ch' }}>

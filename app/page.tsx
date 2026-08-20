@@ -14,6 +14,11 @@ export default function Home() {
     <>
       <CookieBanner />
       <Hero />
+
+      {/* Family movie night sits directly under the trailer — it is the
+          first thing a visitor reads after seeing the film. */}
+      {process.env.NEXT_PUBLIC_LIVE_EVENTS_ENABLED === 'true' ? <BookingTabs /> : <FilmSection />}
+
       <Suspects />
       <Stakes />
 
@@ -103,7 +108,7 @@ export default function Home() {
             }}>
               €15 — one payment, permanent access. One purchase covers your household.<br />
               <a href="/press#evidence" style={{ color: '#a67c00' }}>
-                Sources cited here
+                Sources cited on screen throughout the film
               </a>
             </p>
 
@@ -122,8 +127,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {process.env.NEXT_PUBLIC_LIVE_EVENTS_ENABLED === 'true' ? <BookingTabs /> : <FilmSection />}
 
       <GroupScreenings />
 
