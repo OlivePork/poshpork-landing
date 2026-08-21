@@ -2,21 +2,20 @@ import { NextResponse } from "next/server";
 import { roomAdmin, normaliseCode } from "@/lib/rooms";
 
 /**
- * Join a room. No account needed — the player is identified by a token
- * their own browser generates and keeps.
+ * Join a room, or move between tables.
  *
  * Tables are not set up in advance. The first guest creates Table 1;
- * once it reaches the venue's usual size a new table appears. A larger
- * group can keep joining a full table up to twelve, so a dinner-party
- * evening needs no configuring.
+ * once it reaches the venue's usual size a new one appears. A group who
+ * have just sat down together can start their own, and anyone who taps
+ * the wrong thing can move.
  *
  * POST /api/room/join
- *   { "code": "BKQR47" }                                    → look up
- *   { "code", "name", "device_token", "table_id"?, "force"? } → take a seat
- *
- * table_id omitted  → the room picks the first table with room in it
- * table_id given    → that table specifically
- * force: true       → join a table that is already at its usual size
+ *   { code }                                        → look up the room
+ *   { code, name, device_token }                    → first table with room
+ *   { code, name, device_token, new_table: true }   → a fresh table
+ *   { code, name, device_token, table_id }          → that table
+ *   { code, name, device_token, table_id, force }   → join one at its usual size
+ *   { code, device_token, move: true, ... }         → change tables
  */
 export async function POST(req: Request) {
   let body: {
@@ -25,6 +24,8 @@ export async function POST(req: Request) {
     device_token?: string;
     table_id?: string | null;
     force?: boolean;
+    new_table?: boolean;
+    move?: boolean;
   };
 
   try {
@@ -42,7 +43,7 @@ export async function POST(req: Request) {
 
   const { data: room } = await admin
     .from("rooms")
-    .select("id, code, name, status, expires_at, seats_default")
+    .select("id, code, name, status, expires_at, seats_default, question_open")
     .eq("code", code)
     .maybeSingle();
 
@@ -65,8 +66,8 @@ export async function POST(req: Request) {
     }[];
   };
 
-  // Lookup only — used to show the room before anyone commits.
-  if (!body.name || !body.device_token) {
+  // Lookup only.
+  if (!body.device_token || (!body.name && !body.move)) {
     return NextResponse.json({
       room: { id: room.id, code: room.code, name: room.name, status: room.status },
       tables: await listTables(),
@@ -74,28 +75,39 @@ export async function POST(req: Request) {
     });
   }
 
-  const name = body.name.trim().slice(0, 40);
-  if (!name) {
-    return NextResponse.json({ error: "Enter your name." }, { status: 400 });
-  }
-
-  // Already in this room? Keep the seat rather than claiming another.
   const { data: existing } = await admin
     .from("room_players")
-    .select("id, table_id")
+    .select("id, name, table_id")
     .eq("room_id", room.id)
     .eq("device_token", body.device_token)
     .maybeSingle();
 
-  let tableId = existing?.table_id ?? null;
+  // Moving tables mid-question would land answers on a table you have
+  // just left. Make them wait the few seconds.
+  if (body.move && room.question_open) {
+    return NextResponse.json(
+      { error: "Wait until the question is over, then move." },
+      { status: 409 },
+    );
+  }
 
-  if (!tableId) {
-    // claim_seat does the finding-or-creating in one statement, so two
-    // people tapping at the same moment cannot both make Table 3.
+  const name = (body.name ?? existing?.name ?? "").trim().slice(0, 40);
+  if (!name) {
+    return NextResponse.json({ error: "Enter your name." }, { status: 400 });
+  }
+
+  const previousTable = existing?.table_id ?? null;
+
+  // Keep the existing seat unless they are deliberately moving or choosing.
+  let tableId = previousTable;
+  const wantsSomewhere = body.move || body.new_table || body.table_id;
+
+  if (!tableId || wantsSomewhere) {
     const { data: seat, error: seatErr } = await admin.rpc("claim_seat", {
       r_id: room.id,
       want_table: body.table_id ?? null,
       force_join: body.force === true,
+      new_table: body.new_table === true,
     });
 
     if (seatErr) {
@@ -136,6 +148,11 @@ export async function POST(req: Request) {
   if (error) {
     console.error("Room join error:", error);
     return NextResponse.json({ error: "Could not join the room." }, { status: 500 });
+  }
+
+  // A table nobody is sitting at should not clutter the list.
+  if (previousTable && previousTable !== tableId) {
+    await admin.rpc("prune_empty_tables", { r_id: room.id });
   }
 
   const tables = await listTables();

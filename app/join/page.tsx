@@ -68,6 +68,7 @@ export default function JoinPage() {
   const [error, setError] = useState("");
   const [pendingAnswer, setPendingAnswer] = useState<string | null>(null);
   const [forceTable, setForceTable] = useState<Table | null>(null);
+  const [moving, setMoving] = useState(false);
 
   const tokenRef = useRef<string>("");
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -151,7 +152,7 @@ export default function JoinPage() {
   /* ---------------- take a seat ---------------- */
 
   const takeSeat = useCallback(
-    async (wantTable: string | null, force = false) => {
+    async (wantTable: string | null, force = false, newTable = false, move = false) => {
       if (!name.trim()) {
         setError("Enter your name.");
         return;
@@ -170,6 +171,8 @@ export default function JoinPage() {
             device_token: tokenRef.current,
             table_id: wantTable,
             force,
+            new_table: newTable,
+            move,
           }),
         });
         const json = await r.json();
@@ -189,7 +192,9 @@ export default function JoinPage() {
         window.localStorage.setItem(CODE_KEY, code);
         window.localStorage.setItem(NAME_KEY, name.trim());
         setTableId(json.player?.table_id ?? null);
+        setTables(json.tables ?? []);
         setForceTable(null);
+        setMoving(false);
         setStep("playing");
       } catch {
         setError("Something went wrong. Try again.");
@@ -335,6 +340,14 @@ export default function JoinPage() {
 
             {tables.length > 0 && (
               <>
+                <button
+                  className="pj-secondary"
+                  disabled={busy || !name.trim()}
+                  onClick={() => takeSeat(null, false, true)}
+                >
+                  Start our own table
+                </button>
+
                 <p className="pj-or">or join people you know</p>
                 <div className="pj-tables">
                   {tables.map((t) => {
@@ -375,6 +388,52 @@ export default function JoinPage() {
           </div>
         )}
 
+        {/* -------- move to another table -------- */}
+        {moving && (
+          <div className="pj-modal">
+            <div className="pj-card">
+              <p className="pj-eyebrow">Change table</p>
+              <h1 className="pj-title">Where are you sitting?</h1>
+
+              <div className="pj-tables">
+                {tables.map((t) => {
+                  const here = t.id === tableId;
+                  const full = t.seats_taken >= 12;
+                  const atSize = t.seats_taken >= t.seats_soft;
+                  return (
+                    <button
+                      key={t.id}
+                      className={`pj-table ${here ? "is-on" : ""}`}
+                      disabled={busy || here || full}
+                      onClick={() => takeSeat(t.id, false, false, true)}
+                    >
+                      <span className="pj-table-dot" style={{ background: t.colour ?? "#d4af37" }} />
+                      <span>{t.name}</span>
+                      <span className="pj-table-seats">
+                        {here ? "you are here" : full ? "full" : atSize ? `${t.seats_taken} · join anyway` : `${t.seats_taken} of ${t.seats_soft}`}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              <button
+                className="pj-secondary"
+                disabled={busy}
+                onClick={() => takeSeat(null, false, true, true)}
+              >
+                Start a new table
+              </button>
+
+              {error && <p className="pj-error">{error}</p>}
+
+              <button className="pj-quiet" onClick={() => { setMoving(false); setError(""); }}>
+                Never mind
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* -------- join a table that is already at its usual size -------- */}
         {forceTable && (
           <div className="pj-modal">
@@ -391,7 +450,7 @@ export default function JoinPage() {
               <button
                 className="pj-btn"
                 disabled={busy}
-                onClick={() => takeSeat(forceTable.id, true)}
+                onClick={() => takeSeat(forceTable.id, true, false, moving)}
               >
                 {busy ? "Joining…" : "Join them anyway"}
               </button>
@@ -471,6 +530,27 @@ export default function JoinPage() {
                     {state.players} {state.players === 1 ? "person" : "people"} in the room
                   </p>
                 )}
+
+                <button
+                  className="pj-quiet"
+                  onClick={async () => {
+                    // Refresh the table list before showing the picker.
+                    try {
+                      const r = await fetch("/api/room/join", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ code, device_token: tokenRef.current }),
+                      });
+                      const json = await r.json();
+                      if (json.tables) setTables(json.tables);
+                    } catch {
+                      /* work with what we have */
+                    }
+                    setMoving(true);
+                  }}
+                >
+                  Sitting somewhere else?
+                </button>
               </div>
             )}
 
@@ -525,6 +605,11 @@ const CSS = `
   border: 1px solid rgba(212,175,55,.4); border-radius: 6px; }
 .pj-input:focus { outline: none; border-color: #d4af37; }
 
+.pj-secondary { width: 100%; margin-top: 12px; padding: 15px;
+  font-family: Cinzel, serif; font-size: 15px; cursor: pointer;
+  color: #d4af37; background: transparent;
+  border: 1px solid rgba(212,175,55,.45); border-radius: 8px; }
+.pj-secondary:disabled { opacity: .35; cursor: default; }
 .pj-or { margin: 22px 0 12px; font-size: 12px; letter-spacing: .18em;
   text-transform: uppercase; opacity: .4; }
 .pj-modal { position: fixed; inset: 0; z-index: 40; display: grid;
