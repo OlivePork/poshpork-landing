@@ -76,10 +76,20 @@ export default async function handler(req, res) {
         }
 
         if (userId) {
+          // Venue screenings carry their attribution in the Stripe metadata,
+          // so a ticket bought at a hotel can be traced back to that hotel.
+          const venueId = session.metadata?.venue_id || null;
+          const adults = session.metadata?.adults ? Number(session.metadata.adults) : null;
+          const children = session.metadata?.children ? Number(session.metadata.children) : null;
+
           const { error } = await supabase.from('purchases').upsert(
             {
               user_id: userId,
               product: 'movie',
+              source: session.metadata?.source || 'stripe',
+              venue_id: venueId,
+              adults,
+              children,
               stripe_session_id: session.id,
               amount_cents: session.amount_total,
             },
