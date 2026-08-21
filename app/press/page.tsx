@@ -425,7 +425,7 @@ export default function PressPage() {
             background: "#000",
           }}>
             <iframe
-              src="https://player.vimeo.com/video/1218266606?title=0&byline=0&portrait=0&dnt=1"
+              src="https://player.vimeo.com/video/1218849286?title=0&byline=0&portrait=0&dnt=1"
               title="Which Food Is Killing You? — trailer"
               allow="autoplay; fullscreen; picture-in-picture"
               allowFullScreen
@@ -433,7 +433,7 @@ export default function PressPage() {
             />
           </div>
           <p style={{ ...para, fontSize: "14px", opacity: .65, marginTop: "14px" }}>
-            Trailer &mdash; free to embed. <a href="https://vimeo.com/1218266606" style={link}>vimeo.com/1218266606</a>
+            Trailer &mdash; free to embed. <a href="https://vimeo.com/1218849286" style={link}>vimeo.com/1218266606</a>
           </p>
         </div>
       </section>
