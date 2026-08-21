@@ -20,6 +20,20 @@ type LicenceRow = {
   over_headcount: boolean;
 };
 
+type VenueRow = {
+  venue_id: string;
+  slug: string;
+  name: string;
+  town: string | null;
+  status: string;
+  events_run: number;
+  tickets_sold: number;
+  adults: number;
+  children: number;
+  revenue_cents: number;
+  last_event_at: string | null;
+};
+
 type EventRow = {
   room_id: string;
   code: string;
@@ -59,14 +73,18 @@ export default async function UsagePage() {
     { auth: { persistSession: false } },
   );
 
-  const [{ data: week }, { data: licences }, { data: events }] = await Promise.all([
-    admin.rpc("usage_week"),
-    admin.rpc("usage_by_licence"),
-    admin.rpc("usage_events"),
-  ]);
+  const [{ data: week }, { data: licences }, { data: events }, { data: venues }] =
+    await Promise.all([
+      admin.rpc("usage_week"),
+      admin.rpc("usage_by_licence"),
+      admin.rpc("usage_events"),
+      admin.rpc("venue_summary"),
+    ]);
 
   const w = (week ?? [])[0] ?? { events: 0, players: 0, answers: 0, new_licences: 0, film_sales: 0 };
   const licenceRows = (licences ?? []) as LicenceRow[];
+  const venueRows = (venues ?? []) as VenueRow[];
+  const venueRevenue = venueRows.reduce((n, v) => n + Number(v.revenue_cents || 0), 0);
   const eventRows = (events ?? []) as EventRow[];
   const flagged = licenceRows.filter((l) => l.over_headcount);
 
@@ -112,6 +130,73 @@ export default async function UsagePage() {
             ))}
           </section>
         )}
+
+        {/* VENUES */}
+        <section style={{ marginBottom: "56px" }}>
+          <h2 style={h2}>
+            Venues
+            {venueRevenue > 0 && (
+              <span style={{ fontSize: "15px", opacity: .55, marginLeft: "14px" }}>
+                €{(venueRevenue / 100).toFixed(0)} in tickets
+              </span>
+            )}
+          </h2>
+
+          <div style={{ overflowX: "auto" }}>
+            <table style={table}>
+              <thead>
+                <tr>
+                  <th style={th}>Venue</th>
+                  <th style={th}>Status</th>
+                  <th style={{ ...th, textAlign: "right" }}>Events</th>
+                  <th style={{ ...th, textAlign: "right" }}>Tickets</th>
+                  <th style={{ ...th, textAlign: "right" }}>Adults</th>
+                  <th style={{ ...th, textAlign: "right" }}>Children</th>
+                  <th style={{ ...th, textAlign: "right" }}>Revenue</th>
+                  <th style={th}>Last event</th>
+                </tr>
+              </thead>
+              <tbody>
+                {venueRows.length === 0 && (
+                  <tr><td style={td} colSpan={8}>No venues yet.</td></tr>
+                )}
+                {venueRows.map((v) => (
+                  <tr key={v.venue_id}>
+                    <td style={td}>
+                      {v.name}
+                      <span style={{ display: "block", fontSize: "12px", opacity: .45 }}>
+                        {v.town ? `${v.town} · ` : ""}/v/{v.slug}
+                      </span>
+                    </td>
+                    <td style={{
+                      ...td,
+                      color: v.status === "active" ? "#7fa87f"
+                           : v.status === "paused" ? "#c98b5e"
+                           : undefined,
+                    }}>
+                      {v.status}
+                    </td>
+                    <td style={{ ...td, textAlign: "right" }}>{v.events_run}</td>
+                    <td style={{ ...td, textAlign: "right" }}>{v.tickets_sold}</td>
+                    <td style={{ ...td, textAlign: "right" }}>{v.adults ?? 0}</td>
+                    <td style={{ ...td, textAlign: "right", opacity: .6 }}>{v.children ?? 0}</td>
+                    <td style={{ ...td, textAlign: "right", color: "#d4af37" }}>
+                      €{(Number(v.revenue_cents || 0) / 100).toFixed(0)}
+                    </td>
+                    <td style={td}>{fmt(v.last_event_at)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {venueRows.some((v) => v.status === "active" && !v.last_event_at) && (
+            <p style={{ fontSize: "13px", opacity: .55, marginTop: "16px" }}>
+              A venue marked active with no events has been set up but has not run one yet.
+              Worth a nudge.
+            </p>
+          )}
+        </section>
 
         {/* LICENCES */}
         <section style={{ marginBottom: "56px" }}>
