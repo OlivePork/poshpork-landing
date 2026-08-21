@@ -31,21 +31,54 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Venue slug required" }, { status: 400 });
   }
 
+  const normalisedSlug = slug.trim().toLowerCase();
+
+  // Temporary: confirms what the route actually received and whether the
+  // Supabase credentials reached the function. Remove once this is working.
+  console.log("grant-venue:", {
+    received: slug,
+    normalised: normalisedSlug,
+    hasUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
+    hasServiceKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+  });
+
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    return NextResponse.json(
+      { error: "Supabase credentials are missing on the server." },
+      { status: 500 },
+    );
+  }
+
   const admin = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.SUPABASE_SERVICE_ROLE_KEY,
     { auth: { persistSession: false } },
   );
 
-  const { data: venue } = await admin
+  const { data: venue, error: venueErr } = await admin
     .from("venues")
-    .select("id, slug, name, contact_email, adult_price_cents, table_count, seats_per_table")
-    .eq("slug", slug.toLowerCase())
+    .select("id, slug, name, contact_email, adult_price_cents, seats_per_table")
+    .eq("slug", normalisedSlug)
     .maybeSingle();
 
-  if (!venue) {
+  if (venueErr) {
+    console.error("Venue lookup error:", venueErr);
     return NextResponse.json(
-      { error: "No venue with that slug. Create the row in Supabase first." },
+      { error: "Could not read the venues table.", detail: venueErr.message },
+      { status: 500 },
+    );
+  }
+
+  if (!venue) {
+    // List what does exist, so the mismatch is obvious in the logs.
+    const { data: all } = await admin.from("venues").select("slug");
+    console.log("grant-venue: no match. Existing slugs:", (all ?? []).map((v) => v.slug));
+
+    return NextResponse.json(
+      {
+        error: `No venue with slug "${normalisedSlug}".`,
+        available: (all ?? []).map((v) => v.slug),
+      },
       { status: 404 },
     );
   }
@@ -98,7 +131,10 @@ export async function POST(req: Request) {
 
   if (purchaseErr) {
     console.error("Venue purchase error:", purchaseErr);
-    return NextResponse.json({ error: "Could not grant access." }, { status: 500 });
+    return NextResponse.json(
+      { error: "Could not grant access.", detail: purchaseErr.message },
+      { status: 500 },
+    );
   }
 
   // 3. Link the venue to the account that will open its rooms.
@@ -115,7 +151,7 @@ export async function POST(req: Request) {
       name: venue.name,
       slug: venue.slug,
       priceEuros: venue.adult_price_cents / 100,
-      tables: venue.table_count,
+      tables: venue.seats_per_table,
       seats: venue.seats_per_table,
     });
   } catch (emailErr) {
