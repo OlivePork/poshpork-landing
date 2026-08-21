@@ -92,7 +92,7 @@ export default async function VenuePage({
         </div>
 
         <p style={{ fontSize: "12px", lineHeight: 1.7, opacity: .45, margin: 0 }}>
-          1 hour 27 minutes. Suitable from around fourteen upwards.<br />
+          1 hour 27 minutes. A Family friendly movie, suitable for all ages.<br />
           This film is for entertainment and education only. It is not medical advice.
         </p>
 

@@ -77,7 +77,7 @@ export default function FacilitatorPage() {
 
           <dl style={{ margin: 0 }}>
             <Row k="Length" v="1 hour 27 minutes, plus roughly 10 minutes of pauses for the questions. Allow two hours with discussion." />
-            <Row k="Age" v="Suits a general audience from around fourteen. Younger groups follow the story; the argument lands better with older ones." />
+            <Row k="Age" v="A family friendly movie, suitable for all ages. Younger groups follow the story; the argument lands better with older ones." />
             <Row k="Room" v="One screen, and a device you control it from. Sound matters more than screen size — the film is dialogue-led." />
             <Row k="Wifi" v="Phones need a connection. If it drops mid-question the phone reconnects on its own; nothing is lost. If the venue wifi is bad, use the show-of-hands mode." />
             <Row k="Breaking it up" v="It works across two sessions. Stop at 45 minutes, before the prosecution's case begins. Note the time so you can resume." />
