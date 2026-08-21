@@ -10,8 +10,8 @@ type Table = {
   id: string;
   name: string;
   colour: string | null;
-  max_seats: number;
   seats_taken: number;
+  seats_soft: number;
 };
 
 type RoomInfo = { id: string; code: string; name: string | null; status: string };
@@ -67,6 +67,7 @@ export default function JoinPage() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [pendingAnswer, setPendingAnswer] = useState<string | null>(null);
+  const [forceTable, setForceTable] = useState<Table | null>(null);
 
   const tokenRef = useRef<string>("");
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -76,6 +77,31 @@ export default function JoinPage() {
     tokenRef.current = deviceToken();
     const savedName = window.localStorage.getItem(NAME_KEY);
     if (savedName) setName(savedName);
+
+    // Arriving from a venue (?v=son-mir) after paying: find the room the
+    // venue currently has open and skip the code step entirely.
+    const params = new URLSearchParams(window.location.search);
+    const venue = params.get("v");
+
+    if (venue) {
+      setBusy(true);
+      fetch(`/api/room/for-venue?slug=${encodeURIComponent(venue)}`, { cache: "no-store" })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((json) => {
+          if (json?.code) {
+            lookUp(json.code, true);
+          } else {
+            setBusy(false);
+            setError("The screening has not opened yet. Ask at the bar and they will start it.");
+          }
+        })
+        .catch(() => {
+          setBusy(false);
+          setError("Could not reach the room. Try again in a moment.");
+        });
+      return;
+    }
+
     const saved = window.localStorage.getItem(CODE_KEY);
     if (saved) {
       setCode(saved);
@@ -124,43 +150,55 @@ export default function JoinPage() {
 
   /* ---------------- take a seat ---------------- */
 
-  const takeSeat = useCallback(async () => {
-    if (!name.trim()) {
-      setError("Enter your name.");
-      return;
-    }
-
-    setBusy(true);
-    setError("");
-
-    try {
-      const r = await fetch("/api/room/join", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          code,
-          name,
-          device_token: tokenRef.current,
-          table_id: tableId,
-        }),
-      });
-      const json = await r.json();
-
-      if (!r.ok) {
-        setError(json.error ?? "Could not join.");
-        setBusy(false);
+  const takeSeat = useCallback(
+    async (wantTable: string | null, force = false) => {
+      if (!name.trim()) {
+        setError("Enter your name.");
         return;
       }
 
-      window.localStorage.setItem(CODE_KEY, code);
-      window.localStorage.setItem(NAME_KEY, name.trim());
-      setStep("playing");
-    } catch {
-      setError("Something went wrong. Try again.");
-    }
+      setBusy(true);
+      setError("");
 
-    setBusy(false);
-  }, [code, name, tableId]);
+      try {
+        const r = await fetch("/api/room/join", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            code,
+            name,
+            device_token: tokenRef.current,
+            table_id: wantTable,
+            force,
+          }),
+        });
+        const json = await r.json();
+
+        if (!r.ok) {
+          if (json.needsForce && wantTable) {
+            // Offer to join anyway rather than blocking a group of five.
+            setForceTable(tables.find((t) => t.id === wantTable) ?? null);
+            setBusy(false);
+            return;
+          }
+          setError(json.error ?? "Could not join.");
+          setBusy(false);
+          return;
+        }
+
+        window.localStorage.setItem(CODE_KEY, code);
+        window.localStorage.setItem(NAME_KEY, name.trim());
+        setTableId(json.player?.table_id ?? null);
+        setForceTable(null);
+        setStep("playing");
+      } catch {
+        setError("Something went wrong. Try again.");
+      }
+
+      setBusy(false);
+    },
+    [code, name, tables],
+  );
 
   /* ---------------- polling ---------------- */
 
@@ -283,47 +321,85 @@ export default function JoinPage() {
               maxLength={40}
               value={name}
               onChange={(e) => setName(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && takeSeat(null)}
             />
+
+            {/* Most people just sit down. This is the whole flow for them. */}
+            <button
+              className="pj-btn"
+              disabled={busy || !name.trim()}
+              onClick={() => takeSeat(null)}
+            >
+              {busy ? "Finding you a seat…" : "Sit me anywhere"}
+            </button>
 
             {tables.length > 0 && (
               <>
-                <label className="pj-label">Your table</label>
+                <p className="pj-or">or join people you know</p>
                 <div className="pj-tables">
                   {tables.map((t) => {
-                    const full = t.seats_taken >= t.max_seats;
-                    const on = tableId === t.id;
+                    const full = t.seats_taken >= 12;
+                    const atSize = t.seats_taken >= t.seats_soft;
                     return (
                       <button
                         key={t.id}
-                        className={`pj-table ${on ? "is-on" : ""}`}
-                        style={on && t.colour ? { borderColor: t.colour, background: `${t.colour}22` } : undefined}
-                        disabled={full && !on}
-                        onClick={() => setTableId(on ? null : t.id)}
+                        className="pj-table"
+                        disabled={busy || full || !name.trim()}
+                        onClick={() => takeSeat(t.id)}
                       >
                         <span className="pj-table-dot" style={{ background: t.colour ?? "#d4af37" }} />
                         <span>{t.name}</span>
                         <span className="pj-table-seats">
-                          {full ? "full" : `${t.seats_taken}/${t.max_seats}`}
+                          {full
+                            ? "full"
+                            : atSize
+                              ? `${t.seats_taken} · join anyway`
+                              : `${t.seats_taken} of ${t.seats_soft}`}
                         </span>
                       </button>
                     );
                   })}
                 </div>
-                <p className="pj-hint">
-                  Your table answers together. Talk it through, then anyone can put it in.
-                </p>
               </>
             )}
 
-            {error && <p className="pj-error">{error}</p>}
+            <p className="pj-hint">
+              Your table answers together. Talk it through, then anyone can put it in.
+            </p>
 
-            <button className="pj-btn" disabled={busy} onClick={takeSeat}>
-              {busy ? "Joining…" : "I'm in"}
-            </button>
+            {error && <p className="pj-error">{error}</p>}
 
             <button className="pj-quiet" onClick={() => setStep("code")}>
               Different room
             </button>
+          </div>
+        )}
+
+        {/* -------- join a table that is already at its usual size -------- */}
+        {forceTable && (
+          <div className="pj-modal">
+            <div className="pj-card">
+              <p className="pj-eyebrow">{forceTable.name}</p>
+              <h1 className="pj-title">
+                {forceTable.seats_taken} already here
+              </h1>
+              <p className="pj-lede">
+                That is a full table by the usual count. Join it anyway if you are
+                sitting together &mdash; a table can hold up to twelve.
+              </p>
+
+              <button
+                className="pj-btn"
+                disabled={busy}
+                onClick={() => takeSeat(forceTable.id, true)}
+              >
+                {busy ? "Joining…" : "Join them anyway"}
+              </button>
+
+              <button className="pj-quiet" onClick={() => setForceTable(null)}>
+                Pick a different table
+              </button>
+            </div>
           </div>
         )}
 
@@ -449,6 +525,11 @@ const CSS = `
   border: 1px solid rgba(212,175,55,.4); border-radius: 6px; }
 .pj-input:focus { outline: none; border-color: #d4af37; }
 
+.pj-or { margin: 22px 0 12px; font-size: 12px; letter-spacing: .18em;
+  text-transform: uppercase; opacity: .4; }
+.pj-modal { position: fixed; inset: 0; z-index: 40; display: grid;
+  place-items: center; padding: 20px; background: rgba(10,10,10,.92); }
+.pj-modal .pj-card { width: min(400px, 100%); }
 .pj-tables { display: grid; gap: 8px; }
 .pj-table { display: flex; align-items: center; gap: 12px; width: 100%;
   padding: 14px 16px; font: inherit; font-size: 16px; text-align: left;
