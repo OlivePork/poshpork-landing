@@ -281,3 +281,110 @@ export async function sendLicenceEmail(
     }),
   });
 }
+
+
+/* ------------------------------------------------------------------ */
+/* Venue                                                               */
+/* ------------------------------------------------------------------ */
+
+export async function sendVenueEmail(
+  email: string,
+  v: { name: string; slug: string; priceEuros: number; tables: number; seats: number },
+) {
+  const link = await buildSignInLink(email);
+  const screen = `${SITE_URL}/v/${v.slug}/screen`;
+
+  return resend.emails.send({
+    from: "Colin Marry <colin@poshpork.com>",
+    replyTo: "screening@poshpork.com",
+    to: email,
+    subject: `${v.name} — everything you need to run a screening`,
+    html: shell({
+      tagline: "Four foods stand trial. Your room is the jury.",
+      body: `
+        <p style="font-size: 16px; line-height: 1.7;">
+          <strong>${v.name} is set up.</strong> You can run a screening whenever you
+          like, as often as you like. Here is everything you need.
+        </p>
+
+        <h2 style="color: #d4af37; font-size: 18px; margin: 32px 0 12px; font-family: Georgia, serif;">
+          Your two links
+        </h2>
+
+        <p style="font-size: 15px; line-height: 1.7;">
+          <strong>The lobby screen</strong> &mdash; put this on your projector or TV while
+          guests arrive:<br>
+          <a href="${screen}" style="color: #a67c00; word-break: break-all;">${screen}</a>
+        </p>
+
+        <p style="font-size: 15px; line-height: 1.7;">
+          <strong>The film</strong> &mdash; this is yours, permanently:
+        </p>
+
+        ${button(link, "Open the film")}
+
+        <p style="font-size: 14px; line-height: 1.6; color: #888;">
+          That link works once. To come back at any time, go to
+          <a href="${SITE_URL}/login" style="color: #a67c00;">poshpork.com/login</a>
+          and sign in with <strong>${email}</strong>.
+        </p>
+
+        <h2 style="color: #d4af37; font-size: 18px; margin: 34px 0 12px; font-family: Georgia, serif;">
+          Running an evening
+        </h2>
+
+        <p style="font-size: 15px; line-height: 1.7;">
+          <strong>1. Open the room first.</strong> On the laptop driving the screen, sign in,
+          open the film, and choose <em>Open a room</em>. Set the number of tables
+          (you are set up for ${v.tables} tables of ${v.seats}). Do this before anyone starts
+          scanning, or guests will pay and be told the screening has not opened.
+        </p>
+
+        <p style="font-size: 15px; line-height: 1.7;">
+          <strong>2. Put the lobby screen up.</strong> Open the link above in a second tab
+          and show it on the projector. Guests scan it from their seats.
+        </p>
+
+        <p style="font-size: 15px; line-height: 1.7;">
+          <strong>3. Guests pay on their phones.</strong> &euro;${v.priceEuros.toFixed(0)} an
+          adult, under 18s free. They go straight into the room afterwards &mdash; no code to
+          type. They pick the table they are actually sitting at.
+        </p>
+
+        <p style="font-size: 15px; line-height: 1.7;">
+          <strong>4. Switch to the film tab and press play.</strong> When a question comes up,
+          the film pauses and it appears on every phone. Each table agrees one answer. Your
+          screen shows them arriving &mdash; when the room is in, press continue. That is the
+          only button you need all evening.
+        </p>
+
+        <p style="font-size: 15px; line-height: 1.7;">
+          <strong>5. At the end</strong>, every person votes on each of the four suspects and
+          the tables are ranked. Leave that up while they argue about it.
+        </p>
+
+        <h2 style="color: #d4af37; font-size: 18px; margin: 34px 0 12px; font-family: Georgia, serif;">
+          What you keep
+        </h2>
+
+        <p style="font-size: 15px; line-height: 1.7;">
+          Everything you sell around it &mdash; food, drink, rooms. We take no share of that
+          and ask for no account of it. Guests pay us directly for the film, and they keep
+          it afterwards to watch again at home.
+        </p>
+
+        <p style="font-size: 15px; line-height: 1.7;">
+          The full guide is at
+          <a href="${SITE_URL}/facilitator" style="color: #a67c00;">poshpork.com/facilitator</a>.
+        </p>
+
+        <p style="font-size: 15px; line-height: 1.7; color: #666;">
+          Anything at all &mdash; including on the night, mid-screening &mdash; just reply to
+          this. It comes straight to me.
+        </p>
+
+        <p style="font-size: 16px; line-height: 1.6; margin-top: 26px;">Colin Marry</p>
+      `,
+    }),
+  });
+}
