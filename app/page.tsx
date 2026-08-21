@@ -2,7 +2,6 @@
 import Hero from '@/components/Hero';
 import Suspects from '@/components/Suspects';
 import Stakes from '@/components/Stakes';
-import BookingTabs from '@/components/BookingTabs';
 import FilmSection from '@/components/FilmSection';
 import GiftButton from '@/components/GiftButton';
 import Article from '@/components/Article';
@@ -17,7 +16,7 @@ export default function Home() {
 
       {/* Family movie night sits directly under the trailer — it is the
           first thing a visitor reads after seeing the film. */}
-      {process.env.NEXT_PUBLIC_LIVE_EVENTS_ENABLED === 'true' ? <BookingTabs /> : <FilmSection />}
+      <FilmSection />
 
       <Suspects />
       <Stakes />
