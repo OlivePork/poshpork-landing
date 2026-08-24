@@ -94,3 +94,5 @@ values (
 Then send them the one page agreement, they sign and return then set them as live by running this code: 
 update venues set status = 'active', agreed_at = now()
 where slug = 'agroturismo-example';
+
+.\scripts\grant-venue.ps1 -Slug "vernissa"
