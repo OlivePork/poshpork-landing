@@ -1,3 +1,4 @@
+import SessionPicker from "@/components/SessionPicker";
 export const metadata = {
   title: "In person | Which Food Is Killing You?",
   description:
@@ -82,9 +83,7 @@ export default function ExperiencesPage() {
               &mdash; twenty minutes from Palma.
             </p>
 
-            <a href="mailto:screening@poshpork.com?subject=Murder%20Mystery%20Experience" style={btnPrimary}>
-              Book a place
-            </a>
+            <SessionPicker />
             <p style={{ ...para, fontSize: "14px", opacity: .6, marginTop: "16px", marginBottom: 0 }}>
               Two hours, and you keep the film afterwards to watch again at home.
             </p>
