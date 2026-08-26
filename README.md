@@ -96,3 +96,18 @@ update venues set status = 'active', agreed_at = now()
 where slug = 'agroturismo-example';
 
 .\scripts\grant-venue.ps1 -Slug "vernissa"
+
+How to check for bookings: 
+select
+  s.starts_at,
+  b.email,
+  b.name,
+  b.adults,
+  b.children,
+  b.extras,
+  b.status,
+  (b.amount_cents / 100.0) as paid
+from bookings b
+join sessions s on s.id = b.session_id
+where b.status = 'paid' and s.starts_at > now()
+order by s.starts_at, b.created_at;

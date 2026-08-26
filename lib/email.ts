@@ -388,10 +388,9 @@ export async function sendVenueEmail(
     }),
   });
 }
+
 /* ------------------------------------------------------------------ */
 /* Experience booking                                                  */
-/*                                                                     */
-/* Append this to the bottom of lib/email.ts                           */
 /* ------------------------------------------------------------------ */
 
 export async function sendBookingEmail(
@@ -437,7 +436,9 @@ export async function sendBookingEmail(
 
   const place = b.address ?? [b.venueName, b.venueTown].filter(Boolean).join(", ");
 
-  return resend.emails.send({
+  /* ---------------- the guest ---------------- */
+
+  const guest = resend.emails.send({
     from: "Posh Pork <mystery@poshpork.com>",
     replyTo: "screening@poshpork.com",
     to: email,
@@ -451,33 +452,33 @@ export async function sendBookingEmail(
 
         <table style="width:100%; border-collapse:collapse; margin:28px 0;">
           <tr>
-            <td style="padding:12px 16px 12px 0; border-bottom:1px solid #e0d9cb; font-size:13px; letter-spacing:.1em; text-transform:uppercase; color:#a67c00; white-space:nowrap;">When</td>
+            <td style="padding:12px 16px 12px 0; border-bottom:1px solid #e0d9cb; font-size:13px; letter-spacing:.1em; text-transform:uppercase; color:#a67c00; white-space:nowrap; vertical-align:top;">When</td>
             <td style="padding:12px 0; border-bottom:1px solid #e0d9cb; font-size:16px;"><strong>${day}</strong><br>${time}</td>
           </tr>
           <tr>
-            <td style="padding:12px 16px 12px 0; border-bottom:1px solid #e0d9cb; font-size:13px; letter-spacing:.1em; text-transform:uppercase; color:#a67c00; white-space:nowrap;">Where</td>
+            <td style="padding:12px 16px 12px 0; border-bottom:1px solid #e0d9cb; font-size:13px; letter-spacing:.1em; text-transform:uppercase; color:#a67c00; white-space:nowrap; vertical-align:top;">Where</td>
             <td style="padding:12px 0; border-bottom:1px solid #e0d9cb; font-size:16px;">
               ${place}
               ${b.mapsUrl ? `<br><a href="${b.mapsUrl}" style="color:#a67c00; font-size:15px;">Open in maps</a>` : ""}
             </td>
           </tr>
           <tr>
-            <td style="padding:12px 16px 12px 0; border-bottom:1px solid #e0d9cb; font-size:13px; letter-spacing:.1em; text-transform:uppercase; color:#a67c00; white-space:nowrap;">Who</td>
+            <td style="padding:12px 16px 12px 0; border-bottom:1px solid #e0d9cb; font-size:13px; letter-spacing:.1em; text-transform:uppercase; color:#a67c00; white-space:nowrap; vertical-align:top;">Who</td>
             <td style="padding:12px 0; border-bottom:1px solid #e0d9cb; font-size:16px;">${who}</td>
           </tr>
           <tr>
-            <td style="padding:12px 16px 12px 0; font-size:13px; letter-spacing:.1em; text-transform:uppercase; color:#a67c00; white-space:nowrap;">How long</td>
+            <td style="padding:12px 16px 12px 0; font-size:13px; letter-spacing:.1em; text-transform:uppercase; color:#a67c00; white-space:nowrap; vertical-align:top;">How long</td>
             <td style="padding:12px 0; font-size:16px;">About ${Math.round(b.durationMins / 60)} hours</td>
           </tr>
         </table>
 
         ${b.directions ? `<p style="font-size:15px; line-height:1.7; color:#666;">${b.directions}</p>` : ""}
 
-        <h2 style="color:#d4af37; font-size:18px; margin:34px 0 12px; font-family:Georgia,serif;">On the night</h2>
+        <h2 style="color:#d4af37; font-size:18px; margin:34px 0 12px; font-family:Georgia,serif;">On the day</h2>
 
         <p style="font-size:15px; line-height:1.7;">
           Come a few minutes early. You will be seated with other people &mdash; that is
-          deliberate, and it is where the evening happens.
+          deliberate, and it is where the whole thing happens.
         </p>
 
         <p style="font-size:15px; line-height:1.7;">
@@ -515,4 +516,49 @@ export async function sendBookingEmail(
       `,
     }),
   });
+
+  /* ---------------- the host ---------------- */
+  /* Short, plain, and readable on a phone. The only thing that       */
+  /* matters is knowing somebody is coming and when.                  */
+
+  const host = resend.emails.send({
+    from: "Posh Pork <mystery@poshpork.com>",
+    replyTo: email,
+    to: process.env.ADMIN_EMAIL || "colin@poshpork.com",
+    subject: `Booking — ${day}, ${time} · ${who}`,
+    html: `
+      <div style="font-family: Georgia, serif; color: #2c1810; max-width: 520px; margin: 0 auto; padding: 24px;">
+        <p style="font-size: 20px; margin: 0 0 6px; color: #a67c00;"><strong>${day}</strong></p>
+        <p style="font-size: 28px; margin: 0 0 22px;"><strong>${time}</strong></p>
+
+        <table style="width:100%; border-collapse:collapse; font-size:16px;">
+          <tr>
+            <td style="padding:8px 16px 8px 0; color:#888; white-space:nowrap;">Who</td>
+            <td style="padding:8px 0;">${who}</td>
+          </tr>
+          <tr>
+            <td style="padding:8px 16px 8px 0; color:#888; white-space:nowrap;">Email</td>
+            <td style="padding:8px 0;"><a href="mailto:${email}" style="color:#a67c00;">${email}</a></td>
+          </tr>
+          <tr>
+            <td style="padding:8px 16px 8px 0; color:#888; white-space:nowrap;">Where</td>
+            <td style="padding:8px 0;">${place}</td>
+          </tr>
+        </table>
+
+        <p style="font-size:14px; color:#888; margin-top:26px;">
+          Reply to this and it goes to them.
+        </p>
+      </div>
+    `,
+  });
+
+  // Both go out together. The guest's confirmation is the one that
+  // must not fail — if the host note fails, the booking is still fine.
+  const [guestResult] = await Promise.all([guest, host.catch((err) => {
+    console.error("Host booking notification failed:", err);
+    return null;
+  })]);
+
+  return guestResult;
 }
