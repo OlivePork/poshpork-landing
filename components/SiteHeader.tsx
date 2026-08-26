@@ -73,6 +73,7 @@ export default async function SiteHeader() {
         gap: "clamp(14px, 3vw, 26px)",
         marginLeft: "auto",
       }}>
+        <a href="/experiences" style={navLink}>IN PERSON</a>
         <a href="/about" style={navLink}>THE BACK STORY</a>
         <a href="/press" style={navLink}>PRESS</a>
         <a href="/contact" style={navLink}>CONTACT</a>
