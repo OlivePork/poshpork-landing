@@ -71,9 +71,10 @@ export default function ExperiencesPage() {
               and the tables are ranked.
             </p>
 
-            <a href="mailto:screening@poshpork.com?subject=Murder%20Mystery%20Experience" style={btnPrimary}>
-              Book a place
-            </a>
+                       <SessionPicker />
+            <p style={{ ...para, fontSize: "14px", opacity: .6, marginTop: "16px", marginBottom: 0 }}>
+              Two hours, and you keep the film afterwards to watch again at home.
+            </p>
             <p style={{ ...para, fontSize: "14px", opacity: .6, marginTop: "16px", marginBottom: 0 }}>
               Two hours, and you keep the film afterwards to watch again at home.
             </p>
