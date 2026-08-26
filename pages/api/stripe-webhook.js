@@ -1,6 +1,7 @@
 import Stripe from 'stripe';
 import { Resend } from 'resend';
 import { createClient } from '@supabase/supabase-js';
+import { sendBookingEmail } from '../../lib/email';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -28,6 +29,55 @@ async function getRawBody(req) {
   return Buffer.concat(chunks);
 }
 
+/**
+ * A one-click sign-in link.
+ *
+ * Built from `hashed_token` and pointed at /auth/confirm rather than using
+ * `action_link`. The default action_link uses the PKCE flow, and Gmail
+ * pre-fetches links to scan them — which consumes the single-use code
+ * before the buyer ever clicks it. The token-hash flow survives that.
+ */
+async function signInLink(email, next = '/watch') {
+  try {
+    const { data, error } = await supabase.auth.admin.generateLink({
+      type: 'magiclink',
+      email,
+    });
+    if (error) console.error('Magic link error:', error);
+
+    const hash = data?.properties?.hashed_token;
+    if (hash) {
+      return `${SITE_URL}/auth/confirm?token_hash=${hash}&type=email&next=${next}`;
+    }
+  } catch (err) {
+    console.error('Magic link error:', err);
+  }
+  return `${SITE_URL}${next}`;
+}
+
+/** Find the account for an email, or make one. */
+async function findOrCreateUser(email) {
+  if (!email) return null;
+
+  const { data: existing } = await supabase
+    .from('user_lookup')
+    .select('id')
+    .eq('email', email.toLowerCase())
+    .maybeSingle();
+
+  if (existing?.id) return existing.id;
+
+  const { data: created, error } = await supabase.auth.admin.createUser({
+    email,
+    email_confirm: true,
+  });
+  if (error) {
+    console.error('Create user error:', error);
+    return null;
+  }
+  return created?.user?.id || null;
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -48,6 +98,98 @@ export default async function handler(req, res) {
     const session = event.data.object;
 
     // ================================================================
+    // EXPERIENCE BOOKING
+    //
+    // Must come before the movie branch: a booking also carries
+    // product='movie' in its metadata, because it includes the film.
+    // ================================================================
+    if (session.metadata?.source === 'session' && session.metadata?.booking_id) {
+      const bookingId = session.metadata.booking_id;
+
+      // 1. Mark it paid. Until this happens the seats are only held,
+      //    and the hold expires in fifteen minutes.
+      const { error: bookErr } = await supabase
+        .from('bookings')
+        .update({
+          status: 'paid',
+          amount_cents: session.amount_total,
+          stripe_session_id: session.id,
+          name: session.customer_details?.name || null,
+          held_until: null,
+        })
+        .eq('id', bookingId);
+
+      if (bookErr) {
+        console.error('Booking update error — asking Stripe to retry:', bookErr);
+        return res.status(500).json({ error: 'Could not confirm the booking' });
+      }
+
+      // 2. Everything the confirmation needs, in one call.
+      const { data: rows, error: detailErr } = await supabase
+        .rpc('booking_details', { b_id: bookingId });
+
+      const d = (rows || [])[0];
+
+      if (detailErr || !d) {
+        console.error('Booking details error:', detailErr);
+        return res.status(500).json({ error: 'Could not read the booking' });
+      }
+
+      // 3. Account and film access, so they keep it afterwards.
+      const userId = await findOrCreateUser(d.email);
+
+      if (userId) {
+        await supabase.from('bookings').update({ user_id: userId }).eq('id', bookingId);
+
+        const { error: purchaseErr } = await supabase.from('purchases').upsert(
+          {
+            user_id: userId,
+            product: 'movie',
+            source: 'session',
+            venue_id: session.metadata.venue_id || null,
+            adults: Number(session.metadata.adults) || null,
+            children: Number(session.metadata.children) || null,
+            stripe_session_id: session.id,
+            amount_cents: session.amount_total,
+          },
+          { onConflict: 'stripe_session_id' }
+        );
+
+        if (purchaseErr) {
+          console.error('Booking purchase error:', purchaseErr);
+          return res.status(500).json({ error: 'Could not grant access' });
+        }
+      } else {
+        console.error('Could not resolve user for booking', d.email);
+      }
+
+      // 4. The confirmation. Everything above is idempotent, so a
+      //    Stripe retry after an email failure is safe.
+      try {
+        await sendBookingEmail(d.email, {
+          title: d.title,
+          startsAt: new Date(d.starts_at),
+          durationMins: d.duration_mins,
+          adults: d.adults,
+          children: d.children,
+          extras: d.extras,
+          extraLabel: d.extra_label,
+          venueName: d.venue_name,
+          venueTown: d.venue_town,
+          address: d.address,
+          mapsUrl: d.maps_url,
+          directions: d.directions,
+        });
+        console.log('Booking confirmation sent to', d.email);
+      } catch (emailErr) {
+        console.error('Booking email error — asking Stripe to retry:', emailErr);
+        return res.status(500).json({ error: 'Email failed, retry please' });
+      }
+
+      return res.status(200).json({ received: true });
+    }
+
+    // ================================================================
     // MOVIE PURCHASE
     // ================================================================
     if (session.metadata?.product === 'movie') {
@@ -57,22 +199,7 @@ export default async function handler(req, res) {
       try {
         if (!userId && email) {
           // Look first. Creating blind is what produced duplicate accounts.
-          const { data: existing } = await supabase
-            .from('user_lookup')
-            .select('id')
-            .eq('email', email.toLowerCase())
-            .maybeSingle();
-
-          userId = existing?.id || null;
-
-          if (!userId) {
-            const { data: created, error: createErr } = await supabase.auth.admin.createUser({
-              email,
-              email_confirm: true,
-            });
-            if (createErr) console.error('Create user error:', createErr);
-            userId = created?.user?.id || null;
-          }
+          userId = await findOrCreateUser(email);
         }
 
         if (userId) {
@@ -104,28 +231,7 @@ export default async function handler(req, res) {
         console.error('Movie purchase error:', movieErr);
       }
 
-      // Generate a one-click sign-in link so they never type their email.
-      //
-      // We build the URL ourselves from `hashed_token` and point it at
-      // /auth/confirm rather than using `action_link`. The default action_link
-      // uses the PKCE flow, and Gmail pre-fetches links to scan them — which
-      // consumes the single-use code before the buyer ever clicks it. The
-      // token-hash flow survives that.
-      let watchLink = `${SITE_URL}/watch`;
-      try {
-        const { data: linkData, error: linkError } = await supabase.auth.admin.generateLink({
-          type: 'magiclink',
-          email,
-        });
-        if (linkError) console.error('Magic link error:', linkError);
-
-        const hash = linkData?.properties?.hashed_token;
-        if (hash) {
-          watchLink = `${SITE_URL}/auth/confirm?token_hash=${hash}&type=email&next=/watch`;
-        }
-      } catch (linkErr) {
-        console.error('Magic link error:', linkErr);
-      }
+      const watchLink = await signInLink(email);
 
       try {
         await resend.emails.send({
@@ -296,117 +402,14 @@ export default async function handler(req, res) {
     }
 
     // ================================================================
-    // LIVE EVENT BOOKING — legacy, only runs for genuine event bookings.
+    // Anything else.
     //
-    // Guarded on session_date. Without this guard, any checkout session that
-    // arrives without recognised product metadata falls through to here and
-    // throws on session.customer_details.name, which Stripe then retries.
+    // The old live-event branch was removed with BookingTabs — nothing
+    // creates those checkout sessions any more, and the `bookings` table
+    // it wrote to is now the experiences table with a different shape.
     // ================================================================
-    if (!session.metadata?.session_date) {
-      console.log('Unrecognised checkout session, no action taken:', session.id);
-      return res.status(200).json({ received: true });
-    }
-
-    const customerEmail = session.customer_details?.email;
-    const customerName = session.customer_details?.name;
-    const sessionDate = session.metadata.session_date;
-    const sessionDisplay = session.metadata.session_display;
-    const numPeople = session.metadata.num_people;
-
-    try {
-      const { error } = await supabase.from('bookings').insert([{
-        session_date: sessionDate,
-        session_display: sessionDisplay,
-        num_people: parseInt(numPeople),
-        customer_email: customerEmail,
-        customer_name: customerName,
-        stripe_session_id: session.id,
-      }]);
-
-      if (error) {
-        console.error('Supabase error:', error);
-      } else {
-        console.log('Booking saved');
-      }
-    } catch (dbErr) {
-      console.error('DB error:', dbErr);
-    }
-
-    try {
-      await resend.emails.send({
-        from: 'Posh Pork <mystery@poshpork.com>',
-        replyTo: REPLY_TO,
-        to: customerEmail,
-        subject: 'Your Posh Pork Murder Mystery Experience is confirmed',
-        html: `
-          <div style="font-family: Georgia, serif; color: #2c1810; max-width: 600px; margin: 0 auto;">
-            <div style="background: linear-gradient(135deg, #2c1810 0%, #0a0a0a 100%); padding: 40px 20px; text-align: center;">
-              <h1 style="color: #d4af37; font-size: 28px; margin: 0;">The Posh Pork Murder Mystery</h1>
-              <p style="color: #f5f1e8; font-style: italic; margin-top: 10px;">Join the jury. Solve the mystery.</p>
-            </div>
-
-            <div style="background: #f5f1e8; padding: 40px 30px;">
-              <p style="font-size: 18px; margin-bottom: 20px;">Dear ${customerName},</p>
-
-              <p style="font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
-                <strong>Thank you for booking The Posh Pork Murder Mystery Experience!</strong>
-              </p>
-
-              <p style="font-size: 16px; line-height: 1.6; margin-bottom: 30px;">
-                Your seat is confirmed for:
-              </p>
-
-              <div style="background: white; border: 2px solid #d4af37; border-radius: 8px; padding: 20px; margin-bottom: 30px; text-align: center;">
-                <p style="font-size: 20px; color: #d4af37; margin: 0; font-weight: bold;">${sessionDisplay}</p>
-                <p style="font-size: 16px; margin: 10px 0 0 0;">${numPeople} guest${numPeople > 1 ? 's' : ''}</p>
-              </div>
-
-              <div style="border-top: 1px solid #d4af37; padding-top: 20px; margin-top: 30px;">
-                <h2 style="color: #d4af37; font-size: 20px; margin-bottom: 15px;">LOCATION</h2>
-                <p style="font-size: 16px; line-height: 1.6; margin-bottom: 10px;">
-                  <strong>Possessi&oacute; Vernissa</strong><br/>
-                  Llucmajor, Mallorca, Spain
-                </p>
-                <p style="font-size: 14px; line-height: 1.6; font-style: italic; color: #666;">
-                  Detailed directions and access information will be sent to you 48 hours before your session.
-                </p>
-              </div>
-
-              <div style="border-top: 1px solid #d4af37; padding-top: 20px; margin-top: 30px;">
-                <h2 style="color: #d4af37; font-size: 20px; margin-bottom: 15px;">WHAT TO EXPECT</h2>
-                <p style="font-size: 16px; line-height: 1.6; margin-bottom: 15px;">
-                  This is a 90-minute interactive murder mystery experience focused on food education
-                  and entertainment. Your session will be hosted by the creator himself over coffee.
-                </p>
-                <p style="font-size: 16px; line-height: 1.6;">
-                  You'll join the jury, examine the evidence, and cast your verdict.
-                </p>
-              </div>
-
-              <div style="border-top: 1px solid #d4af37; padding-top: 20px; margin-top: 30px;">
-                <h2 style="color: #d4af37; font-size: 20px; margin-bottom: 15px;">QUESTIONS OR NEED TO RESCHEDULE?</h2>
-                <p style="font-size: 16px; line-height: 1.6;">
-                  Contact us at <a href="mailto:colin@poshpork.com" style="color: #a67c00; text-decoration: underline;">colin@poshpork.com</a>
-                </p>
-              </div>
-
-              <p style="font-size: 16px; line-height: 1.6; margin-top: 40px; margin-bottom: 10px;">
-                We look forward to seeing you.
-              </p>
-
-              <p style="font-size: 16px; font-weight: bold; margin: 0;">Colin</p>
-            </div>
-
-            <div style="background: #2c1810; padding: 20px; text-align: center;">
-              <p style="color: #f5f1e8; font-size: 12px; margin: 0;">&copy; 2026 Posh Pork. Mallorca, Spain.</p>
-            </div>
-          </div>
-        `,
-      });
-      console.log('Email sent');
-    } catch (emailErr) {
-      console.error('Email error:', emailErr);
-    }
+    console.log('Unrecognised checkout session, no action taken:', session.id);
+    return res.status(200).json({ received: true });
   }
 
   res.status(200).json({ received: true });

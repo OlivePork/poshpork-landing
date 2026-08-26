@@ -388,3 +388,131 @@ export async function sendVenueEmail(
     }),
   });
 }
+/* ------------------------------------------------------------------ */
+/* Experience booking                                                  */
+/*                                                                     */
+/* Append this to the bottom of lib/email.ts                           */
+/* ------------------------------------------------------------------ */
+
+export async function sendBookingEmail(
+  email: string,
+  b: {
+    title: string;
+    startsAt: Date;
+    durationMins: number;
+    adults: number;
+    children: number;
+    extras: number;
+    extraLabel: string | null;
+    venueName: string | null;
+    venueTown: string | null;
+    address: string | null;
+    mapsUrl: string | null;
+    directions: string | null;
+  },
+) {
+  const link = await buildSignInLink(email);
+
+  const day = b.startsAt.toLocaleDateString("en-GB", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "Europe/Madrid",
+  });
+
+  const time = b.startsAt.toLocaleTimeString("en-GB", {
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "Europe/Madrid",
+  });
+
+  const who = [
+    `${b.adults} ${b.adults === 1 ? "adult" : "adults"}`,
+    b.children > 0 ? `${b.children} under 18` : null,
+    b.extras > 0 && b.extraLabel ? `${b.extras} × ${b.extraLabel.toLowerCase()}` : null,
+  ]
+    .filter(Boolean)
+    .join(", ");
+
+  const place = b.address ?? [b.venueName, b.venueTown].filter(Boolean).join(", ");
+
+  return resend.emails.send({
+    from: "Posh Pork <mystery@poshpork.com>",
+    replyTo: "screening@poshpork.com",
+    to: email,
+    subject: `You're booked — ${day}, ${time}`,
+    html: shell({
+      tagline: "Four foods stand trial. Your table is the jury.",
+      body: `
+        <p style="font-size: 16px; line-height: 1.7;">
+          <strong>You have a place.</strong> Here is everything you need.
+        </p>
+
+        <table style="width:100%; border-collapse:collapse; margin:28px 0;">
+          <tr>
+            <td style="padding:12px 16px 12px 0; border-bottom:1px solid #e0d9cb; font-size:13px; letter-spacing:.1em; text-transform:uppercase; color:#a67c00; white-space:nowrap;">When</td>
+            <td style="padding:12px 0; border-bottom:1px solid #e0d9cb; font-size:16px;"><strong>${day}</strong><br>${time}</td>
+          </tr>
+          <tr>
+            <td style="padding:12px 16px 12px 0; border-bottom:1px solid #e0d9cb; font-size:13px; letter-spacing:.1em; text-transform:uppercase; color:#a67c00; white-space:nowrap;">Where</td>
+            <td style="padding:12px 0; border-bottom:1px solid #e0d9cb; font-size:16px;">
+              ${place}
+              ${b.mapsUrl ? `<br><a href="${b.mapsUrl}" style="color:#a67c00; font-size:15px;">Open in maps</a>` : ""}
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:12px 16px 12px 0; border-bottom:1px solid #e0d9cb; font-size:13px; letter-spacing:.1em; text-transform:uppercase; color:#a67c00; white-space:nowrap;">Who</td>
+            <td style="padding:12px 0; border-bottom:1px solid #e0d9cb; font-size:16px;">${who}</td>
+          </tr>
+          <tr>
+            <td style="padding:12px 16px 12px 0; font-size:13px; letter-spacing:.1em; text-transform:uppercase; color:#a67c00; white-space:nowrap;">How long</td>
+            <td style="padding:12px 0; font-size:16px;">About ${Math.round(b.durationMins / 60)} hours</td>
+          </tr>
+        </table>
+
+        ${b.directions ? `<p style="font-size:15px; line-height:1.7; color:#666;">${b.directions}</p>` : ""}
+
+        <h2 style="color:#d4af37; font-size:18px; margin:34px 0 12px; font-family:Georgia,serif;">On the night</h2>
+
+        <p style="font-size:15px; line-height:1.7;">
+          Come a few minutes early. You will be seated with other people &mdash; that is
+          deliberate, and it is where the evening happens.
+        </p>
+
+        <p style="font-size:15px; line-height:1.7;">
+          <strong>Bring your phone.</strong> There will be a code on the screen; you scan
+          it and you are in. No app, no sign-up, and it takes about a minute.
+        </p>
+
+        <p style="font-size:15px; line-height:1.7;">
+          When a question appears during the film, your table answers once &mdash; so you
+          have to talk it through first. At the end everyone votes on each of the four
+          suspects, and the tables are ranked.
+        </p>
+
+        <h2 style="color:#d4af37; font-size:18px; margin:34px 0 12px; font-family:Georgia,serif;">The film is yours</h2>
+
+        <p style="font-size:15px; line-height:1.7;">
+          Your booking includes permanent access, so you can watch it again at home with
+          whoever you like.
+        </p>
+
+        ${button(link, "Open the film")}
+
+        <p style="font-size:14px; line-height:1.6; color:#888;">
+          That link works once. To come back later, go to
+          <a href="${SITE_URL}/login" style="color:#a67c00;">poshpork.com/login</a>
+          and sign in with <strong>${email}</strong>.
+        </p>
+
+        <p style="font-size:15px; line-height:1.7; color:#666;">
+          If something changes, or you cannot come, just reply to this. It comes straight
+          to me.
+        </p>
+
+        <p style="font-size:16px; line-height:1.6; margin-top:26px;">Colin Marry</p>
+      `,
+    }),
+  });
+}

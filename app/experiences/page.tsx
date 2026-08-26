@@ -1,4 +1,3 @@
-import SessionPicker from "@/components/SessionPicker";
 export const metadata = {
   title: "In person | Which Food Is Killing You?",
   description:
@@ -71,10 +70,21 @@ export default function ExperiencesPage() {
               and the tables are ranked.
             </p>
 
-                       <SessionPicker />
-            <p style={{ ...para, fontSize: "14px", opacity: .6, marginTop: "16px", marginBottom: 0 }}>
-              Two hours, and you keep the film afterwards to watch again at home.
+            <p style={{ ...para, fontSize: "15px", opacity: .75, maxWidth: "56ch" }}>
+              <a
+                href="https://maps.google.com/?q=Possessi%C3%B3+Vernissa+Llucmajor"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={link}
+              >
+                Possessió Vernissa, Llucmajor
+              </a>{" "}
+              &mdash; twenty minutes from Palma.
             </p>
+
+            <a href="mailto:screening@poshpork.com?subject=Murder%20Mystery%20Experience" style={btnPrimary}>
+              Book a place
+            </a>
             <p style={{ ...para, fontSize: "14px", opacity: .6, marginTop: "16px", marginBottom: 0 }}>
               Two hours, and you keep the film afterwards to watch again at home.
             </p>
