@@ -193,6 +193,22 @@ export default function InteractivePlayer({
     });
     playerRef.current = player;
 
+    // Vimeo's own fullscreen button puts the *iframe* fullscreen, and the
+    // question overlays live outside it — so they simply never appear.
+    //
+    // A browser will not let an iframe go fullscreen without the
+    // allowfullscreen attribute, so we take it away. Vimeo's button then
+    // does nothing and people use ours, which fullscreens the frame and
+    // brings the overlays with it.
+    player.ready().then(() => {
+      const iframe = mountRef.current?.querySelector("iframe");
+      if (iframe) {
+        iframe.removeAttribute("allowfullscreen");
+        iframe.removeAttribute("allow");
+        iframe.setAttribute("allow", "autoplay; picture-in-picture");
+      }
+    }).catch(() => {});
+
     player.on("timeupdate", ({ seconds }: { seconds: number }) => {
       if (modeRef.current === "off" || screenRef.current) return;
       for (const q of questionsRef.current) {
@@ -371,6 +387,19 @@ export default function InteractivePlayer({
 
       <div className="pp-frame" ref={frameRef}>
         <div ref={mountRef} />
+
+        {/* On the player, where people look for it. Sits clear of Vimeo's
+            own controls, which run along the bottom. */}
+        {!showSetup && !screen && !showStandings && (
+          <button
+            className="pp-fs-corner"
+            onClick={toggleFullscreen}
+            title={isFull ? "Leave full screen" : "Full screen"}
+            aria-label={isFull ? "Leave full screen" : "Full screen"}
+          >
+            {isFull ? "\u2715" : "\u26F6"}
+          </button>
+        )}
 
         {showSetup && (
           <div className="pp-veil">
@@ -626,6 +655,13 @@ export default function InteractivePlayer({
 
 const CSS = ROOM_CSS + `
 .pp-frame { position: relative; border: 1px solid #d4af37; border-radius: 10px; overflow: hidden; background: #000; }
+.pp-fs-corner { position: absolute; top: 12px; right: 12px; z-index: 15;
+  width: 38px; height: 38px; display: grid; place-items: center;
+  font-size: 17px; line-height: 1; cursor: pointer;
+  color: #f2ece1; background: rgba(10,10,10,.55);
+  border: 1px solid rgba(212,175,55,.4); border-radius: 6px;
+  opacity: .55; transition: opacity .15s ease, background .15s ease; }
+.pp-fs-corner:hover { opacity: 1; background: rgba(10,10,10,.8); }
 .pp-veil { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(10,10,10,.9); padding: 20px; z-index: 20; overflow-y: auto; }
 .pp-card { width: min(760px, 100%); text-align: center; color: #f2ece1; border: 1px solid rgba(212,175,55,.45); border-radius: 8px; background: linear-gradient(180deg, rgba(24,24,24,.97), rgba(14,14,14,.97)); padding: clamp(20px, 4vw, 40px); }
 .pp-card-wide { width: min(880px, 100%); }
@@ -688,7 +724,9 @@ const CSS = ROOM_CSS + `
 /* Fullscreen: the frame goes fullscreen, not the iframe, so the overlays
    stay on top of the film. */
 .pp-frame:fullscreen { border: none; border-radius: 0; background: #000; display: grid; place-items: center; }
-.pp-frame:fullscreen > div:first-child { width: 100%; }
-.pp-frame:fullscreen .pp-veil { position: fixed; }
-.pp-frame:-webkit-full-screen { border: none; border-radius: 0; background: #000; }
+.pp-frame:fullscreen > div:first-child { width: 100%; max-height: 100vh; }
+.pp-frame:fullscreen .pp-veil { position: fixed; inset: 0; z-index: 2147483647; }
+.pp-frame:fullscreen .pp-fs-corner { top: 20px; right: 20px; }
+.pp-frame:-webkit-full-screen { border: none; border-radius: 0; background: #000; display: grid; place-items: center; }
+.pp-frame:-webkit-full-screen .pp-veil { position: fixed; inset: 0; z-index: 2147483647; }
 `;
