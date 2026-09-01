@@ -74,6 +74,7 @@ export default async function SiteHeader() {
         marginLeft: "auto",
       }}>
         <a href="/experiences" style={navLink}>IN PERSON</a>
+        <a href="/evidence" style={navLink}>THE EVIDENCE</a>
         <a href="/about" style={navLink}>THE BACK STORY</a>
         <a href="/press" style={navLink}>PRESS</a>
         <a href="/contact" style={navLink}>CONTACT</a>

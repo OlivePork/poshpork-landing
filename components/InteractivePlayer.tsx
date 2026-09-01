@@ -572,6 +572,12 @@ export default function InteractivePlayer({
                     <a className="pp-passiton-primary" href="/movie?gift=1" target="_blank" rel="noopener noreferrer">Pass it on</a>
                     <a className="pp-passiton-wa" href={`https://wa.me/?text=${shareText}`} target="_blank" rel="noopener noreferrer">Tell someone</a>
                   </div>
+
+                  {/* Curiosity peaks the moment somebody commits to a verdict.
+                      This is the only place they will reliably look for it. */}
+                  <a className="pp-evidence" href="/evidence" target="_blank" rel="noopener noreferrer">
+                    See the evidence &mdash; every claim, with its source
+                  </a>
                 </div>
               ) : (
                 <>
@@ -719,6 +725,8 @@ const CSS = ROOM_CSS + `
 .pp-passiton-line { margin: 18px auto 24px; max-width: 460px; font-size: 15px; line-height: 1.6; opacity: .7; }
 .pp-passiton-actions { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
 .pp-passiton-primary { padding: 14px 30px; font-family: Cinzel, serif; font-size: 16px; font-weight: bold; color: #0a0a0a; background: linear-gradient(135deg,#a67c00,#d4af37 50%,#a67c00); border-radius: 6px; text-decoration: none; }
+.pp-evidence { display: block; margin: 22px auto 0; font-size: 14px; color: #d4af37; opacity: .75; text-decoration: underline; text-underline-offset: 4px; }
+.pp-evidence:hover { opacity: 1; }
 .pp-passiton-wa { padding: 14px 30px; font-family: Cinzel, serif; font-size: 16px; color: #f2ece1; border: 1px solid rgba(255,255,255,.25); border-radius: 6px; text-decoration: none; }
 
 /* Fullscreen: the frame goes fullscreen, not the iframe, so the overlays
