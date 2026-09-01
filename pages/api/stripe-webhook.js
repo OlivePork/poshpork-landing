@@ -47,7 +47,10 @@ async function signInLink(email, next = '/watch') {
 
     const hash = data?.properties?.hashed_token;
     if (hash) {
-      return `${SITE_URL}/auth/confirm?token_hash=${hash}&type=email&next=${next}`;
+      // /open holds the token until a human presses a button. Corporate
+      // mail scanners fetch every link in an email, which consumes a
+      // single-use token before the recipient ever clicks it.
+      return `${SITE_URL}/open?token_hash=${hash}&next=${encodeURIComponent(next)}`;
     }
   } catch (err) {
     console.error('Magic link error:', err);

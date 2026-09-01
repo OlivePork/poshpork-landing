@@ -32,7 +32,16 @@ export async function buildSignInLink(email: string, next = "/watch") {
 
     const hash = data?.properties?.hashed_token;
     if (hash) {
-      return `${SITE_URL}/auth/confirm?token_hash=${hash}&type=email&next=${next}`;
+      // Point at /open, not /auth/confirm.
+      //
+      // Corporate mail filters — Microsoft Defender Safe Links, Proofpoint,
+      // Mimecast — fetch every URL in an email to check it is safe. A fetch
+      // looks exactly like a click, so it consumes the single-use token and
+      // the recipient is told the link has expired before they touched it.
+      //
+      // /open holds the token and does nothing until somebody presses a
+      // button. Scanners fetch pages; they do not press buttons.
+      return `${SITE_URL}/open?token_hash=${hash}&next=${encodeURIComponent(next)}`;
     }
   } catch (err) {
     console.error("generateLink threw:", err);
