@@ -78,7 +78,7 @@ export default function ExperiencesPage() {
                 rel="noopener noreferrer"
                 style={link}
               >
-                Possessió Vernissa, Llucmajor
+                TBC, Llucmajor
               </a>{" "}
               &mdash; twenty minutes from Palma.
             </p>
