@@ -16,9 +16,27 @@ export type Question = {
 
 type Mode = "interactive" | "group" | "off";
 
+type VerdictRow = {
+  question_id: string;
+  suspect: string;
+  order_number: number;
+  option_a: string;
+  votes_a: number;
+  option_b: string;
+  votes_b: number;
+};
+
+type Tally = {
+  everyone: VerdictRow[];
+  room: { name: string | null; verdict: VerdictRow[] } | null;
+};
+
 const MODE_KEY = "poshpork.answerMode";
 const SIZE_KEY = "poshpork.groupSize";
 const DEFAULT_HOLD = 10;
+// Below this many verdicts the global tally says more about the sample
+// than about anything else, so it stays closed.
+const GLOBAL_FLOOR = 50;
 const FIRE_WINDOW = 4;
 
 export default function InteractivePlayer({
@@ -50,6 +68,8 @@ export default function InteractivePlayer({
   const [picks, setPicks] = useState<Record<string, string>>({});
   const [sent, setSent] = useState(false);
   const [showStandings, setShowStandings] = useState(false);
+  const [tally, setTally] = useState<Tally | null>(null);
+  const [tallyLoading, setTallyLoading] = useState(false);
 
   const modeRef = useRef(mode);
   const screenRef = useRef(screen);
@@ -133,6 +153,28 @@ export default function InteractivePlayer({
 
   const pick = useCallback((questionId: string, option: string) => {
     setPicks((prev) => ({ ...prev, [questionId]: option }));
+  }, []);
+
+  /**
+   * The verdict tally, fetched only once the room has delivered.
+   *
+   * Not a reveal and not a correction — there is no right answer to a
+   * verdict. It is simply what the room decided, and what everyone else
+   * decided before them, which is the thing worth arguing about
+   * afterwards.
+   */
+  const loadTally = useCallback(async () => {
+    setTallyLoading(true);
+    try {
+      const code = roomRef.current.code;
+      const r = await fetch(`/api/verdict${code ? `?code=${encodeURIComponent(code)}` : ""}`, {
+        cache: "no-store",
+      });
+      if (r.ok) setTally(await r.json());
+    } catch {
+      /* the verdict still stands without it */
+    }
+    setTallyLoading(false);
   }, []);
 
   const ask = useCallback(
@@ -303,6 +345,7 @@ export default function InteractivePlayer({
         e.preventDefault();
         if (qs.length > 1) {
           setSent(true);
+          loadTally();
           window.setTimeout(() => closeScreen(true), 700);
         } else {
           closeScreen(true);
@@ -340,7 +383,7 @@ export default function InteractivePlayer({
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [pick, closeScreen, stopTick, toggleFullscreen]);
+  }, [pick, closeScreen, stopTick, toggleFullscreen, loadTally]);
 
   const begin = async (chosen: Mode, size: number) => {
     if (!agreed) return;
@@ -564,6 +607,39 @@ export default function InteractivePlayer({
               {sent ? (
                 <div className="pp-passiton">
                   <p className="pp-logged">Verdict delivered.</p>
+
+                  {tallyLoading && <p className="pp-tally-wait">Counting&hellip;</p>}
+
+                  {tally && (
+                    <div className="pp-tally">
+                      {tally.room && tally.room.verdict.some((v) => v.votes_a + v.votes_b > 0) && (
+                        <>
+                          <p className="pp-tally-head">This room</p>
+                          {tally.room.verdict.map((v) => (
+                            <Verdict key={`r-${v.question_id}`} row={v} mine={picks[v.question_id]} />
+                          ))}
+                        </>
+                      )}
+
+                      {/* A tally of eleven people is not a jury, it is a
+                          rounding error. Hold it back until there are
+                          enough votes for the number to mean something. */}
+                      {tally.everyone.reduce((n, v) => Math.max(n, v.votes_a + v.votes_b), 0) >= GLOBAL_FLOOR ? (
+                        <>
+                          <p className="pp-tally-head">Everyone who has watched it</p>
+                          {tally.everyone.map((v) => (
+                            <Verdict key={`g-${v.question_id}`} row={v} mine={picks[v.question_id]} />
+                          ))}
+                        </>
+                      ) : (
+                        <p className="pp-tally-soon">
+                          The wider tally opens once enough people have delivered a verdict.
+                          You are among the first.
+                        </p>
+                      )}
+                    </div>
+                  )}
+
                   <p className="pp-passiton-line">
                     Humans rose to the top by passing what they knew to the people around
                     them. Older, younger, and everyone in between.
@@ -588,6 +664,7 @@ export default function InteractivePlayer({
                     disabled={answeredCount === 0 && !room.code}
                     onClick={() => {
                       setSent(true);
+                      loadTally();
                       window.setTimeout(() => closeScreen(true), 700);
                     }}
                   >
@@ -659,6 +736,41 @@ export default function InteractivePlayer({
   );
 }
 
+/**
+ * One suspect's tally. The viewer's own choice is marked, but nothing
+ * says whether it was right — because on a verdict, nothing is.
+ */
+function Verdict({ row, mine }: { row: VerdictRow; mine?: string }) {
+  const total = row.votes_a + row.votes_b;
+  const pctA = total > 0 ? Math.round((row.votes_a / total) * 100) : 50;
+
+  if (total === 0) return null;
+
+  const guiltyIsA = row.option_a.toLowerCase().includes("guilt");
+
+  return (
+    <div className="pp-v-row">
+      <p className="pp-v-name">{row.suspect}</p>
+
+      <div className="pp-v-bar">
+        <div
+          className={`pp-v-fill ${guiltyIsA ? "is-guilty" : "is-innocent"}`}
+          style={{ width: `${pctA}%` }}
+        />
+      </div>
+
+      <div className="pp-v-legend">
+        <span className={mine === row.option_a ? "is-mine" : ""}>
+          {row.option_a} {pctA}%
+        </span>
+        <span className={mine === row.option_b ? "is-mine" : ""}>
+          {row.option_b} {100 - pctA}%
+        </span>
+      </div>
+    </div>
+  );
+}
+
 const CSS = ROOM_CSS + `
 .pp-frame { position: relative; border: 1px solid #d4af37; border-radius: 10px; overflow: hidden; background: #000; }
 .pp-fs-corner { position: absolute; top: 12px; right: 12px; z-index: 15;
@@ -721,6 +833,20 @@ const CSS = ROOM_CSS + `
 .pp-bar-modes button { padding: 7px 14px; background: none; border: none; border-right: 1px solid rgba(212,175,55,.2); color: inherit; opacity: .6; cursor: pointer; font: inherit; }
 .pp-bar-modes button:last-child { border-right: none; }
 .pp-bar-modes button.is-on { background: rgba(212,175,55,.18); color: #d4af37; opacity: 1; }
+.pp-tally-wait { margin: 20px 0 0; font-size: 13px; letter-spacing: .18em; text-transform: uppercase; opacity: .45; }
+.pp-tally { margin: 26px 0 6px; text-align: left; }
+.pp-tally-head { font-family: Cinzel, serif; font-size: 12px; letter-spacing: .22em; text-transform: uppercase; color: #d4af37; opacity: .7; margin: 26px 0 14px; }
+.pp-tally-head:first-child { margin-top: 0; }
+.pp-v-row { margin-bottom: 18px; }
+.pp-v-name { font-family: Cinzel, serif; font-size: 15px; color: #f2ece1; margin: 0 0 8px; }
+.pp-v-bar { height: 10px; border-radius: 5px; overflow: hidden; background: rgba(212,175,55,.22); }
+.pp-v-fill { height: 100%; transition: width .8s cubic-bezier(.2,.8,.2,1); }
+.pp-v-fill.is-guilty { background: rgba(160,40,40,.75); }
+.pp-v-fill.is-innocent { background: #d4af37; }
+.pp-v-legend { display: flex; justify-content: space-between; margin-top: 7px; font-size: 12.5px; opacity: .55; }
+.pp-v-legend .is-mine { opacity: 1; color: #d4af37; }
+.pp-v-legend .is-mine::after { content: " · you"; font-size: 11px; letter-spacing: .1em; }
+.pp-tally-soon { font-size: 14px; line-height: 1.6; opacity: .5; margin: 22px 0 0; }
 .pp-passiton { padding-top: 6px; }
 .pp-passiton-line { margin: 18px auto 24px; max-width: 460px; font-size: 15px; line-height: 1.6; opacity: .7; }
 .pp-passiton-actions { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
