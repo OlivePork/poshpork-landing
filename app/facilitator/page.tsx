@@ -76,12 +76,56 @@ export default function FacilitatorPage() {
           <h2 style={h2}>Practicalities</h2>
 
           <dl style={{ margin: 0 }}>
-            <Row k="Length" v="1 hour 27 minutes, plus roughly 10 minutes of pauses for the questions. Allow two hours with discussion." />
+            <Row k="Length" v="1 hour 23 minutes, plus roughly 10 minutes of pauses for the questions. Allow two hours with discussion." />
             <Row k="Age" v="Suits a general audience from around fourteen. Younger groups follow the story; the argument lands better with older ones." />
             <Row k="Room" v="One screen, and a device you control it from. Sound matters more than screen size — the film is dialogue-led." />
             <Row k="Wifi" v="Phones need a connection. If it drops mid-question the phone reconnects on its own; nothing is lost. If the venue wifi is bad, use the show-of-hands mode." />
-            <Row k="Breaking it up" v="It works across two sessions. Stop at 45 minutes, before the prosecution's case begins. Note the time so you can resume." />
+            <Row k="Breaking it up" v="It breaks cleanly into four parts of about seventeen minutes each — see below. Note the time when you stop so you can resume." />
           </dl>
+
+          <h3 style={h3}>The four parts</h3>
+
+          <p style={{ ...para, maxWidth: "62ch" }}>
+            It divides into four roughly equal sections, each of which stands on its own.
+            A department can take one part without the others.
+          </p>
+
+          <ol style={{ margin: "0 0 8px", padding: 0, listStyle: "none", maxWidth: "62ch" }}>
+            <Part
+              n="1"
+              t="What food is, and what happened to it"
+              time="0 to 17 minutes"
+              d="The charge. Protein, fat, what the body needs and cannot make, and what changed when food began to be manufactured. The groundwork for everything after it."
+              fits="Health, Family & Consumer Sciences, Biology"
+            />
+            <Part
+              n="2"
+              t="How we got here"
+              time="17 to 33 minutes"
+              d="Evolution, cooking, what the fossil and isotope record shows about early diets, the agricultural transition, and the argument that food shaped which countries industrialised first."
+              fits="World History, Anthropology, Geography, Economics"
+            />
+            <Part
+              n="3"
+              t="Who decided, and how"
+              time="33 to 50 minutes"
+              d="Dietary guidelines, how the advice reversed, engineered appetite, marketing to children, and the difference between correlation and cause. The section on evidence itself."
+              fits="Statistics, Media Literacy, Government & Civics, Psychology"
+            />
+            <Part
+              n="4"
+              t="Inside the body"
+              time="50 minutes to the end"
+              d="The trial proper. The mechanism traced through the bloodstream — lipids, oxidation, energy production — and then the verdict, which the room delivers."
+              fits="Chemistry, Biology, English & Debate"
+            />
+          </ol>
+
+          <p style={{ ...para, maxWidth: "62ch", opacity: .75 }}>
+            Four lessons of one period each, two double periods, or the whole thing in one
+            sitting. The verdict only works if they have seen part four, so if you are
+            short of time, that is the one to keep.
+          </p>
         </div>
       </section>
 
@@ -222,6 +266,44 @@ function Step({ n, title, text }: { n: string; title: string; text: string }) {
           {title}
         </span>
         <span style={{ fontSize: "16px", lineHeight: 1.65 }}>{text}</span>
+      </span>
+    </li>
+  );
+}
+
+function Part({ n, t, time, d, fits }: { n: string; t: string; time: string; d: string; fits: string }) {
+  return (
+    <li style={{ display: "flex", gap: "20px", padding: "20px 0", borderBottom: "1px solid rgba(232,226,213,.12)" }}>
+      <span style={{
+        flexShrink: 0,
+        width: "38px",
+        height: "38px",
+        borderRadius: "50%",
+        border: "1px solid rgba(212,175,55,.5)",
+        color: "#d4af37",
+        fontFamily: "Cinzel, serif",
+        fontSize: "16px",
+        display: "grid",
+        placeItems: "center",
+      }}>{n}</span>
+      <span>
+        <span style={{
+          display: "block",
+          fontFamily: "Cinzel, serif",
+          fontSize: "17px",
+          color: "#d4af37",
+          marginBottom: "4px",
+        }}>{t}</span>
+        <span style={{
+          display: "block",
+          fontSize: "12px",
+          letterSpacing: ".1em",
+          textTransform: "uppercase",
+          opacity: .45,
+          marginBottom: "8px",
+        }}>{time}</span>
+        <span style={{ display: "block", fontSize: "15px", lineHeight: 1.65, marginBottom: "8px" }}>{d}</span>
+        <span style={{ display: "block", fontSize: "13px", lineHeight: 1.5, opacity: .55 }}>{fits}</span>
       </span>
     </li>
   );

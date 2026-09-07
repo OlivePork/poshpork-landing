@@ -13,72 +13,72 @@ type Fit = { subject: string; where: string; what: string };
 const FITS: Fit[] = [
   {
     subject: "Family & Consumer Sciences",
-    where: "The whole film",
+    where: "All four parts",
     what: "The core fit. Food, appetite, nutrition, and how the food supply is engineered — argued rather than instructed. One lesson block with the discussion, or two periods split at the halfway mark.",
   },
   {
     subject: "Health Education",
-    where: "Opening, and the medical sections",
+    where: "Part one",
     what: "Chronic inflammatory disease, what drives it, and why dietary advice has reversed repeatedly. Pairs with units on lifestyle, prevention and health literacy.",
   },
   {
     subject: "Biology",
-    where: "The mechanism, roughly the final third",
+    where: "Part four",
     what: "Cell turnover, lipid transport, mitochondrial energy production, insulin and lipolysis, ketone metabolism. Also protein digestion, essential amino acids and antinutritional factors.",
   },
   {
     subject: "Chemistry",
-    where: "The mechanism",
+    where: "Part four",
     what: "Saturated and unsaturated bonds, why polyunsaturated fats oxidise and saturated ones cannot, free radical chemistry, aldehyde formation in heated oils, and glycation. Molecular structure with a consequence attached.",
   },
   {
     subject: "Statistics & Scientific Method",
-    where: "Throughout, and the claims table",
+    where: "Part three, and the claims table",
     what: "The strongest fit after FCS. Correlation and causation, confounding — the breastfeeding IQ study is a worked example — dietary recall as unreliable data, and the difference between consensus and a contested finding. Students can audit the published claims table and decide whether each label is right.",
   },
   {
     subject: "Media Literacy",
-    where: "The bliss point, roughly the second half",
+    where: "Part three",
     what: "How products are engineered for overconsumption, how children are marketed to, and how a commercial interest shapes a claim. The director's own conflict of interest is declared in the film, which makes a useful exercise in itself.",
   },
   {
     subject: "Psychology",
-    where: "Appetite and the bliss point",
+    where: "Part three",
     what: "Taste physiology, the protein appetite, how preference is formed in childhood, and why sensory engineering defeats conscious intention.",
   },
   {
     subject: "World History",
-    where: "The Ireland section",
+    where: "Part two",
     what: "Irish cattle and provisions exports to Britain, the Cattle Acts of 1663 and 1667, and the argument that nutrition shaped industrialisation. Presented as an original and unproven thesis, which makes it usable as a source-criticism exercise.",
   },
   {
     subject: "Anthropology & Prehistory",
-    where: "The evolution section",
+    where: "Part two",
     what: "The cooking hypothesis, stable isotope analysis of early diets, and the skeletal record at the agricultural transition. Includes a claim the film marks as unsupported — cranial size and intelligence — which is deliberately left in and flagged.",
   },
   {
     subject: "Economics & Business",
-    where: "The manipulation section",
+    where: "Part three",
     what: "Commodity substitution, industrial by-products becoming food, marketing to establish lifelong preference, and how an industry responds to a threat to its category.",
   },
   {
     subject: "Government & Civics",
-    where: "The dietary guidelines section",
+    where: "Part three",
     what: "How public health policy is made, what happens when 180 scientists demand a retraction, and how an institution handles a challenge to its own advice.",
   },
   {
     subject: "English, Debate & Speech",
-    where: "The structure itself",
+    where: "Part four, and the structure throughout",
     what: "The film is a trial. Prosecution, defence, cross-examination, unreliable witnesses and a closing argument. Students can be assigned a suspect to defend using only what the film presents.",
   },
   {
     subject: "Culinary Arts & ProStart",
-    where: "Fats, oils and cooking",
+    where: "Parts one and four",
     what: "Why frying oils degrade, what happens at temperature, which fats are stable, and why the same dish is different depending on what it is cooked in.",
   },
   {
     subject: "Environmental Science & Geography",
-    where: "Soil and agriculture",
+    where: "Part two",
     what: "Soil fertility and micronutrient availability, the agricultural transition, and the argument connecting soil quality to population outcomes.",
   },
 ];
@@ -136,7 +136,7 @@ export default function SchoolsPage() {
           </p>
 
           <div style={{ display: "grid", gap: "24px", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", marginTop: "40px" }}>
-            <Point t="90 minutes" d="Two periods, or one block. Natural stopping points at 26 and 64 minutes." />
+            <Point t="83 minutes" d="Four parts of about seventeen minutes each. One lesson, or four." />
             <Point t="All ages" d="A ten-year-old follows the story. The argument lands harder with older students." />
             <Point t="Tables of four" d="Each table answers once, so they have to talk it through and agree." />
             <Point t="No phones needed" d="A show-of-hands mode works where devices are not allowed." />
@@ -144,8 +144,53 @@ export default function SchoolsPage() {
         </div>
       </section>
 
+      {/* THE FOUR PARTS */}
+      <section style={{ ...section, background: "#141414" }}>
+        <div style={wrap}>
+          <p style={eyebrow}>How it divides</p>
+          <h2 style={h2}>Four parts, seventeen minutes each</h2>
+
+          <p style={{ ...para, maxWidth: "62ch" }}>
+            It does not have to be watched in one sitting. Each part stands on its own, and
+            a department can take the one that suits it without the others.
+          </p>
+
+          <div style={{ marginTop: "36px" }}>
+            <Part
+              n="1"
+              t="What food is, and what happened to it"
+              time="0–17 min"
+              d="Protein, fat, what the body needs and cannot make, and what changed when food began to be manufactured."
+            />
+            <Part
+              n="2"
+              t="How we got here"
+              time="17–33 min"
+              d="Evolution, cooking, early diets, the agricultural transition, and the argument that food shaped which countries industrialised first."
+            />
+            <Part
+              n="3"
+              t="Who decided, and how"
+              time="33–50 min"
+              d="Dietary guidelines and how they reversed, engineered appetite, marketing to children, and correlation against cause."
+            />
+            <Part
+              n="4"
+              t="Inside the body"
+              time="50 min–end"
+              d="The trial proper. The mechanism traced through the bloodstream, then the verdict, which the class delivers."
+            />
+          </div>
+
+          <p style={{ ...para, maxWidth: "62ch", marginTop: "26px", opacity: .75 }}>
+            If you only have one period, take part four. The verdict is the thing students
+            remember, and it needs the mechanism in front of it.
+          </p>
+        </div>
+      </section>
+
       {/* CURRICULUM */}
-      <section id="curriculum" style={{ ...section, background: "#141414" }}>
+      <section id="curriculum" style={section}>
         <div style={wrap}>
           <p style={eyebrow}>Where it fits</p>
           <h2 style={h2}>Which class, and which part</h2>
@@ -314,6 +359,43 @@ export default function SchoolsPage() {
 }
 
 /* ---------- components ---------- */
+
+function Part({ n, t, time, d }: { n: string; t: string; time: string; d: string }) {
+  return (
+    <div style={{
+      display: "grid",
+      gridTemplateColumns: "38px 1fr",
+      gap: "18px",
+      padding: "18px 0",
+      borderBottom: "1px solid rgba(232,226,213,.12)",
+    }}>
+      <span style={{
+        width: "38px",
+        height: "38px",
+        borderRadius: "50%",
+        border: "1px solid rgba(212,175,55,.5)",
+        color: "#d4af37",
+        fontFamily: "Cinzel, serif",
+        fontSize: "16px",
+        display: "grid",
+        placeItems: "center",
+      }}>{n}</span>
+      <div>
+        <p style={{
+          display: "flex",
+          flexWrap: "wrap",
+          alignItems: "baseline",
+          gap: "12px",
+          margin: "0 0 8px",
+        }}>
+          <span style={{ fontFamily: "Cinzel, serif", fontSize: "17px", color: "#d4af37" }}>{t}</span>
+          <span style={{ fontSize: "12px", letterSpacing: ".1em", textTransform: "uppercase", opacity: .45 }}>{time}</span>
+        </p>
+        <p style={{ fontSize: "15px", lineHeight: 1.65, opacity: .82, margin: 0 }}>{d}</p>
+      </div>
+    </div>
+  );
+}
 
 function Point({ t, d }: { t: string; d: string }) {
   return (
