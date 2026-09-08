@@ -217,6 +217,13 @@ export async function sendLicenceEmail(
         </p>
         ${invoiceLine}
 
+        <p style="font-size: 14px; line-height: 1.6; color: #888;">
+          Your licence runs on the terms at
+          <a href="${SITE_URL}/licence" style="color: #a67c00;">poshpork.com/licence</a>
+          &mdash; one page, plain English. If your procurement department needs a signed
+          version, reply and I will send one the same day.
+        </p>
+
         <div style="border-top: 2px solid #d4af37; margin: 34px 0 0; padding-top: 26px;">
           <h2 style="color: #d4af37; font-size: 19px; margin: 0 0 16px; font-family: Georgia, serif;">
             Running it with a room
