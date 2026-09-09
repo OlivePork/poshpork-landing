@@ -293,13 +293,9 @@ export default function SchoolsPage() {
               <Inc t="Anything new made during your licence year" />
             </ul>
 
-            <a href="mailto:screening@poshpork.com?subject=School%20licence" style={btn}>
-              Ask for a licence
-            </a>
-
-            <p style={{ ...para, fontSize: "14px", opacity: .65, margin: "20px 0 0" }}>
-              Invoices and purchase orders are no trouble. Most schools need one and it will
-              not slow anything down.
+            <p style={{ ...para, fontSize: "17px", marginBottom: 0 }}>
+              Request a licence from Colin by emailing{" "}
+              <a href="mailto:colin@poshpork.com" style={link}>colin@poshpork.com</a>
             </p>
           </div>
 
@@ -448,18 +444,6 @@ const para: React.CSSProperties = {
   fontSize: "16px",
   lineHeight: 1.7,
   margin: "0 0 16px",
-};
-
-const btn: React.CSSProperties = {
-  display: "inline-block",
-  padding: "17px 40px",
-  fontFamily: "Cinzel, serif",
-  fontSize: "16px",
-  fontWeight: "bold",
-  color: "#0a0a0a",
-  background: "linear-gradient(135deg,#a67c00,#d4af37 50%,#a67c00)",
-  borderRadius: "8px",
-  textDecoration: "none",
 };
 
 const link: React.CSSProperties = {

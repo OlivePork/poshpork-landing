@@ -28,8 +28,8 @@ const TERMS: Record<string, { label: string; months: number | null; blurb: strin
   },
   school: {
     label: "School licence",
-    months: 24,
-    blurb: "unlimited classroom use for two years, at one school site",
+    months: 12,
+    blurb: "unlimited classroom use for a year, across every department at one school site",
   },
   organisation: {
     label: "Organisation screening",
@@ -98,7 +98,7 @@ export async function POST(req: Request) {
     (type === "organisation"
       ? priceOrganisation(heads)
       : type === "school"
-        ? 29500
+        ? 24900
         : 24900);
 
   const normalised = email.trim().toLowerCase();
