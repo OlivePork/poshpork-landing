@@ -136,7 +136,7 @@ export default function SchoolsPage() {
           </p>
 
           <div style={{ display: "grid", gap: "24px", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", marginTop: "40px" }}>
-            <Point t="83 minutes" d="Four parts of about seventeen minutes each. One lesson, or four." />
+            <Point t="83 minutes" d="Four parts. Three of about seventeen minutes, then the trial itself." />
             <Point t="All ages" d="A ten-year-old follows the story. The argument lands harder with older students." />
             <Point t="Tables of four" d="Each table answers once, so they have to talk it through and agree." />
             <Point t="No phones needed" d="A show-of-hands mode works where devices are not allowed." />
@@ -148,11 +148,12 @@ export default function SchoolsPage() {
       <section style={{ ...section, background: "#141414" }}>
         <div style={wrap}>
           <p style={eyebrow}>How it divides</p>
-          <h2 style={h2}>Four parts, seventeen minutes each</h2>
+          <h2 style={h2}>Four parts, four lessons</h2>
 
           <p style={{ ...para, maxWidth: "62ch" }}>
             It does not have to be watched in one sitting. Each part stands on its own, and
-            a department can take the one that suits it without the others.
+            a department can take the one that suits it without the others. The first three
+            run about seventeen minutes; the trial itself runs thirty-three.
           </p>
 
           <div style={{ marginTop: "36px" }}>
@@ -177,14 +178,15 @@ export default function SchoolsPage() {
             <Part
               n="4"
               t="Inside the body"
-              time="50 min–end"
-              d="The trial proper. The mechanism traced through the bloodstream, then the verdict, which the class delivers."
+              time="50–83 min"
+              d="The trial proper — it begins the moment the judge enters. The mechanism traced through the bloodstream, then the verdict, which the class delivers. Twice the length of the others, so allow a double period."
             />
           </div>
 
           <p style={{ ...para, maxWidth: "62ch", marginTop: "26px", opacity: .75 }}>
-            If you only have one period, take part four. The verdict is the thing students
-            remember, and it needs the mechanism in front of it.
+            There is a written lesson plan for each of the four &mdash; objectives, the
+            questions to ask, what to do when a table will not stop arguing, and an exit
+            slip. Ask and I will send them.
           </p>
         </div>
       </section>
@@ -335,16 +337,10 @@ export default function SchoolsPage() {
             paddingLeft: "22px",
             maxWidth: "62ch",
           }}>
-            <p style={{ ...para, fontSize: "15px", marginBottom: "14px", opacity: .82 }}>
+            <p style={{ ...para, fontSize: "15px", marginBottom: 0, opacity: .82 }}>
               The film is for education and entertainment. It is not medical advice, and
               nothing in it should replace a conversation with a doctor. No student should
               change anything about how they eat on the strength of a film.
-            </p>
-            <p style={{ ...para, fontSize: "15px", marginBottom: 0, opacity: .82 }}>
-              The director is a pig farmer who intends in future to sell a pork product. That
-              is declared in the film and on the{" "}
-              <a href="/evidence" style={link}>evidence page</a>, and it is worth pointing out
-              to a class.
             </p>
           </div>
         </div>

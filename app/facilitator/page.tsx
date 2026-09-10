@@ -80,14 +80,15 @@ export default function FacilitatorPage() {
             <Row k="Age" v="Suits a general audience from around fourteen. Younger groups follow the story; the argument lands better with older ones." />
             <Row k="Room" v="One screen, and a device you control it from. Sound matters more than screen size — the film is dialogue-led." />
             <Row k="Wifi" v="Phones need a connection. If it drops mid-question the phone reconnects on its own; nothing is lost. If the venue wifi is bad, use the show-of-hands mode." />
-            <Row k="Breaking it up" v="It breaks cleanly into four parts of about seventeen minutes each — see below. Note the time when you stop so you can resume." />
+            <Row k="Breaking it up" v="It breaks cleanly into four parts — three of about seventeen minutes, then the trial, which runs thirty-three. Note the time when you stop so you can resume." />
           </dl>
 
           <h3 style={h3}>The four parts</h3>
 
           <p style={{ ...para, maxWidth: "62ch" }}>
-            It divides into four roughly equal sections, each of which stands on its own.
-            A department can take one part without the others.
+            It divides into four sections, each of which stands on its own. The first three
+            run about seventeen minutes; the trial itself runs thirty-three, and begins the
+            moment the judge enters at fifty minutes.
           </p>
 
           <ol style={{ margin: "0 0 8px", padding: 0, listStyle: "none", maxWidth: "62ch" }}>
@@ -115,15 +116,15 @@ export default function FacilitatorPage() {
             <Part
               n="4"
               t="Inside the body"
-              time="50 minutes to the end"
-              d="The trial proper. The mechanism traced through the bloodstream — lipids, oxidation, energy production — and then the verdict, which the room delivers."
+              time="50 to 83 minutes"
+              d="The trial proper. The mechanism traced through the bloodstream — lipids, oxidation, energy production — and then the verdict, which the room delivers. Twice the length of the others."
               fits="Chemistry, Biology, English & Debate"
             />
           </ol>
 
           <p style={{ ...para, maxWidth: "62ch", opacity: .75 }}>
-            Four lessons of one period each, two double periods, or the whole thing in one
-            sitting. The verdict only works if they have seen part four, so if you are
+            Three single periods and one double, two double periods, or the whole thing in
+            one sitting. The verdict only works if they have seen part four, so if you are
             short of time, that is the one to keep.
           </p>
         </div>
