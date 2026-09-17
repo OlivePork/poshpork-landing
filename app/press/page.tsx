@@ -625,7 +625,14 @@ export default function PressPage() {
             larger sizes on request &mdash; write to{" "}
             <a href="mailto:colin@poshpork.com" style={link}>colin@poshpork.com</a>.
           </p>
-          <ul style={{ listStyle: "none", padding: 0, margin: "28px 0 0", maxWidth: "60ch" }}>
+          <ul style={{
+            listStyle: "none",
+            padding: 0,
+            margin: "28px 0 0",
+            display: "grid",
+            gap: "18px",
+            gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
+          }}>
             <Asset label="The suspects — lineup" href="/press/posh-pork-suspects-lineup.jpg" />
             <Asset label="Lady Posh Pork" href="/press/posh-pork-lady-posh-pork.jpg" />
             <Asset label="Mr Carbohydrates" href="/press/posh-pork-mr-carbohydrates.jpg" />
@@ -723,11 +730,70 @@ function Tool({ name, use }: { name: string; use: string }) {
   );
 }
 
+/**
+ * A downloadable still.
+ *
+ * The `download` attribute is what makes a browser save the file rather than
+ * open it in a tab — which is what a journalist actually wants, and what the
+ * old plain link did not do.
+ */
 function Asset({ label, href, note }: { label: string; href: string; note?: string }) {
   return (
-    <li style={{ padding: "14px 0", borderBottom: "1px solid rgba(232,226,213,.12)" }}>
-      <a href={href} style={{ ...link, fontSize: "16px" }}>{label}</a>
-      {note && <span style={{ display: "block", fontSize: "13px", opacity: .55, marginTop: "4px" }}>{note}</span>}
+    <li>
+      <a
+        href={href}
+        download
+        style={{
+          display: "block",
+          textDecoration: "none",
+          color: "inherit",
+          border: "1px solid rgba(232,226,213,.16)",
+          borderRadius: "8px",
+          overflow: "hidden",
+          background: "rgba(255,255,255,.02)",
+        }}
+      >
+        <span style={{
+          display: "block",
+          aspectRatio: "16 / 9",
+          background: "#0a0a0a",
+          overflow: "hidden",
+        }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={href}
+            alt=""
+            loading="lazy"
+            style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+          />
+        </span>
+
+        <span style={{
+          display: "flex",
+          alignItems: "baseline",
+          justifyContent: "space-between",
+          gap: "12px",
+          padding: "14px 16px",
+        }}>
+          <span style={{ fontSize: "15px", lineHeight: 1.4 }}>{label}</span>
+          <span style={{
+            flexShrink: 0,
+            fontFamily: "Cinzel, serif",
+            fontSize: "11px",
+            letterSpacing: ".14em",
+            textTransform: "uppercase",
+            color: "#d4af37",
+          }}>
+            Download
+          </span>
+        </span>
+
+        {note && (
+          <span style={{ display: "block", padding: "0 16px 14px", fontSize: "12px", opacity: .5 }}>
+            {note}
+          </span>
+        )}
+      </a>
     </li>
   );
 }
