@@ -80,7 +80,6 @@ export default function RootLayout({
                 <Footer />
         <GoogleAnalytics gaId="G-K7M74TGCSQ" />
       </body>
-      </body>
     </html>
   );
 }
