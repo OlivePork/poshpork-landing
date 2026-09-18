@@ -483,70 +483,119 @@ export default function InteractivePlayer({
 
         {showSetup && (
           <div className="pp-veil">
-            <div className="pp-card">
-              <p className="pp-eyebrow">Before the film begins</p>
-              <h2 className="pp-title">How is the jury sitting tonight?</h2>
-              <p className="pp-lede">
-                Questions appear during the film. There are no right answers &mdash;
-                only what you make of the evidence.
-              </p>
+            {venue ? (
+              /* Venue staff want one thing: the code, and a way to start.
+                 Every choice below is one they would make the same way
+                 every time, so it is made for them. */
+              <div className="pp-card">
+                <p className="pp-eyebrow">{venue.name}</p>
 
-              <label className="pp-agree">
-                <input
-                  type="checkbox"
-                  checked={agreed}
-                  onChange={(e) => setAgreed(e.target.checked)}
-                />
-                <span>
-                  I understand this film is{" "}
-                  <strong>food education, not medical advice</strong>. It is not a
-                  substitute for professional care, and I will not change any prescribed
-                  treatment without speaking to my doctor.
-                </span>
-              </label>
+                {room.code ? (
+                  <>
+                    <p className="pp-venue-label">Your guests join with</p>
+                    <p className="pp-venue-code">{room.code}</p>
+                    <p className="pp-venue-note">
+                      It is already on the lobby screen at{" "}
+                      <strong>poshpork.com/v/{venue.slug}/screen</strong>
+                    </p>
+                  </>
+                ) : (
+                  <p className="pp-venue-opening">Opening your room&hellip;</p>
+                )}
 
-              <div className="pp-choices">
-                <button className="pp-choice" disabled={!agreed} onClick={() => begin("interactive", 1)}>
-                  <span className="pp-choice-name">On my own</span>
-                  <span className="pp-choice-note">
-                    The film waits for your answer. Take as long as you like.
+                <label className="pp-agree">
+                  <input
+                    type="checkbox"
+                    checked={agreed}
+                    onChange={(e) => setAgreed(e.target.checked)}
+                  />
+                  <span>
+                    I understand this film is{" "}
+                    <strong>food education, not medical advice</strong>, and I will say so
+                    if anybody asks.
                   </span>
+                </label>
+
+                <button
+                  className="pp-deliver"
+                  disabled={!agreed || !room.code}
+                  onClick={() => begin("group", 24)}
+                >
+                  Start the film
                 </button>
 
-                <button className="pp-choice" disabled={!agreed} onClick={() => begin("group", Math.max(groupSize, 2))}>
-                  <span className="pp-choice-name">Watching as a group</span>
-                  <span className="pp-choice-note">
-                    Talk it over, agree an answer, and the film moves on. One screen,
-                    one answer for the room.
-                  </span>
-                </button>
-
-                <button className="pp-choice pp-choice-quiet" disabled={!agreed} onClick={() => begin("off", 1)}>
-                  <span className="pp-choice-name">Just play the film</span>
-                  <span className="pp-choice-note">No questions, no interruptions.</span>
-                </button>
+                <p className="pp-venue-hint">
+                  When a question appears, the film pauses and it goes to every phone in
+                  the room. Press continue when everyone is in. That is the only button
+                  you need.
+                </p>
               </div>
+            ) : (
+              <div className="pp-card">
+                <p className="pp-eyebrow">Before the film begins</p>
+                <h2 className="pp-title">How is the jury sitting tonight?</h2>
+                <p className="pp-lede">
+                  Questions appear during the film. There are no right answers &mdash;
+                  only what you make of the evidence.
+                </p>
 
-              {!agreed && <p className="pp-agree-hint">Tick the box above to begin.</p>}
+                <label className="pp-agree">
+                  <input
+                    type="checkbox"
+                    checked={agreed}
+                    onChange={(e) => setAgreed(e.target.checked)}
+                  />
+                  <span>
+                    I understand this film is{" "}
+                    <strong>food education, not medical advice</strong>. It is not a
+                    substitute for professional care, and I will not change any prescribed
+                    treatment without speaking to my doctor.
+                  </span>
+                </label>
 
-              <label className="pp-size">
-                How many watching?
-                <input
-                  type="number"
-                  min={1}
-                  max={500}
-                  value={groupSize}
-                  onChange={(e) => setGroupSize(Math.max(1, Number(e.target.value) || 1))}
+                <div className="pp-choices">
+                  <button className="pp-choice" disabled={!agreed} onClick={() => begin("interactive", 1)}>
+                    <span className="pp-choice-name">On my own</span>
+                    <span className="pp-choice-note">
+                      The film waits for your answer. Take as long as you like.
+                    </span>
+                  </button>
+
+                  <button className="pp-choice" disabled={!agreed} onClick={() => begin("group", Math.max(groupSize, 2))}>
+                    <span className="pp-choice-name">Watching as a group</span>
+                    <span className="pp-choice-note">
+                      Talk it over, agree an answer, and the film moves on. One screen,
+                      one answer for the room.
+                    </span>
+                  </button>
+
+                  <button className="pp-choice pp-choice-quiet" disabled={!agreed} onClick={() => begin("off", 1)}>
+                    <span className="pp-choice-name">Just play the film</span>
+                    <span className="pp-choice-note">No questions, no interruptions.</span>
+                  </button>
+                </div>
+
+                {!agreed && <p className="pp-agree-hint">Tick the box above to begin.</p>}
+
+                <label className="pp-size">
+                  How many watching?
+                  <input
+                    type="number"
+                    min={1}
+                    max={500}
+                    value={groupSize}
+                    onChange={(e) => setGroupSize(Math.max(1, Number(e.target.value) || 1))}
+                  />
+                </label>
+
+                <RoomSetup
+                  onCreate={room.create}
+                  creating={room.creating}
+                  code={room.code}
+      
                 />
-              </label>
-
-              <RoomSetup
-                onCreate={room.create}
-                creating={room.creating}
-                code={room.code}
-                venueName={venue?.name}
-              />
-            </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -885,6 +934,12 @@ const CSS = ROOM_CSS + `
 .pp-v-legend .is-mine { opacity: 1; color: #d4af37; }
 .pp-v-legend .is-mine::after { content: " · you"; font-size: 11px; letter-spacing: .1em; }
 .pp-tally-soon { font-size: 14px; line-height: 1.6; opacity: .5; margin: 22px 0 0; }
+.pp-venue-label { font-size: 12px; letter-spacing: .22em; text-transform: uppercase; opacity: .5; margin: 0 0 10px; }
+.pp-venue-code { font-family: Cinzel, serif; font-size: clamp(46px, 11vw, 78px); letter-spacing: .2em; color: #d4af37; margin: 0 0 14px; line-height: 1; }
+.pp-venue-note { font-size: 14px; line-height: 1.6; opacity: .6; margin: 0 0 30px; }
+.pp-venue-note strong { color: #d4af37; font-weight: normal; }
+.pp-venue-opening { font-family: Cinzel, serif; font-size: 20px; color: #d4af37; opacity: .6; margin: 20px 0 30px; }
+.pp-venue-hint { font-size: 13.5px; line-height: 1.6; opacity: .55; margin: 22px 0 0; }
 .pp-passiton { padding-top: 6px; }
 .pp-passiton-line { margin: 18px auto 24px; max-width: 460px; font-size: 15px; line-height: 1.6; opacity: .7; }
 .pp-passiton-actions { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
