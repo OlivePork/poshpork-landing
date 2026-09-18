@@ -57,7 +57,8 @@ function deviceToken() {
 /* ------------------------------------------------------------------ */
 
 export default function JoinPage() {
-  const [step, setStep] = useState<"code" | "seat" | "playing">("code");
+  const [step, setStep] = useState<"code" | "waiting" | "seat" | "playing">("code");
+  const [venueSlug, setVenueSlug] = useState<string | null>(null);
   const [code, setCode] = useState("");
   const [name, setName] = useState("");
   const [room, setRoom] = useState<RoomInfo | null>(null);
@@ -85,21 +86,11 @@ export default function JoinPage() {
     const venue = params.get("v");
 
     if (venue) {
-      setBusy(true);
-      fetch(`/api/room/for-venue?slug=${encodeURIComponent(venue)}`, { cache: "no-store" })
-        .then((r) => (r.ok ? r.json() : null))
-        .then((json) => {
-          if (json?.code) {
-            lookUp(json.code, true);
-          } else {
-            setBusy(false);
-            setError("The screening has not opened yet. Ask at the bar and they will start it.");
-          }
-        })
-        .catch(() => {
-          setBusy(false);
-          setError("Could not reach the room. Try again in a moment.");
-        });
+      // Guests scan the moment the lobby screen goes up, which is almost
+      // always before staff have opened the room. So wait for it rather
+      // than sending them to a code box they cannot fill.
+      setVenueSlug(venue);
+      setStep("waiting");
       return;
     }
 
@@ -205,6 +196,38 @@ export default function JoinPage() {
     [code, name, tables],
   );
 
+  /* ---------------- waiting for the room to open ---------------- */
+
+  useEffect(() => {
+    if (step !== "waiting" || !venueSlug) return;
+
+    let stopped = false;
+
+    const look = async () => {
+      try {
+        const r = await fetch(`/api/room/for-venue?slug=${encodeURIComponent(venueSlug)}`, {
+          cache: "no-store",
+        });
+        if (!r.ok) return;
+        const json = await r.json();
+        if (json?.code && !stopped) {
+          stopped = true;
+          lookUp(json.code, true);
+        }
+      } catch {
+        /* try again on the next tick */
+      }
+    };
+
+    look();
+    const id = setInterval(look, 4000);
+    return () => {
+      stopped = true;
+      clearInterval(id);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step, venueSlug]);
+
   /* ---------------- polling ---------------- */
 
   useEffect(() => {
@@ -309,6 +332,24 @@ export default function JoinPage() {
 
             <button className="pj-btn" disabled={busy} onClick={() => lookUp(code)}>
               {busy ? "Looking…" : "Continue"}
+            </button>
+          </div>
+        )}
+
+        {/* -------- waiting for the room to open -------- */}
+        {step === "waiting" && (
+          <div className="pj-card pj-waiting">
+            <div className="pj-pulse" />
+            <p className="pj-eyebrow">You&apos;re in the right place</p>
+            <h1 className="pj-title">Nearly ready</h1>
+            <p className="pj-lede">
+              The screening is about to start. Put your phone down &mdash; this page will
+              let you in by itself the moment it opens.
+            </p>
+            <p className="pj-meta">Nothing to pay. Nothing to do.</p>
+
+            <button className="pj-quiet" onClick={() => { setStep("code"); setVenueSlug(null); }}>
+              I have a code instead
             </button>
           </div>
         )}
