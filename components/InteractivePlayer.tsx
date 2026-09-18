@@ -70,6 +70,7 @@ export default function InteractivePlayer({
   const [showStandings, setShowStandings] = useState(false);
   const [tally, setTally] = useState<Tally | null>(null);
   const [tallyLoading, setTallyLoading] = useState(false);
+  const [venue, setVenue] = useState<{ slug: string; name: string; seats: number; free: boolean } | null>(null);
 
   const modeRef = useRef(mode);
   const screenRef = useRef(screen);
@@ -86,6 +87,42 @@ export default function InteractivePlayer({
   const room = useRoomHost(lang);
   const roomRef = useRef(room);
   useEffect(() => void (roomRef.current = room), [room]);
+
+  /**
+   * Venue staff should not have to know that starting the film and opening
+   * a room are two different things. If the account belongs to a venue, the
+   * room is opened for them — or the one they already have is adopted.
+   */
+  useEffect(() => {
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const r = await fetch("/api/room/my-venue", { cache: "no-store" });
+        if (!r.ok) return;
+        const json = await r.json();
+        if (cancelled || !json.venue) return;
+
+        setVenue(json.venue);
+
+        if (json.openRoom) {
+          roomRef.current.adopt(json.openRoom);
+        } else {
+          await roomRef.current.create(
+            json.venue.name,
+            6,
+            "table",
+            json.venue.slug,
+          );
+        }
+      } catch {
+        /* the host can still open one by hand */
+      }
+    })();
+
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     const saved = window.localStorage.getItem(MODE_KEY) as Mode | null;
@@ -507,6 +544,7 @@ export default function InteractivePlayer({
                 onCreate={room.create}
                 creating={room.creating}
                 code={room.code}
+                venueName={venue?.name}
               />
             </div>
           </div>

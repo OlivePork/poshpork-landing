@@ -39,13 +39,24 @@ export function useRoomHost(lang: string) {
   useEffect(() => void (codeRef.current = code), [code]);
 
   const create = useCallback(
-    async (name: string, tables: number, answerMode: "table" | "individual") => {
+    async (
+      name: string,
+      tables: number,
+      answerMode: "table" | "individual",
+      venueSlug?: string,
+    ) => {
       setCreating(true);
       try {
         const r = await fetch("/api/room/create", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name, tables, lang, answer_mode: answerMode }),
+          body: JSON.stringify({
+            name,
+            tables,
+            lang,
+            answer_mode: answerMode,
+            venue_slug: venueSlug ?? null,
+          }),
         });
         const json = await r.json();
         if (r.ok && json.code) {
@@ -142,12 +153,18 @@ export function useRoomHost(lang: string) {
     return null;
   }, []);
 
+  const adopt = useCallback((existing: string) => {
+    setCode(existing);
+    codeRef.current = existing;
+  }, []);
+
   return {
     code,
     state,
     standings,
     creating,
     create,
+    adopt,
     openQuestion,
     closeQuestion,
     finish,
@@ -162,10 +179,12 @@ export function RoomSetup({
   onCreate,
   creating,
   code,
+  venueName,
 }: {
   onCreate: (name: string, tables: number, answerMode: "table" | "individual") => void;
   creating: boolean;
   code: string | null;
+  venueName?: string | null;
 }) {
   const [name, setName] = useState("");
   const [tables, setTables] = useState(4);
@@ -174,10 +193,16 @@ export function RoomSetup({
   if (code) {
     return (
       <div className="pp-room-live">
-        <p className="pp-room-label">Room code</p>
+        <p className="pp-room-label">
+          {venueName ? "Your room is open" : "Room code"}
+        </p>
         <p className="pp-room-code">{code}</p>
         <p className="pp-room-note">
-          Everyone goes to <strong>poshpork.com/join</strong> and enters this.
+          {venueName ? (
+            <>Guests scan the screen, or go to <strong>poshpork.com/join</strong>.</>
+          ) : (
+            <>Everyone goes to <strong>poshpork.com/join</strong> and enters this.</>
+          )}
         </p>
       </div>
     );

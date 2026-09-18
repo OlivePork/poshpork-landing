@@ -27,7 +27,13 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "No access found" }, { status: 403 });
   }
 
-  let body: { name?: string; tables?: number; lang?: string; answer_mode?: string };
+  let body: {
+    name?: string;
+    tables?: number;
+    lang?: string;
+    answer_mode?: string;
+    venue_slug?: string | null;
+  };
   try {
     body = await req.json();
   } catch {
@@ -36,6 +42,25 @@ export async function POST(req: Request) {
 
   const tableCount = Math.min(Math.max(Number(body.tables) || 4, 1), 20);
   const admin = roomAdmin();
+
+  // A room opened by venue staff belongs to that venue, so guests arriving
+  // from its QR code can be dropped straight into it.
+  let venueId: string | null = null;
+  let seatsDefault = 4;
+
+  if (body.venue_slug) {
+    const { data: venue } = await admin
+      .from("venues")
+      .select("id, seats_per_table, host_user_id")
+      .eq("slug", String(body.venue_slug).toLowerCase())
+      .eq("status", "active")
+      .maybeSingle();
+
+    if (venue && venue.host_user_id === user.id) {
+      venueId = venue.id;
+      seatsDefault = venue.seats_per_table ?? 4;
+    }
+  }
 
   // Codes are short, so collisions are possible. Try a few times.
   let room: { id: string; code: string } | null = null;
@@ -50,6 +75,8 @@ export async function POST(req: Request) {
         name: body.name?.slice(0, 120) ?? null,
         lang: body.lang ?? "en",
         answer_mode: body.answer_mode === "individual" ? "individual" : "table",
+        venue_id: venueId,
+        seats_default: seatsDefault,
         status: "lobby",
       })
       .select("id, code")
