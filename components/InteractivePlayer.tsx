@@ -33,7 +33,9 @@ type Tally = {
 
 const MODE_KEY = "poshpork.answerMode";
 const SIZE_KEY = "poshpork.groupSize";
-const DEFAULT_HOLD = 10;
+// Long enough for a table to actually talk. Ten seconds only ever
+// produced the fastest person's opinion.
+const DEFAULT_HOLD = 30;
 // Below this many verdicts the global tally says more about the sample
 // than about anything else, so it stays closed.
 const GLOBAL_FLOOR = 50;
@@ -225,11 +227,16 @@ export default function InteractivePlayer({
       playerRef.current?.pause().catch(() => {});
 
       // Push it to the phones, if a room is running.
-      if (roomRef.current.code) {
+      const inRoom = !!roomRef.current.code;
+      if (inRoom) {
         roomRef.current.openQuestion(group[0].id);
       }
 
-      if (modeRef.current !== "group") return;
+      // The clock runs in a room as well as in group mode. In a hotel the
+      // person who started the film is usually at the bar by now, and a
+      // film that waits for a button nobody is standing next to simply
+      // stops.
+      if (modeRef.current !== "group" && !inRoom) return;
 
       const hold = group[0].hold_seconds ?? DEFAULT_HOLD;
       setRemaining(hold);
@@ -247,6 +254,31 @@ export default function InteractivePlayer({
     },
     [stopTick, closeScreen],
   );
+
+  /**
+   * When every table has answered, move on.
+   *
+   * Waiting for a button once the room is already in is just dead air
+   * while sixteen people look at a frozen screen. The clock stays as a
+   * backstop for the table that never answers; this handles the ordinary
+   * case, which is that everybody does.
+   *
+   * A short grace period first, so the last person sees their own answer
+   * land rather than having the screen snatched away as they tap.
+   */
+  useEffect(() => {
+    if (!screen || sent) return;
+    if (!room.code) return;
+
+    const { answered, expected } = room.state;
+    if (expected <= 0 || answered < expected) return;
+
+    const t = window.setTimeout(() => {
+      if (screenRef.current) closeScreen(true);
+    }, 2500);
+
+    return () => window.clearTimeout(t);
+  }, [screen, sent, room.code, room.state, closeScreen]);
 
   const questionsRef = useRef(questions);
   const askRef = useRef(ask);
@@ -592,7 +624,7 @@ export default function InteractivePlayer({
                   onCreate={room.create}
                   creating={room.creating}
                   code={room.code}
-      
+          
                 />
               </div>
             )}
@@ -651,12 +683,27 @@ export default function InteractivePlayer({
               {room.code && (
                 <>
                   <RoomBanner code={room.code} state={room.state} options={screen[0].options} />
+
+                  <div className="pp-timer">
+                    <div className="pp-timer-track">
+                      <div className="pp-timer-fill" style={{ width: `${held ? 100 : (remaining / hold) * 100}%` }} />
+                    </div>
+                    <div className="pp-timer-row">
+                      <span>{held ? "Paused, continue when ready" : `${Math.ceil(remaining)}s`}</span>
+                      <span className="pp-timer-actions">
+                        {!held && <button onClick={() => { stopTick(); setHeld(true); }}>More time</button>}
+                      </span>
+                    </div>
+                  </div>
+
                   <button
                     className="pp-deliver"
                     style={{ marginTop: "18px" }}
                     onClick={() => closeScreen(true)}
                   >
-                    Everyone in &mdash; continue
+                    {room.state.expected > 0 && room.state.answered >= room.state.expected
+                      ? "Everyone in \u2014 carrying on"
+                      : "Continue without the rest"}
                   </button>
                 </>
               )}
@@ -760,7 +807,7 @@ export default function InteractivePlayer({
                       : `Deliver the verdict (${answeredCount}/${screen.length})`}
                   </button>
 
-                  {mode === "group" && !room.code && (
+                  {(mode === "group" || room.code) && (
                     <div className="pp-timer">
                       <div className="pp-timer-track">
                         <div className="pp-timer-fill" style={{ width: `${held ? 100 : (remaining / hold) * 100}%` }} />
