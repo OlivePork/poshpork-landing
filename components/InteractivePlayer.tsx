@@ -16,6 +16,15 @@ export type Question = {
 
 type Mode = "interactive" | "group" | "off";
 
+type VenueInfo = {
+  slug: string;
+  name: string;
+  town: string | null;
+  seats: number;
+  free: boolean;
+  openRoom: string | null;
+};
+
 type VerdictRow = {
   question_id: string;
   suspect: string;
@@ -72,7 +81,8 @@ export default function InteractivePlayer({
   const [showStandings, setShowStandings] = useState(false);
   const [tally, setTally] = useState<Tally | null>(null);
   const [tallyLoading, setTallyLoading] = useState(false);
-  const [venue, setVenue] = useState<{ slug: string; name: string; seats: number; free: boolean } | null>(null);
+  const [venues, setVenues] = useState<VenueInfo[]>([]);
+  const [venue, setVenue] = useState<VenueInfo | null>(null);
 
   const modeRef = useRef(mode);
   const screenRef = useRef(screen);
@@ -92,8 +102,11 @@ export default function InteractivePlayer({
 
   /**
    * Venue staff should not have to know that starting the film and opening
-   * a room are two different things. If the account belongs to a venue, the
-   * room is opened for them — or the one they already have is adopted.
+   * a room are two different things.
+   *
+   * One venue: the room is opened for them, or the one already open is
+   * adopted. More than one — somebody running a winery themselves and a
+   * hotel for a client — and they are asked which, once.
    */
   useEffect(() => {
     let cancelled = false;
@@ -103,28 +116,38 @@ export default function InteractivePlayer({
         const r = await fetch("/api/room/my-venue", { cache: "no-store" });
         if (!r.ok) return;
         const json = await r.json();
-        if (cancelled || !json.venue) return;
+        if (cancelled) return;
 
-        setVenue(json.venue);
+        const list = (json.venues ?? []) as VenueInfo[];
+        setVenues(list);
 
-        if (json.openRoom) {
-          roomRef.current.adopt(json.openRoom);
-        } else {
-          await roomRef.current.create(
-            json.venue.name,
-            6,
-            "table",
-            json.venue.slug,
-          );
-        }
+        if (list.length === 1) setVenue(list[0]);
       } catch {
         /* the host can still open one by hand */
       }
     })();
 
     return () => { cancelled = true; };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  /** Open a room for the chosen venue, or adopt the one already running. */
+  useEffect(() => {
+    if (!venue) return;
+
+    let cancelled = false;
+
+    (async () => {
+      if (venue.openRoom) {
+        roomRef.current.adopt(venue.openRoom);
+        return;
+      }
+      await roomRef.current.create(venue.name, 6, "table", venue.slug);
+      if (cancelled) return;
+    })();
+
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [venue]);
 
   useEffect(() => {
     const saved = window.localStorage.getItem(MODE_KEY) as Mode | null;
@@ -515,7 +538,34 @@ export default function InteractivePlayer({
 
         {showSetup && (
           <div className="pp-veil">
-            {venue ? (
+            {venues.length > 1 && !venue ? (
+              /* Somebody who runs more than one place. Asked once, then
+                 never again for this sitting. */
+              <div className="pp-card">
+                <p className="pp-eyebrow">Which are you running tonight?</p>
+                <h2 className="pp-title">Pick the venue</h2>
+
+                <div className="pp-choices">
+                  {venues.map((v) => (
+                    <button key={v.slug} className="pp-choice" onClick={() => setVenue(v)}>
+                      <span className="pp-choice-name">{v.name}</span>
+                      <span className="pp-choice-note">
+                        {v.town ? `${v.town} · ` : ""}
+                        {v.free ? "guests join free" : "guests pay individually"}
+                        {v.openRoom ? ` · room ${v.openRoom} already open` : ""}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+
+                <button
+                  className="pp-quiet-link"
+                  onClick={() => setVenues([])}
+                >
+                  Neither &mdash; I am just watching
+                </button>
+              </div>
+            ) : venue ? (
               /* Venue staff want one thing: the code, and a way to start.
                  Every choice below is one they would make the same way
                  every time, so it is made for them. */
@@ -551,7 +601,7 @@ export default function InteractivePlayer({
                 <button
                   className="pp-deliver"
                   disabled={!agreed || !room.code}
-                  onClick={() => begin("group", 1)}
+                  onClick={() => begin("group", 24)}
                 >
                   Start the film
                 </button>
@@ -624,7 +674,6 @@ export default function InteractivePlayer({
                   onCreate={room.create}
                   creating={room.creating}
                   code={room.code}
-          
                 />
               </div>
             )}
@@ -981,6 +1030,7 @@ const CSS = ROOM_CSS + `
 .pp-v-legend .is-mine { opacity: 1; color: #d4af37; }
 .pp-v-legend .is-mine::after { content: " · you"; font-size: 11px; letter-spacing: .1em; }
 .pp-tally-soon { font-size: 14px; line-height: 1.6; opacity: .5; margin: 22px 0 0; }
+.pp-quiet-link { display: block; width: 100%; margin: 20px auto 0; background: none; border: none; color: #d4af37; opacity: .55; font: inherit; font-size: 13px; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
 .pp-venue-label { font-size: 12px; letter-spacing: .22em; text-transform: uppercase; opacity: .5; margin: 0 0 10px; }
 .pp-venue-code { font-family: Cinzel, serif; font-size: clamp(46px, 11vw, 78px); letter-spacing: .2em; color: #d4af37; margin: 0 0 14px; line-height: 1; }
 .pp-venue-note { font-size: 14px; line-height: 1.6; opacity: .6; margin: 0 0 30px; }

@@ -3,14 +3,13 @@ import { createClient } from "@/lib/supabase/server";
 import { roomAdmin } from "@/lib/rooms";
 
 /**
- * Is the person watching a venue's staff account?
+ * Which venues does this account run, and has any of them a room open?
  *
  * GET /api/room/my-venue
  *
- * If they are, the player opens a room for them automatically. Two
- * similar-sounding actions — start the film, open a room — is one too
- * many for somebody running an evening in a hotel, and only one of them
- * matters to the guests standing in the lobby with their phones out.
+ * One person can run several — a winery they manage themselves and a hotel
+ * they set up for somebody else. So this returns a list, and the player
+ * asks which one tonight is only when there is more than one.
  */
 export async function GET() {
   const supabase = await createClient();
@@ -18,30 +17,37 @@ export async function GET() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) return NextResponse.json({ venue: null });
+  if (!user) return NextResponse.json({ venues: [] });
 
   const admin = roomAdmin();
 
-  const { data: venue } = await admin
+  const { data: rows } = await admin
     .from("venues")
-    .select("id, slug, name, seats_per_table, billing_mode, status")
+    .select("id, slug, name, town, seats_per_table, billing_mode")
     .eq("host_user_id", user.id)
     .eq("status", "active")
-    .maybeSingle();
+    .order("name");
 
-  if (!venue) return NextResponse.json({ venue: null });
+  const venues = rows ?? [];
 
-  // Already got one open? Hand that back rather than making another.
-  const { data: rows } = await admin.rpc("venue_open_room", { v_slug: venue.slug });
-  const open = (rows ?? [])[0] as { code: string; room_id: string } | undefined;
+  if (venues.length === 0) return NextResponse.json({ venues: [] });
 
-  return NextResponse.json({
-    venue: {
-      slug: venue.slug,
-      name: venue.name,
-      seats: venue.seats_per_table,
-      free: venue.billing_mode === "subscription",
-    },
-    openRoom: open?.code ?? null,
-  });
+  // Which of them already has a room open, so it is adopted rather than
+  // a second one being made alongside it.
+  const withRooms = await Promise.all(
+    venues.map(async (v) => {
+      const { data: open } = await admin.rpc("venue_open_room", { v_slug: v.slug });
+      const room = (open ?? [])[0] as { code: string } | undefined;
+      return {
+        slug: v.slug,
+        name: v.name,
+        town: v.town,
+        seats: v.seats_per_table,
+        free: v.billing_mode === "subscription",
+        openRoom: room?.code ?? null,
+      };
+    }),
+  );
+
+  return NextResponse.json({ venues: withRooms });
 }
