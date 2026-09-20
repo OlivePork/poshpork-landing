@@ -551,7 +551,7 @@ export default function InteractivePlayer({
                 <button
                   className="pp-deliver"
                   disabled={!agreed || !room.code}
-                  onClick={() => begin("group", 24)}
+                  onClick={() => begin("group", 1)}
                 >
                   Start the film
                 </button>
