@@ -573,14 +573,26 @@ export default function InteractivePlayer({
                 <p className="pp-eyebrow">{venue.name}</p>
 
                 {room.code ? (
-                  <>
-                    <p className="pp-venue-label">Your guests join with</p>
-                    <p className="pp-venue-code">{room.code}</p>
-                    <p className="pp-venue-note">
-                      It is already on the lobby screen at{" "}
-                      <strong>poshpork.com/v/{venue.slug}/screen</strong>
-                    </p>
-                  </>
+                  /* With one laptop and one projector, this card IS the lobby
+                     screen — so the QR belongs here, big enough to scan from
+                     the back of the room. */
+                  <div className="pp-venue-join">
+                    <div className="pp-venue-qr">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={`/api/qr?data=${encodeURIComponent(`https://www.poshpork.com/v/${venue.slug}`)}`}
+                        alt=""
+                      />
+                    </div>
+
+                    <div className="pp-venue-text">
+                      <p className="pp-venue-label">Scan to take your seat</p>
+                      <p className="pp-venue-or">or go to</p>
+                      <p className="pp-venue-url">poshpork.com/join</p>
+                      <p className="pp-venue-or">and enter</p>
+                      <p className="pp-venue-code">{room.code}</p>
+                    </div>
+                  </div>
                 ) : (
                   <p className="pp-venue-opening">Opening your room&hellip;</p>
                 )}
@@ -896,6 +908,16 @@ export default function InteractivePlayer({
             {isFull ? "Exit full screen" : "Full screen"}
           </button>
 
+          {/* For latecomers. Sits outside the video frame, so it is never on
+              the projected screen in full-screen mode — the host reads it
+              off the laptop and passes it on. */}
+          {room.code && (
+            <span className="pp-bar-code" title="Room code for anyone arriving late">
+              <span className="pp-bar-code-label">Room</span>
+              {room.code}
+            </span>
+          )}
+
           <span className="pp-bar-label">Questions</span>
           <div className="pp-bar-modes">
             {(["interactive", "group", "off"] as Mode[]).map((m) => (
@@ -1010,7 +1032,9 @@ const CSS = ROOM_CSS + `
 .pp-logged { margin: 24px 0 0; font-size: 13px; letter-spacing: .2em; text-transform: uppercase; color: #d4af37; }
 .pp-bar { display: flex; align-items: center; gap: 14px; justify-content: flex-end; padding: 12px 2px 0; font-size: 12px; color: #f2ece1; }
 .pp-bar-label { letter-spacing: .22em; text-transform: uppercase; opacity: .5; }
-.pp-full { margin-right: auto; padding: 7px 14px; font: inherit; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; background: none; color: #d4af37; border: 1px solid rgba(212,175,55,.35); border-radius: 4px; cursor: pointer; }
+.pp-bar-code { display: inline-flex; align-items: baseline; gap: 8px; margin-right: auto; font-family: Cinzel, serif; font-size: 15px; letter-spacing: .16em; color: #d4af37; }
+.pp-bar-code-label { font-family: Georgia, serif; font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: #f2ece1; opacity: .45; }
+.pp-full { margin-right: 14px; padding: 7px 14px; font: inherit; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; background: none; color: #d4af37; border: 1px solid rgba(212,175,55,.35); border-radius: 4px; cursor: pointer; }
 .pp-full:hover { background: rgba(212,175,55,.12); }
 .pp-bar-modes { display: flex; border: 1px solid rgba(212,175,55,.3); border-radius: 4px; overflow: hidden; }
 .pp-bar-modes button { padding: 7px 14px; background: none; border: none; border-right: 1px solid rgba(212,175,55,.2); color: inherit; opacity: .6; cursor: pointer; font: inherit; }
@@ -1031,8 +1055,14 @@ const CSS = ROOM_CSS + `
 .pp-v-legend .is-mine::after { content: " · you"; font-size: 11px; letter-spacing: .1em; }
 .pp-tally-soon { font-size: 14px; line-height: 1.6; opacity: .5; margin: 22px 0 0; }
 .pp-quiet-link { display: block; width: 100%; margin: 20px auto 0; background: none; border: none; color: #d4af37; opacity: .55; font: inherit; font-size: 13px; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
-.pp-venue-label { font-size: 12px; letter-spacing: .22em; text-transform: uppercase; opacity: .5; margin: 0 0 10px; }
-.pp-venue-code { font-family: Cinzel, serif; font-size: clamp(46px, 11vw, 78px); letter-spacing: .2em; color: #d4af37; margin: 0 0 14px; line-height: 1; }
+.pp-venue-join { display: flex; align-items: center; justify-content: center; gap: clamp(20px, 4vw, 44px); flex-wrap: wrap; margin: 6px 0 30px; }
+.pp-venue-qr { background: #f2ece1; padding: 14px; border-radius: 10px; line-height: 0; flex-shrink: 0; }
+.pp-venue-qr img { display: block; width: clamp(170px, 26vw, 250px); height: clamp(170px, 26vw, 250px); }
+.pp-venue-text { text-align: left; }
+.pp-venue-label { font-family: Cinzel, serif; font-size: clamp(18px, 2.4vw, 24px); color: #d4af37; margin: 0 0 14px; line-height: 1.2; }
+.pp-venue-or { font-size: 12px; letter-spacing: .18em; text-transform: uppercase; opacity: .45; margin: 0 0 4px; }
+.pp-venue-url { font-family: Cinzel, serif; font-size: clamp(16px, 2vw, 20px); color: #f2ece1; margin: 0 0 12px; }
+.pp-venue-code { font-family: Cinzel, serif; font-size: clamp(40px, 7vw, 64px); letter-spacing: .18em; color: #d4af37; margin: 0; line-height: 1; }
 .pp-venue-note { font-size: 14px; line-height: 1.6; opacity: .6; margin: 0 0 30px; }
 .pp-venue-note strong { color: #d4af37; font-weight: normal; }
 .pp-venue-opening { font-family: Cinzel, serif; font-size: 20px; color: #d4af37; opacity: .6; margin: 20px 0 30px; }
