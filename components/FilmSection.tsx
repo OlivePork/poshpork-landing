@@ -121,7 +121,7 @@ export default function FilmSection() {
           marginTop: '24px'
         }}>
           €15 — one payment, permanent access. One purchase covers your household.<br />
-          1 hour 27 minutes.
+          1 hour 23 minutes.
         </p>
       </div>
     </section>

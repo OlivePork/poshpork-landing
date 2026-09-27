@@ -53,7 +53,7 @@ export default function TermsAndConditions() {
         <section style={{marginBottom: '40px'}}>
           <h2 style={sectionHeading}>2. What you are buying</h2>
           <p style={para}>
-            The Film is a feature-length documentary of approximately 1 hour 27 minutes, with optional
+            The Film is a feature-length documentary of approximately 1 hour 23 minutes, with optional
             interactive questions that appear during playback. On purchase you receive:
           </p>
           <ul style={list}>

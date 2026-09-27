@@ -59,7 +59,7 @@ export default function Article() {
               <strong>Who:</strong> One purchase covers your household. Watch alone or gather everyone round.
             </p>
             <p style={{fontSize: '16px', marginBottom: '10px'}}>
-              <strong>Duration:</strong> 1 hour 27 minutes
+              <strong>Duration:</strong> 1 hour 23 minutes
             </p>
             <p style={{fontSize: '16px', marginBottom: '20px'}}>
               <strong>Language:</strong> English

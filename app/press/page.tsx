@@ -433,7 +433,7 @@ export default function PressPage() {
           <h2 style={h2}>At a glance</h2>
           <dl style={{ margin: 0 }}>
             <Row k="Title" v="Which Food Is Killing You? Inside the Greatest Fraud In Human History" />
-            <Row k="Runtime" v="1 hour 27 minutes" />
+            <Row k="Runtime" v="1 hour 23 minutes" />
             <Row k="Format" v="Animated feature documentary with interactive audience voting" />
             <Row k="Language" v="English" />
             <Row k="Director" v="Colin Marry" />

@@ -34,7 +34,7 @@ export default function Suspects() {
         </div>
 
         <p style={{ fontSize: "14px", color: "#777", marginTop: "22px" }}>
-          1 hour 26 minutes. One payment, permanent access.
+          1 hour 23 minutes. One payment, permanent access.
         </p>
       </div>
     </section>

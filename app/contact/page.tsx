@@ -82,7 +82,7 @@ export default function ContactPage() {
             the same time.
           </p>
           <p style={{ ...para, maxWidth: "62ch" }}>
-            It is animated, runs 1 hour 27 minutes, and is family friendly.
+            It is animated, runs 1 hour 23 minutes, and is family friendly.
           </p>
         </div>
       </section>

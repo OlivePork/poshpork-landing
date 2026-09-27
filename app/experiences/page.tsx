@@ -104,7 +104,7 @@ export default function ExperiencesPage() {
             <dl style={{ margin: "0 0 30px" }}>
               <Row k="Where" v="Agrotourism finca, Mallorca" />
               <Row k="Starts" v="8pm" />
-              <Row k="How long" v="The film runs 90 minutes. The evening runs longer." />
+              <Row k="How long" v="The film runs 1 hour 23 minutes. The evening runs longer." />
               <Row k="Room" v="Up to 24 — tables of four, six or twelve" />
               <Row k="Price" v="Around €80 a head all in — three courses, and the film to keep" />
             </dl>

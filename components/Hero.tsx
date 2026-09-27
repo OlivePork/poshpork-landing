@@ -125,7 +125,7 @@ export default function Hero() {
         </div>
 
         <p style={{ fontSize: '14px', lineHeight: 1.7, color: '#888', marginTop: '20px' }}>
-          A film in which you are the jury. 1 hour 27 minutes.<br />
+          A film in which you are the jury. 1 hour 23 minutes.<br />
           One payment. Permanent access. One purchase covers your household.
         </p>
 
