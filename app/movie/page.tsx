@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import BuyButton from "@/components/BuyButton";
 import GiftButton from "@/components/GiftButton";
+import FilmSchema from "@/components/FilmSchema";
 
 export const dynamic = "force-dynamic";
 
@@ -24,6 +25,7 @@ export default async function MoviePage() {
   return (
     <main style={{ background: "#1a1a1a", minHeight: "100vh", padding: "120px 24px", textAlign: "center" }}>
       <div style={{ maxWidth: "760px", margin: "0 auto" }}>
+        <FilmSchema />
         <p style={{ fontFamily: "Cinzel, serif", fontSize: "13px", letterSpacing: "0.3em", textTransform: "uppercase", color: "#d4af37", marginBottom: "24px" }}>
           Watch at home
         </p>
@@ -58,7 +60,7 @@ export default async function MoviePage() {
         )}
 
         <p style={{ fontSize: "15px", color: "#888888", marginTop: "32px", lineHeight: 1.6 }}>
-          1 hour 26 minutes. One payment, permanent access.<br />
+          1 hour 23 minutes. One payment, permanent access.<br />
           Watch on your own, or put it on the big screen for a group.
         </p>
 
