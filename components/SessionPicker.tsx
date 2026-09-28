@@ -154,7 +154,7 @@ export default function SessionPicker() {
           background: "rgba(212,175,55,.05)",
         }}>
           <Counter label="Adults" sub={`€${price.toFixed(0)} each`} value={adults} min={1} max={Math.max(chosen.seats_left, 1)} onChange={setAdults} />
-          <Counter label="Under 18s" sub="Free" value={children} min={0} max={Math.max(chosen.seats_left - adults, 0)} onChange={setChildren} />
+          <Counter label="Under 16s" sub="Free" value={children} min={0} max={Math.max(chosen.seats_left - adults, 0)} onChange={setChildren} />
 
           {chosen.extra_cents ? (
             <Counter
