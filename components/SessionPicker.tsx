@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 type Session = {
   id: string;
+  capacity?: number;
   title: string;
   venue_name: string | null;
   venue_town: string | null;
@@ -25,7 +26,7 @@ export default function SessionPicker() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    fetch("/api/sessions/upcoming", { cache: "no-store" })
+    fetch("/api/sessions/upcoming?n=200", { cache: "no-store" })
       .then((r) => (r.ok ? r.json() : null))
       .then((json) => setSessions(json?.sessions ?? []))
       .catch(() => setSessions([]));
@@ -77,6 +78,41 @@ export default function SessionPicker() {
     );
   }
 
+  /**
+   * Grouped by the week they fall in. Ninety dates in a flat list is a
+   * scroll; the same ninety under "This week", "Next week" and a date is
+   * something a person can read.
+   */
+  const weeks: [string, Session[]][] = (() => {
+    const out = new Map<string, Session[]>();
+    const now = new Date();
+
+    const mondayOf = (dt: Date) => {
+      const m = new Date(dt);
+      const day = (m.getDay() + 6) % 7;          // Monday = 0
+      m.setDate(m.getDate() - day);
+      m.setHours(0, 0, 0, 0);
+      return m;
+    };
+
+    const thisMonday = mondayOf(now).getTime();
+    const week = 7 * 24 * 60 * 60 * 1000;
+
+    for (const s of sessions) {
+      const m = mondayOf(new Date(s.starts_at));
+      const diff = Math.round((m.getTime() - thisMonday) / week);
+
+      const label =
+        diff <= 0 ? "This week"
+        : diff === 1 ? "Next week"
+        : `Week of ${m.toLocaleDateString("en-GB", { day: "numeric", month: "long" })}`;
+
+      out.set(label, [...(out.get(label) ?? []), s]);
+    }
+
+    return [...out.entries()];
+  })();
+
   const price = (chosen?.adult_price_cents ?? 2000) / 100;
   const extraPrice = (chosen?.extra_cents ?? 700) / 100;
   const total = adults * price + extras * extraPrice;
@@ -85,65 +121,79 @@ export default function SessionPicker() {
     <div>
       <p style={label}>Pick a date</p>
 
-      <div style={{ display: "grid", gap: "8px", marginBottom: "26px" }}>
-        {sessions.map((s) => {
-          const on = chosen?.id === s.id;
-          const gone = s.seats_left <= 0;
-          const d = new Date(s.starts_at);
+      <div style={{ marginBottom: "26px" }}>
+        {weeks.map(([weekLabel, rows]) => (
+          <div key={weekLabel} style={{ marginBottom: "22px" }}>
+            <p style={{
+              fontFamily: "Cinzel, serif",
+              fontSize: "11px",
+              letterSpacing: ".2em",
+              textTransform: "uppercase",
+              color: "#d4af37",
+              opacity: .55,
+              margin: "0 0 10px",
+            }}>
+              {weekLabel}
+            </p>
 
-          return (
-            <button
-              key={s.id}
-              disabled={gone}
-              onClick={() => {
-                setChosen(s);
-                setExtras(0);
-              }}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "14px",
-                width: "100%",
-                padding: "15px 18px",
-                textAlign: "left",
-                cursor: gone ? "not-allowed" : "pointer",
-                fontFamily: "inherit",
-                fontSize: "16px",
-                color: "#e8e2d5",
-                background: on ? "rgba(212,175,55,.14)" : "rgba(255,255,255,.02)",
-                border: `1px solid ${on ? "#d4af37" : "rgba(232,226,213,.14)"}`,
-                borderRadius: "6px",
-                opacity: gone ? 0.35 : 1,
-              }}
-            >
-              <span style={{ flex: 1 }}>
-                {d.toLocaleDateString("en-GB", {
-                  weekday: "long",
-                  day: "numeric",
-                  month: "long",
-                  timeZone: "Europe/Madrid",
-                })}
-                <span style={{ display: "block", fontSize: "13px", opacity: 0.55, marginTop: "3px" }}>
-                  {d.toLocaleTimeString("en-GB", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    timeZone: "Europe/Madrid",
-                  })}
-                  {s.venue_town ? ` · ${s.venue_town}` : ""}
-                </span>
-              </span>
-              <span style={{
-                fontSize: "12px",
-                letterSpacing: ".1em",
-                textTransform: "uppercase",
-                opacity: 0.55,
-                whiteSpace: "nowrap",
-              }}>
-                {gone ? "full" : s.seats_left <= 6 ? `${s.seats_left} left` : ""}
-              </span>
-            </button>
-          );
-        })}
+            <div style={{ display: "grid", gap: "8px" }}>
+              {rows.map((s) => {
+                const on = chosen?.id === s.id;
+                const gone = s.seats_left <= 0;
+                const d = new Date(s.starts_at);
+
+                return (
+                  <button
+                    key={s.id}
+                    disabled={gone}
+                    onClick={() => { setChosen(s); setExtras(0); }}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "14px",
+                      width: "100%",
+                      padding: "14px 18px",
+                      textAlign: "left",
+                      cursor: gone ? "not-allowed" : "pointer",
+                      fontFamily: "inherit",
+                      fontSize: "16px",
+                      color: "#e8e2d5",
+                      background: on ? "rgba(212,175,55,.14)" : "rgba(255,255,255,.02)",
+                      border: `1px solid ${on ? "#d4af37" : "rgba(232,226,213,.14)"}`,
+                      borderRadius: "6px",
+                      opacity: gone ? 0.32 : 1,
+                    }}
+                  >
+                    <span style={{ flex: 1 }}>
+                      {d.toLocaleDateString("en-GB", {
+                        weekday: "long",
+                        day: "numeric",
+                        month: "long",
+                        timeZone: "Europe/Madrid",
+                      })}
+                      <span style={{ display: "block", fontSize: "13px", opacity: .55, marginTop: "3px" }}>
+                        {d.toLocaleTimeString("en-GB", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          timeZone: "Europe/Madrid",
+                        })}
+                      </span>
+                    </span>
+
+                    <span style={{
+                      fontSize: "13px",
+                      whiteSpace: "nowrap",
+                      color: gone ? "#a08080" : s.seats_left <= 4 ? "#d4af37" : "#e8e2d5",
+                      opacity: gone ? 1 : s.seats_left <= 4 ? 1 : .5,
+                    }}>
+                      {gone ? "Full" : `${s.seats_left} of ${s.capacity ?? 16} left`}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ))}
       </div>
 
       {chosen && (

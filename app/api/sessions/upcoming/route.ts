@@ -11,7 +11,8 @@ import { roomAdmin } from "@/lib/rooms";
  */
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
-  const n = Math.min(Math.max(Number(searchParams.get("n")) || 8, 1), 40);
+  // A season's worth. Six a week to the end of the year is around 90.
+  const n = Math.min(Math.max(Number(searchParams.get("n")) || 12, 1), 250);
 
   const admin = roomAdmin();
 
