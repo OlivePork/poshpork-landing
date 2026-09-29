@@ -28,8 +28,8 @@ export default function ExperiencesPage() {
             The Food Conversation
           </h1>
           <p style={{ fontSize: "19px", lineHeight: 1.6, opacity: .85, maxWidth: "54ch", margin: 0 }}>
-            Four foods stand trial. Your table is the jury. Two hours of
-            evidence, argument and a verdict you reach yourselves.
+            Learn how food can cause disease &mdash; and how it can undo it. Then
+            decide, as the jury, which of the four is guilty.
           </p>
         </div>
       </header>
@@ -87,24 +87,29 @@ export default function ExperiencesPage() {
         </div>
       </section>
 
-      {/* WHEN AND WHERE */}
+      {/* WHERE */}
       <section style={section}>
         <div style={wrap}>
-          <h2 style={h2}>When and where</h2>
+          <h2 style={h2}>Where</h2>
 
-          <dl style={{ margin: "0 0 32px", maxWidth: "58ch" }}>
-            <Row k="Wednesday" v="10am" />
-            <Row k="Friday" v="10am" />
-            <Row k="Saturday" v="10am and 12.30pm" />
-            <Row k="Sunday" v="10am and 12.30pm" />
-          </dl>
-
-          <p style={{ ...para, maxWidth: "58ch" }}>
-            <strong>Campos, Mallorca.</strong> The exact address comes with your
-            confirmation, along with a map.
+          <p style={{ ...para, maxWidth: "58ch", fontSize: "18px" }}>
+            <strong>[ VENUE NAME ]</strong><br />
+            [ Street address ]<br />
+            Campos, Mallorca
           </p>
 
-          <p style={{ ...para, maxWidth: "58ch", opacity: .75 }}>
+          <p style={{ ...para, maxWidth: "58ch" }}>
+            <a
+              href="https://maps.google.com/?q=Campos+Mallorca"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={link}
+            >
+              Open in maps
+            </a>
+          </p>
+
+          <p style={{ ...para, maxWidth: "58ch", opacity: .75, marginTop: "26px" }}>
             Coming with a group of eight or more, or want a morning to yourselves?
             Write to <a href="mailto:colin@poshpork.com" style={link}>colin@poshpork.com</a>{" "}
             and we will arrange one.
@@ -166,26 +171,6 @@ function Point({ t, d }: { t: string; d: string }) {
         lineHeight: 1.3,
       }}>{t}</h3>
       <p style={{ fontSize: "15px", lineHeight: 1.6, color: "#a8a29a", margin: 0 }}>{d}</p>
-    </div>
-  );
-}
-
-function Row({ k, v }: { k: string; v: string }) {
-  return (
-    <div style={{
-      display: "grid",
-      gridTemplateColumns: "minmax(120px, 170px) 1fr",
-      gap: "18px",
-      padding: "14px 0",
-      borderBottom: "1px solid rgba(232,226,213,.12)",
-      alignItems: "baseline",
-    }}>
-      <dt style={{
-        fontFamily: "Cinzel, serif",
-        fontSize: "16px",
-        color: "#d4af37",
-      }}>{k}</dt>
-      <dd style={{ margin: 0, fontSize: "17px", lineHeight: 1.5 }}>{v}</dd>
     </div>
   );
 }

@@ -2,10 +2,6 @@
 
 import { useEffect, useState } from "react";
 
-// Almost nobody books three months ahead. Show the weeks people
-// actually choose from and keep the rest one tap away.
-const WEEKS_SHOWN = 3;
-
 type Session = {
   id: string;
   capacity?: number;
@@ -28,7 +24,6 @@ export default function SessionPicker() {
   const [email, setEmail] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-  const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
     fetch("/api/sessions/upcoming?n=200", { cache: "no-store" })
@@ -83,38 +78,15 @@ export default function SessionPicker() {
     );
   }
 
-  /**
-   * Grouped by the week they fall in. Ninety dates in a flat list is a
-   * scroll; the same ninety under "This week", "Next week" and a date is
-   * something a person can read.
-   */
-  const weeks: [string, Session[]][] = (() => {
+  /** Grouped by month, so the dropdown has headings rather than ninety rows. */
+  const months: [string, Session[]][] = (() => {
     const out = new Map<string, Session[]>();
-    const now = new Date();
-
-    const mondayOf = (dt: Date) => {
-      const m = new Date(dt);
-      const day = (m.getDay() + 6) % 7;          // Monday = 0
-      m.setDate(m.getDate() - day);
-      m.setHours(0, 0, 0, 0);
-      return m;
-    };
-
-    const thisMonday = mondayOf(now).getTime();
-    const week = 7 * 24 * 60 * 60 * 1000;
-
     for (const s of sessions) {
-      const m = mondayOf(new Date(s.starts_at));
-      const diff = Math.round((m.getTime() - thisMonday) / week);
-
-      const label =
-        diff <= 0 ? "This week"
-        : diff === 1 ? "Next week"
-        : `Week of ${m.toLocaleDateString("en-GB", { day: "numeric", month: "long" })}`;
-
+      const label = new Date(s.starts_at).toLocaleDateString("en-GB", {
+        month: "long", year: "numeric", timeZone: "Europe/Madrid",
+      });
       out.set(label, [...(out.get(label) ?? []), s]);
     }
-
     return [...out.entries()];
   })();
 
@@ -126,101 +98,49 @@ export default function SessionPicker() {
     <div>
       <p style={label}>Pick a date</p>
 
-      <div style={{ marginBottom: "26px" }}>
-        {(showAll ? weeks : weeks.slice(0, WEEKS_SHOWN)).map(([weekLabel, rows]) => (
-          <div key={weekLabel} style={{ marginBottom: "22px" }}>
-            <p style={{
-              fontFamily: "Cinzel, serif",
-              fontSize: "11px",
-              letterSpacing: ".2em",
-              textTransform: "uppercase",
-              color: "#d4af37",
-              opacity: .55,
-              margin: "0 0 10px",
-            }}>
-              {weekLabel}
-            </p>
+      {/* A dropdown rather than a list. Ninety dates is a scroll, and it
+          pushed the part people actually have to fill in off the screen. */}
+      <select
+        value={chosen?.id ?? ""}
+        onChange={(e) => {
+          const s = sessions.find((x) => x.id === e.target.value) ?? null;
+          setChosen(s);
+          setExtras(0);
+        }}
+        style={{
+          width: "100%",
+          padding: "16px 18px",
+          marginBottom: "24px",
+          fontSize: "16px",
+          fontFamily: "inherit",
+          color: "#e8e2d5",
+          background: "#000",
+          border: `1px solid ${chosen ? "#d4af37" : "rgba(212,175,55,.35)"}`,
+          borderRadius: "6px",
+        }}
+      >
+        <option value="">Choose a morning&hellip;</option>
 
-            <div style={{ display: "grid", gap: "8px" }}>
-              {rows.map((s) => {
-                const on = chosen?.id === s.id;
-                const gone = s.seats_left <= 0;
-                const d = new Date(s.starts_at);
-
-                return (
-                  <button
-                    key={s.id}
-                    disabled={gone}
-                    onClick={() => { setChosen(s); setExtras(0); }}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "14px",
-                      width: "100%",
-                      padding: "14px 18px",
-                      textAlign: "left",
-                      cursor: gone ? "not-allowed" : "pointer",
-                      fontFamily: "inherit",
-                      fontSize: "16px",
-                      color: "#e8e2d5",
-                      background: on ? "rgba(212,175,55,.14)" : "rgba(255,255,255,.02)",
-                      border: `1px solid ${on ? "#d4af37" : "rgba(232,226,213,.14)"}`,
-                      borderRadius: "6px",
-                      opacity: gone ? 0.32 : 1,
-                    }}
-                  >
-                    <span style={{ flex: 1 }}>
-                      {d.toLocaleDateString("en-GB", {
-                        weekday: "long",
-                        day: "numeric",
-                        month: "long",
-                        timeZone: "Europe/Madrid",
-                      })}
-                      <span style={{ display: "block", fontSize: "13px", opacity: .55, marginTop: "3px" }}>
-                        {d.toLocaleTimeString("en-GB", {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                          timeZone: "Europe/Madrid",
-                        })}
-                      </span>
-                    </span>
-
-                    <span style={{
-                      fontSize: "13px",
-                      whiteSpace: "nowrap",
-                      color: gone ? "#a08080" : s.seats_left <= 4 ? "#d4af37" : "#e8e2d5",
-                      opacity: gone ? 1 : s.seats_left <= 4 ? 1 : .5,
-                    }}>
-                      {gone ? "Full" : `${s.seats_left} of ${s.capacity ?? 16} left`}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
+        {months.map(([monthLabel, rows]) => (
+          <optgroup key={monthLabel} label={monthLabel}>
+            {rows.map((s) => {
+              const d = new Date(s.starts_at);
+              const day = d.toLocaleDateString("en-GB", {
+                weekday: "short", day: "numeric", month: "short", timeZone: "Europe/Madrid",
+              });
+              const time = d.toLocaleTimeString("en-GB", {
+                hour: "2-digit", minute: "2-digit", timeZone: "Europe/Madrid",
+              });
+              const gone = s.seats_left <= 0;
+              return (
+                <option key={s.id} value={s.id} disabled={gone}>
+                  {day} · {time} — {gone ? "full" : `${s.seats_left} of ${s.capacity ?? 16} left`}
+                </option>
+              );
+            })}
+          </optgroup>
         ))}
-      </div>
-
-      {!showAll && weeks.length > WEEKS_SHOWN && (
-        <button
-          onClick={() => setShowAll(true)}
-          style={{
-            width: "100%",
-            padding: "14px",
-            marginBottom: "26px",
-            cursor: "pointer",
-            fontFamily: "Cinzel, serif",
-            fontSize: "14px",
-            letterSpacing: ".1em",
-            color: "#d4af37",
-            background: "transparent",
-            border: "1px solid rgba(212,175,55,.35)",
-            borderRadius: "6px",
-          }}
-        >
-          Later dates &mdash; {weeks.length - WEEKS_SHOWN} more weeks
-        </button>
-      )}
+      </select>
 
       {chosen && (
         <div style={{
