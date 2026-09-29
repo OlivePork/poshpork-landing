@@ -2,6 +2,10 @@
 
 import { useEffect, useState } from "react";
 
+// Almost nobody books three months ahead. Show the weeks people
+// actually choose from and keep the rest one tap away.
+const WEEKS_SHOWN = 3;
+
 type Session = {
   id: string;
   capacity?: number;
@@ -24,6 +28,7 @@ export default function SessionPicker() {
   const [email, setEmail] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
     fetch("/api/sessions/upcoming?n=200", { cache: "no-store" })
@@ -122,7 +127,7 @@ export default function SessionPicker() {
       <p style={label}>Pick a date</p>
 
       <div style={{ marginBottom: "26px" }}>
-        {weeks.map(([weekLabel, rows]) => (
+        {(showAll ? weeks : weeks.slice(0, WEEKS_SHOWN)).map(([weekLabel, rows]) => (
           <div key={weekLabel} style={{ marginBottom: "22px" }}>
             <p style={{
               fontFamily: "Cinzel, serif",
@@ -195,6 +200,27 @@ export default function SessionPicker() {
           </div>
         ))}
       </div>
+
+      {!showAll && weeks.length > WEEKS_SHOWN && (
+        <button
+          onClick={() => setShowAll(true)}
+          style={{
+            width: "100%",
+            padding: "14px",
+            marginBottom: "26px",
+            cursor: "pointer",
+            fontFamily: "Cinzel, serif",
+            fontSize: "14px",
+            letterSpacing: ".1em",
+            color: "#d4af37",
+            background: "transparent",
+            border: "1px solid rgba(212,175,55,.35)",
+            borderRadius: "6px",
+          }}
+        >
+          Later dates &mdash; {weeks.length - WEEKS_SHOWN} more weeks
+        </button>
+      )}
 
       {chosen && (
         <div style={{
