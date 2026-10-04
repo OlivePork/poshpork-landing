@@ -1,9 +1,26 @@
 import SessionPicker from "@/components/SessionPicker";
 
+/* ---------- the facts, in one place ----------
+   Change these and the whole page follows.
+   Keep them matching the poster. */
+
+const DURATION_TITLE = "Ninety minutes";
+const DURATION_TEXT = "Ten in the morning, or half past twelve at weekends.";
+const SEATS_TITLE = "Twelve seats";
+const SEATS_TEXT = "Three tables of four. It does not work with more.";
+const INTRO_PRICE = "\u20AC5";   // €5 introductory price
+const FULL_PRICE = "\u20AC15";   // €15 normal price
+const VENUE_NAME = "El Gran Paji";
+const VENUE_STREET = "10 Carrer de Santany\u00ED"; // Santanyí
+const VENUE_TOWN = "Campos, Mallorca";
+const MAPS_URL =
+  "https://maps.google.com/?q=" +
+  encodeURIComponent(`${VENUE_NAME}, ${VENUE_STREET}, Campos, Mallorca`);
+
 export const metadata = {
   title: "The Food Conversation | Campos, Mallorca",
   description:
-    "Two hours of food, argument and a verdict. Four foods stand trial and your table is the jury. Campos, Mallorca. €15 an adult, under 16s free.",
+    `Ninety minutes of food, argument and a verdict. Four foods stand trial and your table is the jury. ${VENUE_NAME}, Campos, Mallorca. ${INTRO_PRICE} an adult at the introductory price (normally ${FULL_PRICE}), under 16s free.`,
 };
 
 export default function ExperiencesPage() {
@@ -62,8 +79,8 @@ export default function ExperiencesPage() {
             gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))",
             marginTop: "44px",
           }}>
-            <Point t="Two hours" d="Ten in the morning, or half past twelve at weekends." />
-            <Point t="Sixteen seats" d="Four tables of four. It does not work with more." />
+            <Point t={DURATION_TITLE} d={DURATION_TEXT} />
+            <Point t={SEATS_TITLE} d={SEATS_TEXT} />
             <Point t="All ages" d="A ten-year-old follows the story. The argument lands harder with everyone else." />
             <Point t="Your phone" d="No app, no sign-up. A code on the screen and you are in." />
           </div>
@@ -77,8 +94,12 @@ export default function ExperiencesPage() {
           <h2 style={h2}>Pick a morning</h2>
 
           <p style={{ ...para, maxWidth: "58ch" }}>
-            <strong style={{ color: "#d4af37" }}>&euro;15 an adult. Under 16s free.</strong>{" "}
-            You keep the film afterwards, to watch again at home with whoever you like.
+            <strong style={{ color: "#d4af37" }}>
+              {INTRO_PRICE} an adult. Under 16s free.
+            </strong>{" "}
+            That is an introductory price while we are starting out; the normal
+            price is {FULL_PRICE} an adult. You keep the film afterwards, to watch
+            again at home with whoever you like.
           </p>
 
           <div style={{ maxWidth: "520px", marginTop: "34px" }}>
@@ -93,14 +114,14 @@ export default function ExperiencesPage() {
           <h2 style={h2}>Where</h2>
 
           <p style={{ ...para, maxWidth: "58ch", fontSize: "18px" }}>
-            <strong>[ VENUE NAME ]</strong><br />
-            [ Street address ]<br />
-            Campos, Mallorca
+            <strong>{VENUE_NAME}</strong><br />
+            {VENUE_STREET}<br />
+            {VENUE_TOWN}
           </p>
 
           <p style={{ ...para, maxWidth: "58ch" }}>
             <a
-              href="https://maps.google.com/?q=Campos+Mallorca"
+              href={MAPS_URL}
               target="_blank"
               rel="noopener noreferrer"
               style={link}
