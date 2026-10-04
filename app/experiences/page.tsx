@@ -16,7 +16,7 @@ const VENUE_STREET = "10 Carrer de Santany\u00ED"; // Santanyí
 const VENUE_TOWN = "Campos, Mallorca";
 const MAPS_URL =
   "https://maps.google.com/?q=" +
-              query={`${VENUE_STREET}, 07630 Campos, Mallorca`}
+    query="Carrer de Santanyí, 10, 07630 Campos, Illes Balears, España"
 
 export const metadata = {
   title: "The Food Conversation | Campos, Mallorca",
