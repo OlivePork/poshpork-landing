@@ -1,4 +1,5 @@
 import SessionPicker from "@/components/SessionPicker";
+import VenueMap from "@/components/VenueMap";
 
 /* ---------- the facts, in one place ----------
    Change these and the whole page follows.
@@ -118,6 +119,13 @@ export default function ExperiencesPage() {
             {VENUE_STREET}<br />
             {VENUE_TOWN}
           </p>
+
+          <div style={{ maxWidth: "720px", margin: "24px 0 16px" }}>
+            <VenueMap
+              query={`${VENUE_NAME}, ${VENUE_STREET}, Campos, Mallorca`}
+              label={`Map showing ${VENUE_NAME} in Campos`}
+            />
+          </div>
 
           <p style={{ ...para, maxWidth: "58ch" }}>
             <a
