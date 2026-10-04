@@ -14,9 +14,9 @@ const FULL_PRICE = "\u20AC15";   // €15 normal price
 const VENUE_NAME = "El Gran Paji";
 const VENUE_STREET = "10 Carrer de Santany\u00ED"; // Santanyí
 const VENUE_TOWN = "Campos, Mallorca";
-const MAPS_URL =
-  "https://maps.google.com/?q=" +
-    query="Carrer de Santanyí, 10, 07630 Campos, Illes Balears, España"
+// What Google Maps searches for. Spanish order: street, number, postcode, town.
+const MAP_ADDRESS = "Carrer de Santany\u00ED, 10, 07630 Campos, Illes Balears, Espa\u00F1a";
+const MAPS_URL = "https://maps.google.com/?q=" + encodeURIComponent(MAP_ADDRESS);
 
 export const metadata = {
   title: "The Food Conversation | Campos, Mallorca",
@@ -122,7 +122,7 @@ export default function ExperiencesPage() {
 
           <div style={{ maxWidth: "720px", margin: "24px 0 16px" }}>
             <VenueMap
-              query={`${VENUE_NAME}, ${VENUE_STREET}, Campos, Mallorca`}
+              query={MAP_ADDRESS}
               label={`Map showing ${VENUE_NAME} in Campos`}
             />
           </div>
