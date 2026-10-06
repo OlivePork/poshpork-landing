@@ -1,5 +1,6 @@
 import SessionPicker from "@/components/SessionPicker";
 import VenueMap from "@/components/VenueMap";
+import Image from "next/image";
 
 /* ---------- the facts, in one place ----------
    Change these and the whole page follows.
@@ -19,7 +20,7 @@ const MAP_ADDRESS = "Carrer de Santany\u00ED, 10, 07630 Campos, Illes Balears, E
 const MAPS_URL = "https://maps.google.com/?q=" + encodeURIComponent(MAP_ADDRESS);
 
 export const metadata = {
-  title: "The Food Conversation | Campos, Mallorca",
+  title: "The Posh Pork Murder Mystery Experience | Campos, Mallorca",
   description:
     `Ninety minutes of food, argument and a verdict. Four foods stand trial and your table is the jury. ${VENUE_NAME}, Campos, Mallorca. ${INTRO_PRICE} an adult at the introductory price (normally ${FULL_PRICE}), under 16s free.`,
 };
@@ -34,21 +35,56 @@ export default function ExperiencesPage() {
         padding: "clamp(56px,8vw,104px) 20px",
         borderBottom: "1px solid rgba(212,175,55,.25)",
       }}>
-        <div style={wrap}>
-          <p style={eyebrow}>In person &middot; Campos, Mallorca</p>
-          <h1 style={{
-            fontFamily: "Cinzel, serif",
-            fontSize: "clamp(32px,5.5vw,54px)",
-            color: "#d4af37",
-            lineHeight: 1.12,
-            margin: "0 0 22px",
-          }}>
-            The Food Conversation
-          </h1>
-          <p style={{ fontSize: "19px", lineHeight: 1.6, opacity: .85, maxWidth: "54ch", margin: 0 }}>
-            Learn how food can cause disease &mdash; and how it can undo it. Then
-            decide, as the jury, which of the four is guilty.
-          </p>
+        <div style={{
+          ...wrap,
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+          gap: "clamp(32px,5vw,56px)",
+          alignItems: "center",
+        }}>
+          <div>
+            <p style={eyebrow}>In person &middot; Campos, Mallorca</p>
+            <h1 style={{
+              fontFamily: "Cinzel, serif",
+              fontSize: "clamp(30px,4.6vw,46px)",
+              color: "#d4af37",
+              lineHeight: 1.15,
+              margin: "0 0 22px",
+            }}>
+              The Posh Pork Murder Mystery Experience
+            </h1>
+            <p style={{ fontSize: "19px", lineHeight: 1.6, opacity: .85, maxWidth: "54ch", margin: "0 0 14px" }}>
+              Poor diet now kills more people than smoking. The question is:
+              which food is it?
+            </p>
+            <p style={{ fontSize: "17px", lineHeight: 1.6, opacity: .75, maxWidth: "54ch", margin: 0 }}>
+              Four suspects. One verdict. Yours. Watch the film, talk each question
+              through at your table, and decide which of the four is guilty.
+            </p>
+          </div>
+
+          <a
+            href="/posters/murder-mystery-poster.jpg"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ display: "block", maxWidth: "380px", width: "100%", justifySelf: "center" }}
+          >
+            <Image
+              src="/posters/murder-mystery-poster.jpg"
+              alt="Poster for The Posh Pork Murder Mystery Experience: four food suspects, meat, carbohydrates, vegetable oils and food additives, with times, price and the venue in Campos."
+              width={1100}
+              height={1971}
+              priority
+              sizes="(max-width: 700px) 90vw, 380px"
+              style={{
+                width: "100%",
+                height: "auto",
+                display: "block",
+                border: "1px solid rgba(212,175,55,.45)",
+                boxShadow: "0 18px 40px rgba(0,0,0,.55)",
+              }}
+            />
+          </a>
         </div>
       </header>
 
