@@ -11,7 +11,7 @@ const SEATS_TITLE = "Twelve seats";
 const SEATS_TEXT = "Three tables of four. It does not work with more.";
 const INTRO_PRICE = "\u20AC5";   // €5 introductory price
 const FULL_PRICE = "\u20AC15";   // €15 normal price
-const VENUE_NAME = "El Gran Paji";
+const VENUE_NAME = "El Gran Pati";
 const VENUE_STREET = "10 Carrer de Santany\u00ED"; // Santanyí
 const VENUE_TOWN = "Campos, Mallorca";
 // What Google Maps searches for. Spanish order: street, number, postcode, town.
