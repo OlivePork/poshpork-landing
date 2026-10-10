@@ -90,7 +90,7 @@ export default function SessionPicker() {
     return [...out.entries()];
   })();
 
-  const price = (chosen?.adult_price_cents ?? 2000) / 100;
+  const price = (chosen?.adult_price_cents ?? 500) / 100;
   const extraPrice = (chosen?.extra_cents ?? 700) / 100;
   const total = adults * price + extras * extraPrice;
 
@@ -99,7 +99,10 @@ export default function SessionPicker() {
       <p style={label}>Pick a date</p>
 
       {/* A dropdown rather than a list. Ninety dates is a scroll, and it
-          pushed the part people actually have to fill in off the screen. */}
+          pushed the part people actually have to fill in off the screen.
+          The font stays at 16px on purpose: below that, iPhones zoom the
+          whole page in when the dropdown is tapped. The lines are kept
+          short instead, so each date fits on one row on a phone. */}
       <select
         value={chosen?.id ?? ""}
         onChange={(e) => {
@@ -109,7 +112,7 @@ export default function SessionPicker() {
         }}
         style={{
           width: "100%",
-          padding: "16px 18px",
+          padding: "14px 14px",
           marginBottom: "24px",
           fontSize: "16px",
           fontFamily: "inherit",
@@ -117,6 +120,9 @@ export default function SessionPicker() {
           background: "#000",
           border: `1px solid ${chosen ? "#d4af37" : "rgba(212,175,55,.35)"}`,
           borderRadius: "6px",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
         }}
       >
         <option value="">Choose a morning&hellip;</option>
@@ -132,9 +138,10 @@ export default function SessionPicker() {
                 hour: "2-digit", minute: "2-digit", timeZone: "Europe/Madrid",
               });
               const gone = s.seats_left <= 0;
+              // Short on purpose: "Sat 10 Oct · 10:00 · 12 left"
               return (
                 <option key={s.id} value={s.id} disabled={gone}>
-                  {day} · {time} — {gone ? "full" : `${s.seats_left} of ${s.capacity ?? 16} left`}
+                  {day} · {time} · {gone ? "full" : `${s.seats_left} left`}
                 </option>
               );
             })}
