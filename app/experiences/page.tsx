@@ -156,6 +156,42 @@ export default function ExperiencesPage() {
             {VENUE_TOWN}
           </p>
 
+          {/* Photos of the venue, so people recognise it when they arrive */}
+          <div style={{ maxWidth: "720px", margin: "24px 0 0", display: "grid", gap: "12px" }}>
+            <figure style={fig}>
+              <Image
+                src="/venue/gran-pati-front.jpg"
+                alt="The front of El Gran Pati, a stone house with pale green shutters at number 10, Carrer de Santanyí, Campos"
+                width={1600} height={720}
+                sizes="(max-width: 760px) 92vw, 720px"
+                style={photo}
+              />
+              <figcaption style={cap}>Number 10, with the pale green shutters</figcaption>
+            </figure>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+              <figure style={fig}>
+                <Image
+                  src="/venue/gran-pati-sign.jpg"
+                  alt="The oval iron sign reading El Gran Pati, Brunch Café"
+                  width={800} height={800}
+                  sizes="(max-width: 760px) 46vw, 354px"
+                  style={photo}
+                />
+                <figcaption style={cap}>Look for the sign</figcaption>
+              </figure>
+              <figure style={fig}>
+                <Image
+                  src="/venue/gran-pati-room.jpg"
+                  alt="Inside: a vaulted room with armchairs and the film playing on a screen"
+                  width={800} height={800}
+                  sizes="(max-width: 760px) 46vw, 354px"
+                  style={photo}
+                />
+                <figcaption style={cap}>The room, with the film on screen</figcaption>
+              </figure>
+            </div>
+          </div>
+
           <div style={{ maxWidth: "720px", margin: "24px 0 16px" }}>
             <VenueMap
               query={MAP_ADDRESS}
@@ -267,6 +303,21 @@ const para: React.CSSProperties = {
   fontSize: "16px",
   lineHeight: 1.7,
   margin: "0 0 16px",
+};
+
+const fig: React.CSSProperties = { margin: 0 };
+
+const photo: React.CSSProperties = {
+  width: "100%",
+  height: "auto",
+  display: "block",
+  border: "1px solid rgba(212,175,55,.3)",
+};
+
+const cap: React.CSSProperties = {
+  fontSize: "13px",
+  color: "#a8a29a",
+  marginTop: "6px",
 };
 
 const link: React.CSSProperties = {
