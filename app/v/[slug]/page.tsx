@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata() {
   return {
-    title: "Tonight's screening | Which Food Is Killing You?",
+    title: "Today's screening | Which Food Is Killing You?",
     description: "Take your seat on the jury.",
   };
 }
@@ -51,7 +51,7 @@ export default async function VenuePage({
     }}>
       <div style={{ width: "min(460px, 100%)", textAlign: "center" }}>
 
-        <p style={eyebrow}>Tonight at {venue.name}</p>
+        <p style={eyebrow}>Today at {venue.name}</p>
 
         <h1 style={{
           fontFamily: "Cinzel, serif",

@@ -4,7 +4,7 @@ import { createClient as createAdminClient } from "@supabase/supabase-js";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-export const metadata = { title: "Tonight's screening" };
+export const metadata = { title: "Today's screening" };
 
 /**
  * The lobby screen. Put this on the projector while guests arrive
@@ -70,7 +70,7 @@ export default async function VenueScreenPage({
           opacity: .7,
           margin: "0 0 2vh",
         }}>
-          Tonight at {venue.name}
+          Today at {venue.name}
         </p>
 
         <h1 style={{
