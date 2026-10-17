@@ -155,14 +155,14 @@ export default async function VenueScreenPage({
                 margin: "0 0 .5vh",
                 lineHeight: 1,
               }}>
-                {free ? "Free to join" : `\u20AC${price} an adult`}
+                {free ? "Scan to join your table" : `\u20AC${price} an adult`}
               </p>
               <p style={{
                 fontSize: "clamp(14px, 1.6vw, 24px)",
                 color: "#d4af37",
                 margin: 0,
               }}>
-                {free ? `${venue.name} has taken care of it` : "Under 18s go free"}
+                {free ? `No app, no sign-up` : "Under 18s go free"}
               </p>
             </div>
           </div>

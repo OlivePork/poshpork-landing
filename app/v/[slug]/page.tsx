@@ -83,10 +83,10 @@ export default async function VenuePage({
                 margin: "0 0 10px",
                 lineHeight: 1.2,
               }}>
-                It&apos;s on the house
+                Welcome to {venue.name}
               </p>
               <p style={{ fontSize: "15px", lineHeight: 1.6, opacity: .7, margin: "0 0 24px" }}>
-                {venue.name} has taken care of it. Nothing to pay.
+                Tap below to join your table. No app, no sign-up.
               </p>
 
               <a
