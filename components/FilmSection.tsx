@@ -1,5 +1,8 @@
 import GiftButton from "@/components/GiftButton";
 
+// The free clip shown in this section. Change the number to swap the clip.
+const CLIP_VIMEO_ID = "1237520558";
+
 export default function FilmSection() {
   return (
     <section style={{
@@ -33,12 +36,49 @@ export default function FilmSection() {
           fontSize: '19px',
           lineHeight: '1.7',
           color: '#b0b0b0',
-          marginBottom: '48px'
+          marginBottom: '40px'
         }}>
           Made to be watched together. The evidence is laid out in full, the witnesses
           contradict each other, and every person in the room delivers their own verdict.
           Animated, funny, and the argument afterwards is the point.
         </p>
+
+        {/* FREE CLIP */}
+        <div style={{ marginBottom: '56px' }}>
+          <p style={{
+            fontFamily: 'Cinzel, serif',
+            fontSize: '13px',
+            letterSpacing: '0.2em',
+            textTransform: 'uppercase',
+            color: '#d4af37',
+            marginBottom: '16px'
+          }}>
+            Free to watch: a scene from the film
+          </p>
+
+          <div style={{
+            position: 'relative',
+            width: '100%',
+            aspectRatio: '16 / 9',
+            background: '#000',
+            border: '1px solid rgba(212,175,55,.35)'
+          }}>
+            <iframe
+              src={`https://player.vimeo.com/video/${CLIP_VIMEO_ID}?dnt=1&title=0&byline=0&portrait=0&color=d4af37`}
+              title="A free scene from Which Food Is Killing You?"
+              allow="autoplay; fullscreen; picture-in-picture"
+              allowFullScreen
+              loading="lazy"
+              style={{
+                position: 'absolute',
+                inset: 0,
+                width: '100%',
+                height: '100%',
+                border: 0
+              }}
+            />
+          </div>
+        </div>
 
         <div style={{
           display: 'grid',
