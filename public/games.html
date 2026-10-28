@@ -3,7 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Colin’s Food Court · Game prototype</title>
+<title>Colin’s Food Court · Who do you suspect?</title>
+<meta name="description" content="Four foods stand accused of making the modern world sick. Guilty or not guilty? Deliver your verdict.">
+<meta property="og:title" content="Who do you suspect? Four foods are on trial.">
+<meta property="og:description" content="Meat, carbohydrates, vegetable oils or food additives: find them guilty or not guilty, and set the sentence.">
+<meta property="og:image" content="https://www.poshpork.com/posters/murder-mystery-poster.jpg">
+<meta property="og:url" content="https://www.poshpork.com/games.html#suspect">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Domine:wght@400;700&display=swap" rel="stylesheet">
@@ -67,6 +74,9 @@ input[type=range]{width:100%;accent-color:var(--gold);height:36px}
 .tally .row{display:grid;grid-template-columns:110px 1fr 40px;gap:8px;align-items:center;font-size:14px}
 .bar{height:14px;border-radius:7px;background:var(--line);overflow:hidden}.bar i{display:block;height:100%;background:var(--bad);width:0;transition:width .9s}
 .hidden{display:none!important}
+.vlist{display:grid;gap:8px;margin-top:8px}.vr{display:grid;grid-template-columns:40px 1fr auto;gap:10px;align-items:center;font-size:14px}
+.vr img{width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--gold2)}
+.vt{font-family:Cinzel,Georgia,serif;font-weight:800;font-size:12px;letter-spacing:.06em;text-align:right}.vt.g{color:var(--bad)}.vt.n{color:var(--ok)}
 .slots{position:relative;display:grid;gap:8px;padding-left:16px;border-left:3px solid var(--gold);margin-left:6px}
 .slot{position:relative;min-height:50px;border:2px dashed var(--line);border-radius:10px;display:flex;align-items:center;gap:10px;padding:6px 10px;background:var(--bg);cursor:pointer}
 .slot::before{content:'';position:absolute;left:-25px;top:50%;width:13px;height:13px;border-radius:50%;background:var(--gold);transform:translateY(-50%)}
@@ -229,8 +239,8 @@ const GAMES=[
    {q:'8. Olives (getting harder)',o:['Keto','Not keto'],a:0,why:'Keto. Olives are a fruit, but a fatty one: only about 3 g of usable carbohydrate per 100 g.'},
    {q:'9. Full-fat Greek yoghurt (tricky)',o:['Keto','Not keto'],a:0,why:'Keto, in sensible portions: about 4 g of carbohydrate and 10 g of fat per 100 g. Straining removes much of the milk sugar. Flavoured and low-fat versions are not keto.',st:'Contested'},
    {q:'10. Whole milk (the hardest)',o:['Keto','Not keto'],a:1,why:'Not keto, surprisingly. About 5 g of milk sugar per glass-sized 100 ml, and not much fat to balance it. A splash in coffee is fine; a glass is not. Compare it with the Greek yoghurt you just saw.',st:'Contested'}]},
- {id:'verdict',title:'The Verdict',host:'all',mech:'Cluedo accusation',type:'verdict',
-  intro:'Every juror votes on every suspect. Guilty or not guilty?',
+ {id:'verdict',title:'Who Do You Suspect?',host:'all',mech:'Your verdict',type:'verdict',
+  intro:'Four foods stand accused of making the modern world sick. Who do you suspect? Find each one guilty or not guilty, and if guilty, set the sentence.',
   sus:[['meat','Lady Posh Pork','Meat'],['carbs','Mr Carbohydrates','Refined carbohydrate'],['oils','Mr Vegetable Oils','Seed oils'],['bliss','The Bliss Brothers','Food additives']]}
 ];
 
@@ -401,7 +411,7 @@ function mFinal(){if(msel===null)return;const q=G.qs[qi];document.getElementById
 let votes,sent;
 function yrs(v){v=+v;return v>=25?'25+ years (life)':v===1?'1 year':v+' years'}
 function verdict(){votes={};sent={};
-  el(`${scoreBar('The Verdict')}<div class="card">${hostHTML('all')}<h2>The Verdict</h2><p>${G.intro}</p><p class="note">Find a suspect guilty and you also set the sentence.</p>
+  el(`${scoreBar('Who Do You Suspect?')}<div class="card">${hostHTML('all')}<h2>Who Do You Suspect?</h2><p>${G.intro}</p><p class="note">Find a suspect guilty and you also set the sentence.</p>
   ${G.sus.map(s=>`<div style="display:flex;gap:10px;align-items:center;margin:16px 0 8px"><img src="${IMG[s[0]]}" alt="" style="width:46px;height:46px;border-radius:50%;object-fit:cover;border:2px solid var(--gold2)"><div><strong>${s[1]}</strong><div class="note">${s[2]}</div></div></div>
   <div class="opts two" data-s="${s[0]}">${['Guilty','Not guilty'].map((o,k)=>`<button class="opt" onclick="vote('${s[0]}',${k},this)">${o}</button>`).join('')}</div>
   <div class="hidden" id="sent-${s[0]}" style="margin-top:10px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg)">
@@ -409,27 +419,30 @@ function verdict(){votes={};sent={};
     <input type="range" min="1" max="25" value="10" aria-label="Sentence for ${s[1]} in years" oninput="sent['${s[0]}']=+this.value;document.getElementById('sv-${s[0]}').textContent=yrs(this.value)">
     <div style="display:flex;justify-content:space-between" class="note"><span>1 year</span><span>25+ (life)</span></div>
   </div>`).join('')}
-  <button class="btn" id="vv" disabled onclick="showVerdict()">Deliver our verdict</button><div id="res"></div></div>`)}
+  <button class="btn" id="vv" disabled onclick="showVerdict()">Deliver my verdict</button><div id="res"></div></div>`)}
 function vote(s,k,b){votes[s]=k;[...b.parentNode.children].forEach(x=>x.classList.remove('picked'));b.classList.add('picked');
   const box=document.getElementById('sent-'+s);box.classList.toggle('hidden',k!==0);if(k===0&&sent[s]===undefined)sent[s]=10;
   document.getElementById('vv').disabled=Object.keys(votes).length<4}
 function showVerdict(){document.getElementById('vv').classList.add('hidden');
   document.querySelectorAll('.card input[type=range]').forEach(r=>r.disabled=true);
   document.querySelectorAll('.opts.two .opt').forEach(b=>b.disabled=true);
-  const rows=G.sus.map(s=>{const room=Math.round(25+Math.random()*60);const mine=votes[s[0]]===0;const pct=Math.min(100,Math.round(room*0.9+(mine?10:0)));
-    const avg=Math.max(1,Math.min(25,Math.round(3+pct/100*18+(mine?(sent[s[0]]-10)/3:0))));
-    const yours=mine?`You said: <strong>${yrs(sent[s[0]])}</strong>`:'You said: not guilty';
-    return `<div style="margin-top:6px"><div class="row"><span>${s[1]}</span><div class="bar"><i data-w="${pct}"></i></div><span>${pct}%</span></div>
-      <div class="note" style="margin:2px 0 0">${yours} · Room’s average sentence: <strong>${yrs(avg)}</strong></div></div>`}).join('');
-  const guilty=G.sus.filter(s=>votes[s[0]]===0);
-  const harsh=guilty.sort((x,y)=>sent[y[0]]-sent[x[0]])[0];
-  document.getElementById('res').innerHTML=`<div class="ans"><div class="verdict ok">The room’s verdict</div><p class="note" style="margin:0 0 6px">Share of jurors voting guilty, and the sentences handed down (simulated room for this prototype).</p><div class="tally">${rows}</div>
-  ${harsh?`<p style="margin:12px 0 0">Your harshest sentence: <strong>${harsh[1]}</strong>, ${yrs(sent[harsh[0]])}.</p>`:`<p style="margin:12px 0 0">You let every suspect walk free.</p>`}</div>
-  <button class="btn" onclick="gp=2;finish()">Finish</button>`;
-  setTimeout(()=>document.querySelectorAll('.tally i').forEach(i=>i.style.width=i.dataset.w+'%'),60)}
+  const rows=G.sus.map(s=>{const g=votes[s[0]]===0;return `<div class="vr"><img src="${IMG[s[0]]}" alt=""><span><strong>${s[1]}</strong><br><span class="note">${s[2]}</span></span><span class="vt ${g?'g':'n'}">${g?'GUILTY · '+yrs(sent[s[0]]):'NOT GUILTY'}</span></div>`}).join('');
+  const guilty=G.sus.filter(s=>votes[s[0]]===0).sort((x,y)=>sent[y[0]]-sent[x[0]]);
+  const harsh=guilty[0];
+  const line=harsh?`I found ${guilty.length} of the 4 foods guilty, and gave ${harsh[1]} ${yrs(sent[harsh[0]])}.`:`I let all 4 foods walk free.`;
+  G.share=`${line} Four foods are on trial. Who do you suspect?`;
+  document.getElementById('res').innerHTML=`<div class="ans"><div class="verdict ok">Your verdict</div><div class="vlist">${rows}</div>
+  <p style="margin:12px 0 0"><strong>${line}</strong></p></div>
+  <button class="btn" onclick="shareVerdict()">Share my verdict</button>
+  <a class="btn" style="display:block;text-align:center;text-decoration:none;background:transparent;color:var(--gold);border:2px solid var(--gold)" href="https://www.poshpork.com/movie">See the evidence: watch the film</a>
+  <p class="note" id="shr" style="text-align:center;margin-top:8px"></p>
+  <button class="link" onclick="gp=2;finish()">Finish</button>`}
+function shareVerdict(){const url='https://www.poshpork.com/games.html#suspect';const t=G.share;
+  if(navigator.share){navigator.share({title:'Who do you suspect?',text:t,url}).catch(()=>{})}
+  else{const all=t+' '+url;(navigator.clipboard?navigator.clipboard.writeText(all):Promise.reject()).then(()=>{document.getElementById('shr').textContent='Copied. Paste it anywhere to share.'},()=>{prompt('Copy this to share:',all)})}}
 
 
-menu();
+if(location.hash==='#suspect'){start(GAMES.findIndex(g=>g.id==='verdict'))}else{menu()}
 </script>
 </body>
 </html>
