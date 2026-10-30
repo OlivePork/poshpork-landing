@@ -10,14 +10,17 @@ const DURATION_TITLE = "Ninety minutes";
 const DURATION_TEXT = "Ten in the morning, or half past twelve at weekends.";
 const SEATS_TITLE = "Twelve seats";
 const SEATS_TEXT = "Three tables of four. It does not work with more.";
-const INTRO_PRICE = "\u20AC5";   // €5 introductory price
-const FULL_PRICE = "\u20AC15";   // €15 normal price
+const INTRO_PRICE = "\u20AC5";   // 5 euro introductory price
+const FULL_PRICE = "\u20AC15";   // 15 euro normal price
 const VENUE_NAME = "El Gran Pati";
-const VENUE_STREET = "10 Carrer de Santany\u00ED"; // Santanyí
+const VENUE_STREET = "10 Carrer de Santany\u00ED"; // Santanyi with an accent
 const VENUE_TOWN = "Campos, Mallorca";
 // What Google Maps searches for. Spanish order: street, number, postcode, town.
 const MAP_ADDRESS = "Carrer de Santany\u00ED, 10, 07630 Campos, Illes Balears, Espa\u00F1a";
 const MAPS_URL = "https://maps.google.com/?q=" + encodeURIComponent(MAP_ADDRESS);
+// The food games: a static page in /public
+const GAMES_URL = "/games.html";
+const SUSPECT_URL = "/games.html#suspect";
 
 export const metadata = {
   title: "The Posh Pork Murder Mystery Experience | Campos, Mallorca",
@@ -124,6 +127,53 @@ export default function ExperiencesPage() {
         </div>
       </section>
 
+      {/* GAMES */}
+      <section style={{ ...section, background: "#17120c", borderTop: "1px solid rgba(212,175,55,.2)" }}>
+        <div style={{
+          ...wrap,
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+          gap: "clamp(28px,4vw,48px)",
+          alignItems: "center",
+        }}>
+          <a href={SUSPECT_URL} style={{ display: "block" }}>
+            <Image
+              src="/og-suspects.jpg"
+              alt="The four food suspects in a line-up: Mr Carbohydrates, Mr Vegetable Oils, Lady Posh Pork and the Bliss Brothers"
+              width={1200}
+              height={630}
+              sizes="(max-width: 700px) 92vw, 430px"
+              style={{
+                width: "100%",
+                height: "auto",
+                display: "block",
+                borderRadius: "8px",
+                border: "1px solid rgba(212,175,55,.4)",
+              }}
+            />
+          </a>
+
+          <div>
+            <p style={eyebrow}>Try it before you come</p>
+            <h2 style={h2}>Play the food games</h2>
+            <p style={{ ...para, maxWidth: "50ch" }}>
+              Twelve short games from the film, on your phone. How much protein do
+              you really need? Is it keto or not? Which part of your body is richest
+              in omega-3?
+            </p>
+            <p style={{ ...para, maxWidth: "50ch" }}>
+              Start with the one everyone argues about: put the four suspects on
+              trial and set their sentences.
+            </p>
+
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "12px", marginTop: "22px" }}>
+              <a href={SUSPECT_URL} style={goldButton}>Who do you suspect?</a>
+              <a href={GAMES_URL} style={outlineButton}>All twelve games</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* BOOK */}
       <section id="book" style={{ ...section, background: "#141414" }}>
         <div style={wrap}>
@@ -161,7 +211,7 @@ export default function ExperiencesPage() {
             <figure style={fig}>
               <Image
                 src="/venue/gran-pati-front.jpg"
-                alt="The front of El Gran Pati, a stone house with pale green shutters at number 10, Carrer de Santanyí, Campos"
+                alt={"The front of El Gran Pati, a stone house with pale green shutters at number 10, Carrer de Santany\u00ED, Campos"}
                 width={1600} height={720}
                 sizes="(max-width: 760px) 92vw, 720px"
                 style={photo}
@@ -172,7 +222,7 @@ export default function ExperiencesPage() {
               <figure style={fig}>
                 <Image
                   src="/venue/gran-pati-sign.jpg"
-                  alt="The oval iron sign reading El Gran Pati, Brunch Café"
+                  alt={"The oval iron sign reading El Gran Pati, Brunch Caf\u00E9"}
                   width={800} height={800}
                   sizes="(max-width: 760px) 46vw, 354px"
                   style={photo}
@@ -323,4 +373,27 @@ const cap: React.CSSProperties = {
 const link: React.CSSProperties = {
   color: "#d4af37",
   textDecoration: "underline",
+};
+
+const goldButton: React.CSSProperties = {
+  display: "inline-block",
+  padding: "14px 24px",
+  borderRadius: "6px",
+  textDecoration: "none",
+  fontFamily: "Cinzel, serif",
+  fontSize: "15px",
+  fontWeight: "bold",
+  color: "#0f0f0f",
+  background: "linear-gradient(135deg,#a67c00,#d4af37 50%,#a67c00)",
+};
+
+const outlineButton: React.CSSProperties = {
+  display: "inline-block",
+  padding: "13px 22px",
+  borderRadius: "6px",
+  textDecoration: "none",
+  fontFamily: "Cinzel, serif",
+  fontSize: "15px",
+  color: "#d4af37",
+  border: "1px solid rgba(212,175,55,.6)",
 };
