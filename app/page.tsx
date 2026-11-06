@@ -12,6 +12,10 @@ import Manifesto from "@/components/Manifesto";
 export default function Home() {
   return (
     <>
+      return (
+    <main ...>
+      <Manifesto />
+      ...the rest of the page as it is...
       <CookieBanner />
       <Hero />
 
