@@ -93,8 +93,9 @@ export default function Manifesto() {
 
         <p className="mf-sign">&mdash; Colin</p>
 
-        <div className="mf-join">
-          <SignupForm source="manifesto" />
+                {/* The existing EUR 1 support list: the same list as on /watch */}
+        <div id="join" className="mf-join">
+          <SupportList />
         </div>
       </div>
     </section>
