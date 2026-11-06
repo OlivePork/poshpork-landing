@@ -1,4 +1,4 @@
-import SignupForm from "@/components/SignupForm";
+import SupportList from "@/components/SupportList";
 
 /**
  * The manifesto, first thing on the home page.

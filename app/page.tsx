@@ -7,7 +7,6 @@ import GiftButton from '@/components/GiftButton';
 import Article from '@/components/Article';
 import CookieBanner from '@/components/CookieBanner';
 import GroupScreenings from '@/components/GroupScreenings';
-import FilmClip from "@/components/FilmClip";
 import Manifesto from "@/components/Manifesto";
 
 export default function Home() {
