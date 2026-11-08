@@ -6,10 +6,13 @@ import { roomAdmin, normaliseCode } from "@/lib/rooms";
  *
  * By default a table answers as a group: any phone at the table can set
  * or change it while the question is open, and the last change stands.
- * Everyone at the table sees what is currently in — which is the point,
- * because a table can watch itself being overruled and argue about it.
+ * Everyone at the table sees what is currently in.
  *
  * The final verdict on each suspect is always individual.
+ *
+ * Saving works as "update the row if it exists, otherwise insert it",
+ * so it does not depend on a particular unique index existing in the
+ * database (an upsert needs one, and fails silently-looking without it).
  *
  * POST /api/room/answer
  *   { "code": "BKQR47", "device_token": "...", "answer": "Hard butter" }
@@ -52,7 +55,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "You are not in this room" }, { status: 403 });
   }
 
-  // Is this question part of the closing verdict? Those are always individual.
   const { data: question } = await admin
     .from("questions")
     .select("correct_answer, verdict_group")
@@ -60,61 +62,46 @@ export async function POST(req: Request) {
     .maybeSingle();
 
   const isVerdict = !!question?.verdict_group;
+  const asTable = room.answer_mode === "table" && !isVerdict && !!player.table_id;
 
-  const asTable =
-    room.answer_mode === "table" && !isVerdict && !!player.table_id;
+  const isCorrect = question?.correct_answer ? body.answer === question.correct_answer : null;
 
-  const isCorrect = question?.correct_answer
-    ? body.answer === question.correct_answer
-    : null;
+  const row = {
+    room_id: room.id,
+    question_id: room.current_question_id,
+    player_id: player.id,
+    table_id: player.table_id,
+    answer: body.answer,
+    is_correct: isCorrect,
+    is_table_answer: asTable,
+    set_by_player_id: player.id,
+    set_by_name: player.name,
+    answered_at: new Date().toISOString(),
+  };
 
-  if (asTable) {
-    // One row per table. Replace whatever is there — last change stands.
-    const { error } = await admin.from("room_answers").upsert(
-      {
-        room_id: room.id,
-        question_id: room.current_question_id,
-        player_id: player.id,
-        table_id: player.table_id,
-        answer: body.answer,
-        is_correct: isCorrect,
-        is_table_answer: true,
-        set_by_player_id: player.id,
-        set_by_name: player.name,
-        answered_at: new Date().toISOString(),
-      },
-      { onConflict: "room_id,question_id,table_id" },
-    );
+  // Find the existing answer: the table's, or this person's.
+  let find = admin
+    .from("room_answers")
+    .select("id")
+    .eq("room_id", room.id)
+    .eq("question_id", room.current_question_id)
+    .eq("is_table_answer", asTable);
+  find = asTable ? find.eq("table_id", player.table_id) : find.eq("player_id", player.id);
 
-    if (error) {
-      console.error("Table answer error:", error);
-      return NextResponse.json({ error: "Could not record that." }, { status: 500 });
-    }
-
-    return NextResponse.json({ ok: true, as_table: true, set_by: player.name });
+  const { data: existing, error: findErr } = await find.limit(1).maybeSingle();
+  if (findErr) {
+    console.error("Answer lookup error:", findErr);
+    return NextResponse.json({ error: "Could not record that.", detail: findErr.message }, { status: 500 });
   }
 
-  // Individual: one row per player.
-  const { error } = await admin.from("room_answers").upsert(
-    {
-      room_id: room.id,
-      question_id: room.current_question_id,
-      player_id: player.id,
-      table_id: player.table_id,
-      answer: body.answer,
-      is_correct: isCorrect,
-      is_table_answer: false,
-      set_by_player_id: player.id,
-      set_by_name: player.name,
-      answered_at: new Date().toISOString(),
-    },
-    { onConflict: "room_id,question_id,player_id" },
-  );
+  const { error } = existing
+    ? await admin.from("room_answers").update(row).eq("id", existing.id)
+    : await admin.from("room_answers").insert(row);
 
   if (error) {
-    console.error("Room answer error:", error);
-    return NextResponse.json({ error: "Could not record that." }, { status: 500 });
+    console.error("Answer save error:", error);
+    return NextResponse.json({ error: "Could not record that.", detail: error.message }, { status: 500 });
   }
 
-  return NextResponse.json({ ok: true, as_table: false });
+  return NextResponse.json({ ok: true, as_table: asTable, set_by: player.name });
 }

@@ -82,6 +82,7 @@ export default function JoinPage() {
   const [pendingAnswer, setPendingAnswer] = useState<string | null>(null);
   const [forceTable, setForceTable] = useState<Table | null>(null);
   const [moving, setMoving] = useState(false);
+  const [answerError, setAnswerError] = useState("");
 
   const tokenRef = useRef<string>("");
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -279,6 +280,7 @@ export default function JoinPage() {
   const answer = useCallback(
     async (option: string) => {
       setPendingAnswer(option);
+      setAnswerError("");
       try {
         const r = await fetch("/api/room/answer", {
           method: "POST",
@@ -289,9 +291,18 @@ export default function JoinPage() {
             answer: option,
           }),
         });
-        if (!r.ok) setPendingAnswer(null);
+        if (!r.ok) {
+          const j = await r.json().catch(() => ({}));
+          setPendingAnswer(null);
+          setAnswerError(
+            r.status === 409
+              ? "That question has just closed."
+              : `Your answer didn\u2019t save. Tap it again.${j.detail ? ` (${j.detail})` : ""}`,
+          );
+        }
       } catch {
         setPendingAnswer(null);
+        setAnswerError("No connection. Tap your answer again.");
       }
     },
     [code],
@@ -549,6 +560,8 @@ export default function JoinPage() {
                     </button>
                   ))}
                 </div>
+
+                {answerError && <p className="pj-error">{answerError}</p>}
 
                 {current && (
                   <div className={`pj-status ${someoneElseSetIt ? "is-other" : ""}`}>
