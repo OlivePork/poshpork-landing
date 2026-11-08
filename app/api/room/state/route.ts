@@ -207,8 +207,27 @@ export async function GET(req: Request) {
       });
   }
 
+  // Which tables have answered the current question (for the host's screen).
+  let tables: { id: string; name: string; colour: string | null; answered: boolean }[] = [];
+  {
+    const { data: tl } = await admin.rpc("room_table_list", { r_id: room.id });
+    const done = new Set<string>();
+    if (room.current_question_id) {
+      const { data: rows } = await admin
+        .from("room_answers")
+        .select("table_id")
+        .eq("room_id", room.id)
+        .eq("question_id", room.current_question_id);
+      for (const r of (rows ?? []) as { table_id: string | null }[]) if (r.table_id) done.add(r.table_id);
+    }
+    tables = ((tl ?? []) as { id: string; name: string; colour: string | null; seats_taken?: number }[])
+      .filter((t) => (t.seats_taken ?? 1) > 0)
+      .map((t) => ({ id: t.id, name: t.name, colour: t.colour, answered: done.has(t.id) }));
+  }
+
   return NextResponse.json({
     status: room.status,
+    tables,
     question_open: room.question_open,
     revealed: !!room.revealed,
     question,

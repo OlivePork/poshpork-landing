@@ -536,7 +536,7 @@ export default function JoinPage() {
 
                 <h1 className="pj-question">{state.question.question_text}</h1>
 
-                <div className="pj-options">
+                <div className={`pj-options${current ? " has-choice" : ""}`}>
                   {state.question.options.map((opt) => (
                     <button
                       key={opt}
@@ -545,30 +545,27 @@ export default function JoinPage() {
                     >
                       {opt}
                       {current === opt && <span className="pj-tick">&#10003;</span>}
+                      {current === opt && <span className="pj-locked">Your answer</span>}
                     </button>
                   ))}
                 </div>
 
                 {current && (
                   <div className={`pj-status ${someoneElseSetIt ? "is-other" : ""}`}>
-                    {state.table_mode ? (
-                      someoneElseSetIt ? (
-                        <>
-                          <strong>{setBy}</strong> put in <strong>{current}</strong> for the table.
-                          <span className="pj-status-sub">Disagree? Tap another &mdash; the last one stands.</span>
-                        </>
-                      ) : (
-                        <>
-                          Your table&apos;s answer is in.
-                          <span className="pj-status-sub">Anyone can change it while it&apos;s open.</span>
-                        </>
-                      )
+                    {state.table_mode && someoneElseSetIt ? (
+                      <>
+                        <strong>{setBy}</strong> put in <strong>{current}</strong> for your table.
+                      </>
                     ) : (
                       <>
-                        Answer in.
-                        <span className="pj-status-sub">Tap another to change it.</span>
+                        <strong>&#10003; {state.table_mode ? "Your table\u2019s answer is in." : "Your answer is in."}</strong>
                       </>
                     )}
+                    <span className="pj-status-sub">
+                      Waiting for the reveal &middot; {state.answered} of {state.expected || state.players}{" "}
+                      {state.table_mode ? "tables" : "people"} answered
+                    </span>
+                    <span className="pj-status-sub">Changed your mind? Tap another answer before the host reveals it.</span>
                   </div>
                 )}
               </div>
@@ -746,6 +743,9 @@ const CSS = `
 .pj-option:active { background: rgba(212,175,55,.2); }
 .pj-option.is-chosen { background: rgba(212,175,55,.26);
   border-color: #d4af37; color: #fff; }
+.pj-options.has-choice .pj-option:not(.is-chosen) { opacity: .45; }
+.pj-locked { display: block; margin-top: 6px; font-family: Georgia, serif; font-size: 11px;
+  letter-spacing: .18em; text-transform: uppercase; color: #d4af37; }
 .pj-tick { position: absolute; right: 16px; top: 50%;
   transform: translateY(-50%); font-size: 18px; color: #d4af37; }
 

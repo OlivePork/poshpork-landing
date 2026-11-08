@@ -38,6 +38,7 @@ type RoomState = {
   players: number;
   table_mode: boolean;
   profiles: Profile[] | null;
+  tables: { id: string; name: string; colour: string | null; answered: boolean }[];
 };
 
 type Standing = { table_id: string; table_name: string; colour: string | null; score: number };
@@ -140,6 +141,12 @@ export default function HostGamesPage() {
   }
 
   const rounds = [1, 2, 3];
+  const roundOver = !!q && isCurrent && !isOpen && (idx === questions.length - 1 || questions[idx + 1]?.game_round !== q.game_round);
+  const nextRound = q ? (questions.find((x) => x.game_round > q.game_round)?.game_round ?? null) : null;
+  const startRound = (r: number) => {
+    const first = questions.findIndex((x) => x.game_round === r);
+    if (first >= 0) { setIdx(first); setStandings(null); }
+  };
   const expected = state?.expected || state?.players || 0;
 
   return (
@@ -171,6 +178,7 @@ export default function HostGamesPage() {
           <div className="hg-card">
             <p className="hg-eyebrow">The scores</p>
             <h2 className="hg-h1">How the tables stand</h2>
+            {roundOver && nextRound && <p className="hg-note" style={{ margin: "0 0 18px" }}>End of Round {q?.game_round}. Play the next part of the film, then start Round {nextRound}.</p>}
             <ol className="hg-scores">
               {standings.map((s, i) => (
                 <li key={s.table_id} className={i === 0 ? "is-top" : ""}>
@@ -231,10 +239,23 @@ export default function HostGamesPage() {
             )}
 
             {isCurrent && (
-              <p className="hg-count">
-                {isOpen ? "Answering\u2026 " : ""}
-                {state?.answered ?? 0} of {expected} {state?.table_mode ? "tables" : "people"} answered
-              </p>
+              <div className="hg-live">
+                <p className="hg-count">
+                  <strong>{state?.answered ?? 0}</strong> of {expected} {state?.table_mode ? "tables" : "people"} answered
+                  {isOpen && (state?.answered ?? 0) >= expected && expected > 0 ? " \u2014 everyone is in!" : ""}
+                </p>
+                {state?.table_mode && (state?.tables?.length ?? 0) > 0 && (
+                  <div className="hg-chips">
+                    {state!.tables.map((t) => (
+                      <span key={t.id} className={`hg-chip${t.answered ? " is-in" : ""}`}>
+                        <span className="hg-dot" style={{ background: t.colour ?? "#d4af37" }} />
+                        {t.name}
+                        <span className="hg-chip-mark">{t.answered ? "\u2713" : "\u2026"}</span>
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
             )}
           </div>
         )}
@@ -242,24 +263,38 @@ export default function HostGamesPage() {
 
       {/* Controls: on the laptop, at the bottom */}
       <footer className="hg-controls">
-        <button className="hg-btn" onClick={() => setIdx(Math.max(0, idx - 1))} disabled={idx === 0}>&larr; Back</button>
+        {standings ? (
+          <>
+            <button className="hg-btn hg-gold" onClick={() => setStandings(null)}>&larr; Back to the game</button>
+            {roundOver && nextRound && (
+              <button className="hg-btn" onClick={() => startRound(nextRound)}>Go to Round {nextRound} &rarr;</button>
+            )}
+          </>
+        ) : (
+          <>
+            <button className="hg-btn" onClick={() => setIdx(Math.max(0, idx - 1))} disabled={idx === 0}>&larr; Previous</button>
 
-        {!isCurrent && <button className="hg-btn hg-gold" onClick={open} disabled={!q}>Open this question</button>}
+            {!isCurrent && <button className="hg-btn hg-gold" onClick={open} disabled={!q}>Open this question</button>}
 
-        {isOpen && q?.game_kind === "quiz" && <button className="hg-btn hg-gold" onClick={reveal}>Close and reveal the answer</button>}
-        {isOpen && q?.game_kind === "profile" && q.id !== lastProfile && <button className="hg-btn hg-gold" onClick={close}>Close</button>}
-        {isOpen && q?.game_kind === "profile" && q.id === lastProfile && <button className="hg-btn hg-gold" onClick={reveal}>Close and reveal the suspects</button>}
+            {isOpen && q?.game_kind === "quiz" && <button className="hg-btn hg-gold" onClick={reveal}>Close and reveal the answer</button>}
+            {isOpen && q?.game_kind === "profile" && q.id !== lastProfile && <button className="hg-btn hg-gold" onClick={next}>Next question &rarr;</button>}
+            {isOpen && q?.game_kind === "profile" && q.id === lastProfile && <button className="hg-btn hg-gold" onClick={reveal}>Close and reveal the suspects</button>}
 
-        {isCurrent && !isOpen && idx < questions.length - 1 && questions[idx + 1]?.game_round === q?.game_round && (
-          <button className="hg-btn hg-gold" onClick={next}>Next question &rarr;</button>
+            {isCurrent && !isOpen && !roundOver && (
+              <button className="hg-btn hg-gold" onClick={next}>Next question &rarr;</button>
+            )}
+            {roundOver && (
+              <>
+                <button className="hg-btn hg-gold" onClick={showScores}>Show the scores</button>
+                <span className="hg-end">End of Round {q?.game_round}{nextRound ? `: play Part ${q?.game_round} of the film next` : ""}</span>
+              </>
+            )}
+
+            <span className="hg-spacer" />
+            {!roundOver && <button className="hg-btn" onClick={showScores}>Scores</button>}
+            <button className="hg-btn" onClick={clearScreen}>Clear phones</button>
+          </>
         )}
-        {isCurrent && !isOpen && (idx === questions.length - 1 || questions[idx + 1]?.game_round !== q?.game_round) && (
-          <span className="hg-end">End of round: play the next part of the film.</span>
-        )}
-
-        <span className="hg-spacer" />
-        <button className="hg-btn" onClick={showScores}>Scores</button>
-        <button className="hg-btn" onClick={clearScreen}>Clear phones</button>
       </footer>
 
       {error && <p className="hg-error">{error}</p>}
@@ -294,7 +329,14 @@ const CSS = `
 .hg-explain { margin-top: 26px; padding: 22px 26px; border-radius: 12px; background: rgba(212,175,55,.08); border: 1px solid rgba(212,175,55,.3); font-size: clamp(20px,1.9vw,26px); line-height: 1.5; }
 .hg-explain p { margin: 0 0 10px; }
 .hg-stamp { display: inline-block; font-family: Cinzel, serif; font-size: 14px; letter-spacing: .12em; color: #8fd19e; border: 2px solid #8fd19e; border-radius: 4px; padding: 3px 10px; }
-.hg-count { margin: 22px 0 0; font-size: 20px; opacity: .7; }
+.hg-live { margin-top: 24px; }
+.hg-count { margin: 0 0 12px; font-size: 22px; opacity: .85; } .hg-count strong { color: #d4af37; font-family: Cinzel, serif; font-size: 1.3em; }
+.hg-chips { display: flex; flex-wrap: wrap; gap: 10px; }
+.hg-chip { display: inline-flex; align-items: center; gap: 10px; padding: 10px 16px; border-radius: 999px; font-size: 18px;
+  border: 1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.04); opacity: .6; transition: all .4s ease; }
+.hg-chip.is-in { opacity: 1; border-color: #8fd19e; background: rgba(122,170,110,.18); animation: hgIn .5s ease; }
+.hg-chip-mark { font-family: Cinzel, serif; color: #8fd19e; }
+@keyframes hgIn { 0% { transform: scale(.9); } 60% { transform: scale(1.06); } 100% { transform: none; } }
 .hg-profiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; }
 .hg-prof { padding: 22px 24px; border-radius: 12px; background: rgba(212,175,55,.08); border: 1px solid rgba(212,175,55,.4);
   animation: hgPop .6s ease both; }
