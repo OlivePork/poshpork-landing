@@ -22,12 +22,24 @@ type Question = {
   question_text: string;
   options: string[];
   verdict_group: string | null;
+  kind: string | null;   // 'profile' | 'quiz' for games, null for the film
+  round: number | null;
+};
+
+type Profile = {
+  table_id: string;
+  table_name: string;
+  colour: string | null;
+  suspects: { key: string; name: string; line: string }[];
 };
 
 type State = {
   status: string;
   question_open: boolean;
+  revealed: boolean;
   question: Question | null;
+  reveal: { correct_answer: string | null; explanation: string | null; stamp: string | null } | null;
+  profiles: Profile[] | null;
   table_mode: boolean;
   tally: Record<string, number>;
   answered: number;
@@ -297,11 +309,19 @@ export default function JoinPage() {
 
   // What is currently in: the confirmed answer, or the one just tapped.
   const current = state?.mine ?? pendingAnswer;
-  const isMine = !!pendingAnswer && pendingAnswer === state?.mine;
   const setBy = state?.set_by ?? null;
   const myName = name.trim();
   const someoneElseSetIt =
     !!state?.table_mode && !!setBy && !!myName && setBy.toLowerCase() !== myName.toLowerCase();
+
+  const eyebrow = (q: Question) =>
+    q.kind === "profile"
+      ? "Which suspect are you?"
+      : q.round
+        ? `Round ${q.round}`
+        : q.verdict_group
+          ? "Your verdict"
+          : `Evidence ${String(q.order_number).padStart(2, "0")}`;
 
   return (
     <main className="pj">
@@ -331,7 +351,7 @@ export default function JoinPage() {
             {error && <p className="pj-error">{error}</p>}
 
             <button className="pj-btn" disabled={busy} onClick={() => lookUp(code)}>
-              {busy ? "Looking…" : "Continue"}
+              {busy ? "Looking\u2026" : "Continue"}
             </button>
           </div>
         )}
@@ -376,7 +396,7 @@ export default function JoinPage() {
               disabled={busy || !name.trim()}
               onClick={() => takeSeat(null)}
             >
-              {busy ? "Finding you a seat…" : "Sit me anywhere"}
+              {busy ? "Finding you a seat\u2026" : "Sit me anywhere"}
             </button>
 
             {tables.length > 0 && (
@@ -407,7 +427,7 @@ export default function JoinPage() {
                           {full
                             ? "full"
                             : atSize
-                              ? `${t.seats_taken} · join anyway`
+                              ? `${t.seats_taken} \u00b7 join anyway`
                               : `${t.seats_taken} of ${t.seats_soft}`}
                         </span>
                       </button>
@@ -451,7 +471,7 @@ export default function JoinPage() {
                       <span className="pj-table-dot" style={{ background: t.colour ?? "#d4af37" }} />
                       <span>{t.name}</span>
                       <span className="pj-table-seats">
-                        {here ? "you are here" : full ? "full" : atSize ? `${t.seats_taken} · join anyway` : `${t.seats_taken} of ${t.seats_soft}`}
+                        {here ? "you are here" : full ? "full" : atSize ? `${t.seats_taken} \u00b7 join anyway` : `${t.seats_taken} of ${t.seats_soft}`}
                       </span>
                     </button>
                   );
@@ -493,7 +513,7 @@ export default function JoinPage() {
                 disabled={busy}
                 onClick={() => takeSeat(forceTable.id, true, false, moving)}
               >
-                {busy ? "Joining…" : "Join them anyway"}
+                {busy ? "Joining\u2026" : "Join them anyway"}
               </button>
 
               <button className="pj-quiet" onClick={() => setForceTable(null)}>
@@ -508,14 +528,10 @@ export default function JoinPage() {
           <div className="pj-play">
             {state?.question && state.question_open ? (
               <div className="pj-card">
-                <p className="pj-eyebrow">
-                  {state.question.verdict_group
-                    ? "Your verdict"
-                    : `Evidence ${String(state.question.order_number).padStart(2, "0")}`}
-                </p>
+                <p className="pj-eyebrow">{eyebrow(state.question)}</p>
 
                 {state.table_mode && state.table_name && (
-                  <p className="pj-table-tag">{state.table_name} — answer together</p>
+                  <p className="pj-table-tag">{state.table_name} &mdash; answer together</p>
                 )}
 
                 <h1 className="pj-question">{state.question.question_text}</h1>
@@ -528,7 +544,7 @@ export default function JoinPage() {
                       onClick={() => answer(opt)}
                     >
                       {opt}
-                      {current === opt && <span className="pj-tick">✓</span>}
+                      {current === opt && <span className="pj-tick">&#10003;</span>}
                     </button>
                   ))}
                 </div>
@@ -539,7 +555,7 @@ export default function JoinPage() {
                       someoneElseSetIt ? (
                         <>
                           <strong>{setBy}</strong> put in <strong>{current}</strong> for the table.
-                          <span className="pj-status-sub">Disagree? Tap another — the last one stands.</span>
+                          <span className="pj-status-sub">Disagree? Tap another &mdash; the last one stands.</span>
                         </>
                       ) : (
                         <>
@@ -556,6 +572,8 @@ export default function JoinPage() {
                   </div>
                 )}
               </div>
+            ) : state?.question && state.revealed ? (
+              <RevealCard state={state} />
             ) : (
               <div className="pj-card pj-waiting">
                 <div className="pj-pulse" />
@@ -602,6 +620,58 @@ export default function JoinPage() {
         )}
       </div>
     </main>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* What the phone shows when the host reveals a game question          */
+/* ------------------------------------------------------------------ */
+
+function RevealCard({ state }: { state: State }) {
+  const q = state.question!;
+
+  if (q.kind === "profile") {
+    const mineProfile = state.profiles?.find((p) => p.table_id === state.table_id) ?? null;
+    const sus = mineProfile?.suspects ?? [];
+    return (
+      <div className="pj-card pj-reveal">
+        <p className="pj-eyebrow">The court has decided</p>
+        <p className="pj-lede" style={{ margin: "0 0 8px" }}>
+          {state.table_name ? `${state.table_name} is most like` : "Your table is most like"}
+        </p>
+        <h1 className="pj-title pj-suspect">
+          {sus.length === 0
+            ? "\u2026nobody yet"
+            : sus.length === 1
+              ? sus[0].name
+              : `Half ${sus.map((s) => s.name).join(", half ")}`}
+        </h1>
+        {sus.length === 1 && <p className="pj-lede">{sus[0].line}</p>}
+        {sus.length > 1 && <p className="pj-lede">The court cannot decide.</p>}
+      </div>
+    );
+  }
+
+  const right = state.reveal?.correct_answer ?? null;
+  const ok = !!state.mine && state.mine === right;
+
+  return (
+    <div className="pj-card pj-reveal">
+      <p className="pj-eyebrow">{q.round ? `Round ${q.round}` : "The answer"}</p>
+      <h1 className={`pj-title ${ok ? "pj-ok" : "pj-no"}`}>
+        {!state.mine ? "No answer went in" : ok ? "Correct!" : "Not quite"}
+      </h1>
+      {state.mine && !ok && (
+        <p className="pj-lede" style={{ margin: "0 0 6px" }}>
+          {state.table_mode ? "Your table said" : "You said"} <strong>{state.mine}</strong>.
+        </p>
+      )}
+      {right && (
+        <p className="pj-answer">The answer: <strong>{right}</strong></p>
+      )}
+      {state.reveal?.explanation && <p className="pj-explain">{state.reveal.explanation}</p>}
+      {state.reveal?.stamp && <span className="pj-stamp">{state.reveal.stamp.toUpperCase()}</span>}
+    </div>
   );
 }
 
@@ -687,6 +757,17 @@ const CSS = `
 .pj-status strong { color: #d4af37; }
 .pj-status-sub { display: block; margin-top: 6px; font-size: 12.5px; opacity: .6; }
 
+.pj-reveal { animation: pjIn .5s ease both; }
+@keyframes pjIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.pj-ok { color: #8fd19e; }
+.pj-no { color: #e0a0a0; }
+.pj-suspect { font-size: clamp(28px, 7vw, 38px); }
+.pj-answer { font-size: 17px; margin: 0 0 14px; }
+.pj-answer strong { color: #d4af37; }
+.pj-explain { font-size: 15px; line-height: 1.6; opacity: .85; margin: 0 0 14px; text-align: left; }
+.pj-stamp { display: inline-block; font-family: Cinzel, serif; font-size: 11px;
+  letter-spacing: .12em; color: #8fd19e; border: 2px solid #8fd19e; border-radius: 4px; padding: 2px 8px; }
+
 .pj-btn { width: 100%; margin-top: 22px; padding: 17px;
   font-family: Cinzel, serif; font-size: 17px; font-weight: bold;
   cursor: pointer; color: #0a0a0a; border: none; border-radius: 8px;
@@ -709,5 +790,6 @@ const CSS = `
 }
 @media (prefers-reduced-motion: reduce) {
   .pj-pulse { animation: none; opacity: .7; }
+  .pj-reveal { animation: none; }
 }
 `;

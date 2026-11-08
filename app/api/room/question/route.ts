@@ -3,14 +3,15 @@ import { createClient } from "@/lib/supabase/server";
 import { roomAdmin, normaliseCode } from "@/lib/rooms";
 
 /**
- * Host control: open, close or clear the room's current question.
+ * Host control: open, close, reveal or clear the room's current question.
  * Only the signed-in host of the room may do this.
  *
  * POST /api/room/question
- *   { "code": "BKQR47", "question_id": "...", "open": true }   open a question
- *   { "code": "BKQR47", "open": false }                        close it
- *   { "code": "BKQR47", "question_id": null }                  clear it
- *   { "code": "BKQR47", "status": "ended" }                    change room status
+ *   { code, question_id, open: true }        open a question (clears any reveal)
+ *   { code, open: false }                    close it, nothing shown yet
+ *   { code, open: false, revealed: true }    close it and show the answer on phones
+ *   { code, question_id: null }              clear it
+ *   { code, status: "finished" }             change room status
  */
 export async function POST(req: Request) {
   const supabase = await createClient();
@@ -19,7 +20,13 @@ export async function POST(req: Request) {
   } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Not signed in" }, { status: 401 });
 
-  let body: { code?: string; question_id?: string | null; open?: boolean; status?: string };
+  let body: {
+    code?: string;
+    question_id?: string | null;
+    open?: boolean;
+    revealed?: boolean;
+    status?: string;
+  };
   try {
     body = await req.json();
   } catch {
@@ -44,8 +51,10 @@ export async function POST(req: Request) {
   if (body.question_id !== undefined) {
     patch.current_question_id = body.question_id;
     patch.question_opened_at = body.question_id ? new Date().toISOString() : null;
+    patch.revealed = false; // a new question always starts hidden
   }
   if (body.open !== undefined) patch.question_open = body.open;
+  if (body.revealed !== undefined) patch.revealed = body.revealed;
   if (body.status) patch.status = body.status;
 
   if (Object.keys(patch).length === 0) {
