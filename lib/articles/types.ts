@@ -46,6 +46,19 @@ export type Reference = {
   note: string;
 };
 
+/** A real film named on a list page. Schema uses only these fields. */
+export type ListedFilm = {
+  title: string;
+  /** Omit when the site or source does not state a year. */
+  year?: string;
+  /** Empty when the source names an organisation instead of a director. */
+  directors: string[];
+  maker?: string;
+  summary: string;
+  sourceName: string;
+  sourceHref: string;
+};
+
 export type Article = {
   slug: string;
   title: string;
@@ -57,6 +70,8 @@ export type Article = {
   /** What this page cannot show. */
   limits: string[];
   references: Reference[];
+  /** Present only on list articles. */
+  films?: ListedFilm[];
 };
 
 export function paragraph(inlines: Inline[]): Paragraph {

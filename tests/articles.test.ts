@@ -13,33 +13,34 @@ import {
   proseSentences,
   wordCount,
 } from "../lib/articles";
-import { articleJsonLd, indexJsonLd } from "../lib/articles/schema";
+import { articleJsonLd, filmListJsonLd, indexJsonLd } from "../lib/articles/schema";
 
 const emDash = /[\u2014\u2013]/;
 const waitlist = /waitlist|waiting list/i;
+const EVIDENCE_SLUGS = [
+  "ultra-processed-food",
+  "uncured-bacon-celery-powder",
+  "pasture-raised-and-conventional-pork",
+];
+const LIST_SLUGS = [
+  "food-documentaries-for-families",
+  "documentaries-like-food-inc",
+  "food-documentaries-2026",
+  "ultra-processed-food-documentaries",
+  "films-made-with-ai",
+];
 
 function read(path: string): string {
   return readFileSync(new URL(`../${path}`, import.meta.url), "utf8");
 }
 
 describe("article prose", () => {
-  it("publishes exactly the three approved questions", () => {
-    assert.deepEqual(
-      ARTICLES.map((article) => article.slug),
-      [
-        "ultra-processed-food",
-        "uncured-bacon-celery-powder",
-        "pasture-raised-and-conventional-pork",
-      ],
-    );
-    assert.deepEqual(
-      ARTICLES.map((article) => article.title),
-      [
-        "Is ultra-processed food really that bad?",
-        "Uncured bacon and celery powder: is it safer than nitrates?",
-        "Pasture-raised versus conventional pork: what is the difference?",
-      ],
-    );
+  it("keeps the evidence articles and adds the five film lists", () => {
+    const slugs = ARTICLES.map((article) => article.slug);
+    for (const slug of [...EVIDENCE_SLUGS, ...LIST_SLUGS]) {
+      assert.ok(slugs.includes(slug), slug);
+    }
+    assert.equal(slugs.length, EVIDENCE_SLUGS.length + LIST_SLUGS.length);
   });
 
   it("answers before the later sections and stays inside the sentence limit", () => {
@@ -66,8 +67,10 @@ describe("article prose", () => {
       const headings = article.blocks
         .filter((block) => block.kind === "h2")
         .map((block) => block.text);
-      assert.ok(headings.includes("Hazard and risk"));
-      assert.ok(headings.includes("Association and causation"));
+      if (EVIDENCE_SLUGS.includes(article.slug)) {
+        assert.ok(headings.includes("Hazard and risk"));
+        assert.ok(headings.includes("Association and causation"));
+      }
       assert.ok(article.faqs.length >= 4);
       assert.ok(article.references.length >= 4);
       assert.ok(article.limits.length >= 4);
@@ -75,6 +78,21 @@ describe("article prose", () => {
       const blob = JSON.stringify(article);
       assert.equal(waitlist.test(blob), false);
       assert.equal(emDash.test(blob), false);
+      assert.equal(/fully AI-generated/i.test(blob), false, article.slug);
+    }
+  });
+
+  it("names only checked films and keeps this site's film off streaming apps", () => {
+    for (const slug of LIST_SLUGS) {
+      const article = ARTICLES.find((item) => item.slug === slug);
+      assert.ok(article?.films && article.films.length >= 4);
+      const blob = JSON.stringify(article);
+      assert.match(blob, /Which Food Is Killing You\?/);
+      assert.equal(/on Netflix/i.test(blob), false, slug);
+      for (const film of article!.films!) {
+        assert.ok(film.sourceHref.startsWith("https://"), film.title);
+        assert.match(blob, new RegExp(film.title.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+      }
     }
   });
 
@@ -107,14 +125,33 @@ describe("structured data", () => {
       assert.equal(data.author["@type"], "Organization");
       assert.equal(data.author.name, "Posh Pork");
       assert.equal(data.url, `${SITE_ORIGIN}${articlePath(article)}`);
-      assert.equal(serialised.includes("Person"), false);
+      if (EVIDENCE_SLUGS.includes(article.slug)) {
+        assert.equal(serialised.includes("Person"), false);
+      }
       assert.equal(serialised.includes("dateReviewed"), false);
       assert.equal(serialised.includes("reviewRating"), false);
       assert.equal(data.citation.length, article.references.length);
     }
   });
 
-  it("lists the three real article urls on the index", () => {
+  it("adds an ItemList of real films on each list article", () => {
+    for (const slug of LIST_SLUGS) {
+      const article = ARTICLES.find((item) => item.slug === slug);
+      const list = filmListJsonLd(article!);
+      assert.ok(list);
+      assert.equal(list["@type"], "ItemList");
+      assert.equal(list.itemListElement.length, article!.films!.length);
+      const ours = list.itemListElement.find(
+        (entry) => entry.item.name === "Which Food Is Killing You?",
+      );
+      assert.ok(ours);
+      assert.ok(ours.item.director);
+      assert.equal(ours.item.director[0].name, "Colin Marry");
+      assert.equal(JSON.stringify(ours).includes("aggregateRating"), false);
+    }
+  });
+
+  it("lists the real article urls on the index", () => {
     const data = indexJsonLd(ARTICLES);
     assert.equal(data["@type"], "CollectionPage");
     assert.equal(data.url, `${SITE_ORIGIN}/articles`);
@@ -127,7 +164,7 @@ describe("structured data", () => {
 });
 
 describe("routes", () => {
-  it("adds the index and the three articles to the sitemap", () => {
+  it("adds the index and every article to the sitemap", () => {
     const urls = sitemap().map((entry) => entry.url);
     const expected = [
       `${SITE_ORIGIN}/articles`,

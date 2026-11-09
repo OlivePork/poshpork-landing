@@ -7,7 +7,7 @@ import {
   type Block,
   inlineText,
 } from "@/lib/articles";
-import { articleJsonLd, serializeJsonLd } from "@/lib/articles/schema";
+import { serializeJsonLd, structuredData } from "@/lib/articles/schema";
 
 function headingId(text: string): string {
   const base = text
@@ -157,10 +157,13 @@ export default function EditorialArticle({ article }: { article: Article }) {
 
       <BuyFilmCta />
 
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: serializeJsonLd(articleJsonLd(article)) }}
-      />
+      {structuredData(article).map((data, index) => (
+        <script
+          key={index}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(data) }}
+        />
+      ))}
     </main>
   );
 }

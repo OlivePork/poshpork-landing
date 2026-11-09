@@ -1,4 +1,5 @@
 import bacon from "./bacon";
+import { LIST_ARTICLES } from "./lists";
 import pasture from "./pasture";
 import { ARTICLE_PUBLISHED, SITE_ORIGIN, articleUrl, type Article } from "./types";
 import ultraProcessed from "./ultra-processed";
@@ -17,19 +18,19 @@ export {
 } from "./types";
 export type { Article, Block, Inline } from "./types";
 
-export const ARTICLES: Article[] = [ultraProcessed, bacon, pasture];
+export const ARTICLES: Article[] = [ultraProcessed, bacon, pasture, ...LIST_ARTICLES];
 
 export const INDEX_PATH = "/articles";
 
 export const INDEX_TITLE = "Articles";
 
 export const INDEX_DESCRIPTION =
-  "Three evidence-led answers on ultra-processed food, uncured bacon, and pasture-raised pork.";
+  "Food evidence, selected documentaries, and a note on films made with AI.";
 
 export const INDEX_INTRO = [
-  "These pages answer three food questions from public scientific and regulatory sources.",
-  "Each page names its sources and states what the evidence cannot show.",
-  "They are not medical advice.",
+  "Some pages answer a food question from public scientific and regulatory sources.",
+  "Other pages name real documentaries. They are selections, not rankings.",
+  "None of these pages report search volume. Health pages are not medical advice.",
 ];
 
 export function getArticle(slug: string): Article | undefined {

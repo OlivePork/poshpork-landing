@@ -52,6 +52,49 @@ export function articleJsonLd(article: Article) {
   };
 }
 
+export function filmListJsonLd(article: Article) {
+  if (!article.films?.length) return null;
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: article.title,
+    itemListOrder: "https://schema.org/ItemListUnordered",
+    numberOfItems: article.films.length,
+    itemListElement: article.films.map((film, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      item: {
+        "@type": "Movie",
+        name: film.title,
+        ...(film.year ? { datePublished: film.year } : {}),
+        description: film.summary,
+        url: film.sourceHref,
+        ...(film.directors.length
+          ? {
+              director: film.directors.map((name) => ({
+                "@type": "Person",
+                name,
+              })),
+            }
+          : {}),
+        ...(film.maker
+          ? {
+              creator: {
+                "@type": "Organization",
+                name: film.maker,
+              },
+            }
+          : {}),
+      },
+    })),
+  };
+}
+
+export function structuredData(article: Article): unknown[] {
+  const list = filmListJsonLd(article);
+  return list ? [articleJsonLd(article), list] : [articleJsonLd(article)];
+}
+
 export function indexJsonLd(articles: Article[]) {
   return {
     "@context": "https://schema.org",
