@@ -24,7 +24,8 @@ export default function Footer() {
           © 2026 Posh Pork. All rights reserved.
         </p>
 
-        <nav style={{ display: 'flex', gap: '24px' }}>
+        <nav aria-label="Footer" style={{ display: 'flex', flexWrap: 'wrap', gap: '24px' }}>
+          <a href="/articles" style={linkStyle}>Articles</a>
           <a href="/terms" style={linkStyle}>Terms &amp; Conditions</a>
           <a href="/privacy" style={linkStyle}>Privacy</a>
         </nav>

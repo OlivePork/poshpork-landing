@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { articleSitemapEntries } from "../lib/articles";
 
 /**
  * The sitemap, generated at build.
@@ -37,6 +38,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly",
       priority: 0.8,
     },
+    ...articleSitemapEntries().map((entry) => ({
+      url: entry.url,
+      lastModified: entry.lastModified,
+      changeFrequency: "monthly" as const,
+      priority: entry.priority,
+    })),
     {
       url: `${site}/experiences`,
       lastModified: now,
