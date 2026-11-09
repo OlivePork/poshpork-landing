@@ -8,6 +8,7 @@ import Article from '@/components/Article';
 import CookieBanner from '@/components/CookieBanner';
 import GroupScreenings from '@/components/GroupScreenings';
 import Manifesto from "@/components/Manifesto";
+import Reviews from "@/components/Reviews";
 
 export default function Home() {
   return (
