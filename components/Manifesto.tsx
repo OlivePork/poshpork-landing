@@ -106,8 +106,6 @@ export default function Manifesto() {
     <section aria-label="The manifesto" className={`mf ${fell.className}${open ? " is-open" : ""}`}>
       <style>{CSS}</style>
 
-      <h2 className={`mf-title ${fellSC.className}`}>The Manifesto</h2>
-
       <div className="mf-wrap">
         {/* The door */}
         <div
@@ -120,6 +118,7 @@ export default function Manifesto() {
             if (!open && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); setOpen(true); }
           }}
         >
+          <h2 className={`mf-title ${fellSC.className}`}>The Manifesto</h2>
           <img className="mf-door mf-door-closed" src="/manifesto/door-closed.jpg" alt="An old oak door, wet with rain, with a rolled parchment scroll tied with red ribbon, hanging from a single hand-hammered nail" />
           <img className="mf-door mf-door-open" src="/manifesto/door-open.jpg" alt="" aria-hidden="true" />
           <div className="mf-light" aria-hidden="true" />
@@ -174,7 +173,7 @@ export default function Manifesto() {
         aria-controls="manifesto-text"
         onClick={() => {
           setOpen((o) => !o);
-          if (open) document.querySelector(".mf-title")?.scrollIntoView({ behavior: "smooth", block: "start" });
+          if (open) document.querySelector(".mf")?.scrollIntoView({ behavior: "smooth", block: "start" });
         }}
       >
         {open ? "Roll it back up" : "Unroll the manifesto"}
@@ -185,33 +184,39 @@ export default function Manifesto() {
 
 const CSS = `
 .mf {
-  --w: min(560px, calc(100vw - 32px));
+  /* The door is sized from the screen height so the whole closed view
+     (title, door, scroll, button) fits in one screen with no scrolling. */
+  --w: min(calc(100vw - 24px), calc(min(100svh - 190px, 600px) * 1.1));
   position: relative; overflow: hidden;
-  padding: clamp(44px,7vw,80px) 0 clamp(48px,7vw,84px);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 14px 0 18px;
   text-align: center; color: #2b1a0b;
   background:
     radial-gradient(ellipse at 50% 30%, rgba(120,70,25,.35), transparent 60%),
     radial-gradient(ellipse at 50% 120%, #000, transparent 55%),
     #110a05;
 }
+/* On wide screens, fill the first screen exactly; on phones, just wrap the door. */
+@media (min-aspect-ratio: 1/1) { .mf { min-height: calc(100svh - 72px); } }
 .mf-title {
-  margin: 0 auto 26px; font-weight: 400; letter-spacing: .04em;
-  font-size: clamp(40px,7vw,68px); line-height: 1; color: #f0dfb8;
+  position: absolute; z-index: 3; left: 0; right: 0; top: 3.5%;
+  margin: 0; font-weight: 400; letter-spacing: .05em; pointer-events: none;
+  font-size: clamp(30px, calc(var(--w) * .095), 58px); line-height: 1; color: #f0dfb8;
   text-shadow: 0 2px 0 #3a2410, 0 6px 22px rgba(0,0,0,.8), 0 0 40px rgba(214,150,60,.25);
 }
-.mf-wrap { position: relative; width: var(--w); margin: 0 auto; min-height: calc(var(--w) * 1.25); }
+.mf-wrap { position: relative; width: var(--w); margin: 0 auto; min-height: calc(var(--w) / 1.1); }
 .mf.is-open .mf-wrap {
   background: url(/manifesto/door-open.jpg) center top / 100% auto repeat-y;
   box-shadow: 0 30px 60px rgba(0,0,0,.6);
 }
 
 .mf-stage {
-  position: relative; width: 100%; aspect-ratio: 4 / 5; overflow: hidden;
+  position: relative; width: 100%; aspect-ratio: 1.1 / 1; overflow: hidden;
   border-radius: 4px; cursor: pointer; box-shadow: 0 30px 60px rgba(0,0,0,.6), inset 0 0 0 1px rgba(0,0,0,.4);
 }
 .mf.is-open .mf-stage { cursor: default; box-shadow: none; }
 .mf-stage:focus-visible { outline: 3px solid #f0dfb8; outline-offset: 4px; }
-.mf-door { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: opacity 1s ease; }
+.mf-door { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 62%; transition: opacity 1s ease; }
 .mf-door-open { opacity: 0; }
 .mf.is-open .mf-door-closed { opacity: 0; }
 .mf.is-open .mf-door-open { opacity: 1; }
@@ -243,7 +248,7 @@ const CSS = `
 
 .mf-unroll {
   position: relative; display: grid; grid-template-rows: 0fr;
-  margin-top: calc(var(--w) * -1.06);
+  margin-top: calc(var(--w) * -0.73);
   transition: grid-template-rows 2.2s cubic-bezier(.35,.7,.2,1);
   pointer-events: none;
 }
@@ -259,7 +264,7 @@ const CSS = `
 .mf-ptop { display: block; width: 100%; height: auto; position: relative; z-index: 1; }
 .mf-pbody {
   position: relative; z-index: 2; margin-top: -30%;
-  padding: 92px clamp(22px,6vw,48px) 54px; text-align: left;
+  padding: 64px clamp(22px,6vw,48px) 54px; text-align: left;
   background: url(/manifesto/parchment-tile.jpg) 0 0 / 480px auto repeat;
   -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 84px);
           mask-image: linear-gradient(to bottom, transparent 0, #000 84px);
@@ -291,7 +296,7 @@ const CSS = `
 .mf-strong { font-weight: bold; }
 
 .mf-button {
-  margin-top: 30px; padding: 14px 30px; cursor: pointer; font-size: 19px; letter-spacing: .04em;
+  margin-top: 14px; padding: 12px 28px; cursor: pointer; font-size: 18px; letter-spacing: .04em;
   color: #f0dfb8; background: linear-gradient(180deg, #3a2412, #22140a);
   border: 1px solid rgba(240,223,184,.45); border-radius: 3px;
   box-shadow: 0 8px 22px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.08);
