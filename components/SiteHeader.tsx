@@ -76,8 +76,7 @@ export default async function SiteHeader() {
         <a href="/schools" style={navLink}>SCHOOLS</a>
         <a href="/experiences" style={navLink}>IN PERSON</a>
         <a href="/evidence" style={navLink}>THE EVIDENCE</a>
-        <a href="/articles" style={navLink}>ARTICLES</a>
-        <a href="/press" style={navLink}>PRESS</a>
+               <a href="/press" style={navLink}>PRESS</a>
         <a href="/contact" style={navLink}>CONTACT</a>
         {user && <SignOutButton email={user.email} />}
       </nav>
