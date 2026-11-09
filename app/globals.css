@@ -72,6 +72,17 @@ html, body {
     );
   }
   
+  .article-page a:focus-visible,
+  .article-page button:focus-visible {
+    outline: 3px solid #5c3d00;
+    outline-offset: 3px;
+  }
+
+  .article-cta button:focus-visible {
+    outline: 3px solid #f2ece1;
+    outline-offset: 3px;
+  }
+
   .detective-border {
     border: 2px solid var(--gold);
     box-shadow: 
